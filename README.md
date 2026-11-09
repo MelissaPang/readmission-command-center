@@ -44,6 +44,7 @@ nurses and CHWs, who work the outreach queue; the Revenue Integrity & Quality te
 
 ## Presentation materials
 
+* [`docs/storyline.md`](docs/storyline.md): the narrative spine (outcome-first arc, persona map, one-patient thread through every layer, proof points, requirements check)
 * [`docs/deck_walkthrough.md`](docs/deck_walkthrough.md): slide-by-slide deck content (outcome first, buyer KPIs, sources for every number)
 * [`docs/talk_track.md`](docs/talk_track.md): role-play script with tell-show-tell demo, objection handling for business and technical stakeholders
 * [`docs/ai_workflow.md`](docs/ai_workflow.md): AI tools, the actual prompts, and the build workflow with Claude Code
