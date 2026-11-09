@@ -82,7 +82,7 @@ wb = spark.sql("""SELECT count(*) AS plans, count_if(status = 'approved') AS app
 print("App write-back read from the lakehouse (UC -> Lakebase):", wb)
 display(spark.sql("""SELECT p.plan_id, p.encounter_id, p.status, p.model_endpoint, p.approved_by, p.approved_ts, count(t.task_id) AS outreach_tasks
                      FROM rcc_lakebase.app_rcc.transition_plans p LEFT JOIN rcc_lakebase.app_rcc.outreach_tasks t USING (plan_id)
-                     GROUP BY ALL ORDER BY p.created_ts DESC LIMIT 10"""))
+                     GROUP BY ALL ORDER BY p.approved_ts DESC NULLS LAST LIMIT 10"""))
 check("App-approved transition plans visible in UC via Lakebase catalog", f"{wb.approved} approved / {wb.plans} plans", ">= 1 approved", wb.approved >= 1)
 g = spark.sql(f"SELECT status FROM {catalog}.gold.genie_eval_transcript").toPandas()
 check("Genie answered story questions", f"{(g.status == 'COMPLETED').sum()}/{len(g)}", "all COMPLETED", (g.status == "COMPLETED").all())

@@ -228,3 +228,18 @@ The evaluator reads text only, so every stage commits its output as text, not sc
 | Genie space + dashboard | 0.5 h | Space + `.lvdash.json` |
 | Databricks App (5 pages) + FM API plan drafting | 2 h | `app/` |
 | End-to-end run, evidence export, README | 0.5–1 h | `evidence/`, executed notebooks |
+
+---
+
+## 7. As built: deviations from the design above
+
+| Design | As built | Why |
+|---|---|---|
+| `ai_extract` / `ai_classify` | `ai_query('databricks-claude-haiku-4-5', …, responseFormat => STRUCT<…>)` in a streaming table | One call returns all flags plus an evidence quote with a typed schema. The streaming table sends each note to the model once (incremental). |
+| LightGBM | scikit-learn HistGradientBoosting **and** logistic regression; the higher test AUC becomes `@champion` | LightGBM isn't preinstalled on serverless. On this synthetic data, logistic regression slightly beat GBM. |
+| SHAP drivers | counterfactual drivers: risk drop when a factor is set to its reference value | No extra dependency, and the explanations are actionable ("book follow-up" lowers risk by X pts). |
+| React + Vite | FastAPI + vanilla JS / Chart.js (no build step) | Faster to build and deploy for the prototype; same five pages. |
+| App Lakebase resource binding | explicit SP grants (`scripts/grant_app_access.py`) | The shared workspace returns PERMISSION_DENIED when binding a Lakebase instance as an app resource. |
+| Account groups for masks / row filters | `gold.rcc_user_entitlements` table read by the mask and filter functions | We can't create account groups in the shared demo workspace. |
+| Tags `data_classification=synthetic_phi`, `project=…` | `data_classification=RESTRICTED`, `rcc_*` keys | Workspace tag policies restrict allowed values. |
+| Job pipeline task `full_refresh: true` | `full_refresh: false` (incremental) | A full refresh re-sends about 16.6k notes to the model (~20 min). Incremental runs take ~2 min. |
