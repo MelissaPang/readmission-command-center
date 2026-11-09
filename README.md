@@ -27,6 +27,11 @@ What the data shows (every number below is recomputed from the gold tables and c
 **Personas:** Priya Raman, RN, Manager of Transitional Care, the app's main user, who approves the transition plans; transitional-care
 nurses and CHWs, who work the outreach queue; the Revenue Integrity & Quality team, who use the HRRP page, the dashboard and Genie.
 
+## Presentation materials
+
+* [`docs/deck_walkthrough.md`](docs/deck_walkthrough.md): slide-by-slide deck content (outcome first, buyer KPIs, sources for every number)
+* [`docs/talk_track.md`](docs/talk_track.md): role-play script with tell-show-tell demo, objection handling for business and technical stakeholders
+
 ## Architecture
 
 See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the full design. Here is the integrated data journey:
