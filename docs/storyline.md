@@ -15,7 +15,7 @@ All numbers come from the prototype run on synthetic Cedarbrook data (sources in
 
 The three-sentence version (the elevator pitch, ~30 seconds):
 1. *Problem:* Heart-failure readmissions on 6 North jumped from 14.8% to 23.9% after a weekend staffing change, and heart failure is the biggest line of a $1.62M HRRP penalty.
-2. *Insight:* Only 18% of weekend discharges leave with a 7-day follow-up (vs 69% on weekdays), and those patients readmit at nearly twice the rate.
+2. *Insight:* Only 18% of weekend discharges leave with a 7-day follow-up (vs 69% on weekdays), and those patients readmit at nearly twice the rate. Cedarbrook couldn't see it because the answer was spread across siloed systems and unstructured notes, with no platform to bring it together or apply AI safely.
 3. *Outcome:* Getting weekend follow-up to 80% avoids ~7 readmissions, cuts the HF ERR from 1.19 to 1.14 and saves ~$240K a year on one unit. The same playbook is worth ~$874K across CUMC.
 
 ---
@@ -26,7 +26,7 @@ The three-sentence version (the elevator pitch, ~30 seconds):
 |---|---|---|---|
 | **Who** | CFO / Chief Quality Officer, Cedarbrook Health | Priya Raman, RN, Manager of Transitional Care | Data architect / platform lead |
 | **Their KPIs** | HRRP penalty $, HF excess readmission ratio (ERR), payback, risk | 7-day follow-up rate, high-risk patients contacted within 48h, nurse time per patient, unit readmission rate | Integration effort, data quality, PHI security, operability, cost to run |
-| **Their fear** | Spending money on a dashboard that doesn't move the penalty; AI risk | Another tool that adds clicks; AI telling nurses what to do | Another silo to integrate and secure |
+| **Their fear** | Spending money on a dashboard that doesn't move the penalty; AI risk | Another tool that adds clicks; AI telling nurses what to do | Another silo to integrate and secure; PHI copied into yet another tool; an ML/AI capability the team can't operate |
 | **The line that lands** | "This turns a penalty line into a decision you can fund, with a number attached." | "Your team gets a short, ranked list of who to call today and why, and the care plan is drafted for you to approve." | "One governed copy of the data, from raw extract to app, deployed as code." |
 | **Proof they need** | The what-if ($238K at 80%), the method being auditable, a 90-day pilot | The worklist, the AI plan with RN approval, the outreach tasks | Lineage, masks, row filters, data-quality results, Lakebase sync verification, the bundle |
 
@@ -52,6 +52,30 @@ The arc deliberately **opens with the outcome**, then earns it. Architecture app
 * 6 North HF readmissions went **14.8% → 23.9%** in 20 weeks. **Every other unit stayed within ~1.5 pts.**
 * Why it stayed hidden: the cause is **operational** (a staffing and clinic schedule change), the evidence is **in free text**, and the data is **split** between Quality, Finance and Care Transitions.
 
+### Beat 2b: Why Cedarbrook couldn't solve it before (the technical complication)
+*Scenario: Cedarbrook's current state, typical of a 3-hospital system. Confirm the specifics in discovery.*
+
+The business problem persisted because the technology made the answer impossible to assemble:
+
+1. **Siloed data. The answer needed five systems that don't talk to each other.**
+   * Encounters and readmissions live in the EHR reporting database (Epic Clarity).
+   * Follow-up appointments live in ambulatory scheduling.
+   * Social risk ("lives alone") lives only in clinical notes.
+   * Staffing changes live in HR / nursing operations.
+   * The HRRP penalty lives in Finance's spreadsheets built from CMS files.
+
+   Linking a weekend discharge to a missing appointment to a penalty dollar took a manual, monthly analyst project. By the time it was done, the data was stale.
+2. **Complicated infrastructure. Every new question meant another copy and another integration.**
+   * A warehouse for reporting, a separate data lake, a BI tool, and an app database for the care-management worklist: each with its own copy of PHI, its own access rules, and its own IT queue.
+   * Every new data feed was a project, and security reviews multiplied with every copy.
+   * There was no single, trusted definition of "readmission rate" or "ERR". Quality and Finance numbers didn't match.
+3. **Limited ML and AI capability. The risk signal was there, but nobody could use it.**
+   * There's no data science platform or MLOps: risk models live in notebooks on laptops, if they exist at all. They can't be deployed into a nurse's workflow, monitored or governed.
+   * **Key risk signals are unstructured** (living alone, transportation, "patient to call" are only in discharge notes), and there was no safe way to apply LLMs to PHI at scale. Manual chart review doesn't scale to ~16,600 notes.
+   * Analysts depend on IT for every new report, so Finance can't ask its own questions.
+
+> Line to say: *"The answer existed in Cedarbrook's data, but it was spread across five systems, three copies and a stack of notes nobody could read at scale."*
+
 ### Beat 3: The insight (root cause, quantified)
 * Weekend pharmacist gone (2026-06-19) and Friday clinic slots dropped (2026-06-26). Since then, **18%** of weekend HF discharges have a booked 7-day follow-up vs **69%** on weekdays.
 * No follow-up → **29.8%** readmit vs **16.4%** with one.
@@ -61,6 +85,7 @@ The arc deliberately **opens with the outcome**, then earns it. Architecture app
 ### Beat 4: Resolution (what the solution does, one connected journey)
 * The **one-thread story** below is the centrepiece. It shows the layers are connected, not stitched.
 * In business terms: **see the cause → find the patients → act → measure the dollars → ask anything.**
+* In platform terms, each technical challenge from Beat 2b is answered by one capability (§4b), on **one platform, one governed copy of the data**.
 
 ### Beat 5: Value (in the buyer's KPIs)
 * For the **executive:**
@@ -116,6 +141,29 @@ addresses the "layers present but not connected" failure mode.
 
 ---
 
+## 4b. How Databricks solves each challenge (challenge → capability → proof)
+
+| Challenge (Beat 2b) | What was hard | How Databricks solves it | Proof in this build |
+|---|---|---|---|
+| **Siloed data** | Encounters, appointments, notes, staffing and CMS penalty data in 5 systems; manual, stale joins | **Lakeflow** ingests every feed incrementally into one lakehouse (Auto Loader; Lakeflow Connect for Epic Clarity / FHIR in production) with data-quality rules. **One gold layer** defines readmission, follow-up and ERR once for everyone. | 9 raw feeds → bronze → silver → 10 gold tables in one pipeline; planted bad records caught (6 invalid, 45 duplicates); Quality, Finance, the app and Genie all read the same `gold.*` (`evidence/pipeline_events.md`) |
+| **Complicated infrastructure** | Separate warehouse, lake, BI, app database and ML tools; PHI copied everywhere; every question is an IT project | **One platform:** Lakeflow + SQL warehouse + AI/BI + **Lakebase** (Postgres for the app) + **Databricks Apps**, all under **Unity Catalog**. No copies to secure. Serving tables *sync* from gold, and app writes are readable back in UC. Deployed as code with **Asset Bundles**; serverless, so no clusters to manage. | One bundle deploys schemas, the pipeline, a 10-task job, the dashboard and the app; Lakebase synced tables verified 9/9 identical to their source; app approvals queryable in UC (`evidence/lakebase_verification.md`) |
+| **Governance across copies** | Each system has its own access rules; PHI audits are hard | **Unity Catalog:** column masks, row filters, tags, lineage and audit on one copy; the app runs as a least-privilege service principal | Analysts see `***MASKED***`; an FCH-only user sees 3,424 of 14,475 rows; lineage raw → app (`99_validate_story.ipynb`) |
+| **Limited ML capability** | No MLOps; models can't reach the workflow | **MLflow + UC model registry:** tracked experiments, champion by test AUC, governed alias, batch scoring into the worklist, explanations per patient | Two models compared; champion `ml.readmit_30d_risk@champion` (AUC 0.7245); scores and drivers in the nurse worklist (`03_*.ipynb`, `04_*.ipynb`) |
+| **Unstructured data, AI on PHI** | Signal locked in notes; no safe way to use LLMs | **AI Functions** (`ai_query` with structured output) run Claude *inside the governed pipeline*, so PHI never leaves the platform. **Foundation Model API** drafts plans with grounding and human approval. | 16,584 notes → structured flags, 0 errors, an evidence quote per flag; AI plan in 4.4 s, RN-approved, audited (`02_*.ipynb`, `11_draft_plan.json`) |
+| **Analysts depend on IT** | Every new question is a ticket | **Genie** on the governed gold tables: plain-English questions, answers with SQL, PHI masked by policy | 5/5 story questions answered correctly (`06_genie_space.ipynb`) |
+
+> Line to say: *"Five systems became one governed platform, three copies of PHI became one, and the notes nobody could read became a model feature,
+> without the data ever leaving Cedarbrook's control."*
+
+**How to tell it to each persona**
+* *Executive:* "Fewer systems, one version of the truth, and an analysis that used to be a manual analyst project now refreshes with every pipeline run (about 2 minutes, incremental)."
+* *Domain owner:* "The note you write at discharge is read for you, and the risk shows up on your list the same day."
+* *Technical:*
+  * "One governance model (UC) across ingest, ML, serving and the app; Lakebase removes the separate app database."
+  * "Everything is code in one bundle, serverless, and incremental, so AI cost scales with new notes, not history."
+
+---
+
 ## 5. Demo storyline (tell → show → tell)
 
 | Stop | Tell (what you'll see) | Show | Tell back (what it means) |
@@ -157,6 +205,8 @@ Address these *inside* the beats so the objections are already answered:
 * **"What about PHI?"** (Beat 4, step 3) Masks, row filters, a least-privilege app identity, lineage.
 * **"How long until value?"** (Beat 7) A 90-day pilot; value starts the first week nurses use the list.
 * **"Will it integrate with Epic?"** (Beat 7 / Q&A) Same pipeline. The connect phase maps feeds, it doesn't rebuild.
+* **"Isn't this just another platform to run?"** (§4b) It *replaces* copies: the warehouse, lake, ML tools and app database are consolidated under one governance model, serverless and deployed as code.
+* **"We don't have data scientists."** (§4b) Fixed-rule SQL, a transparent model with a governed champion, and AI Functions in SQL: the team operates it with SQL and Python skills they already have.
 * **"Why the jump between 70% and 80%?"** (Q&A) CUMC is above the 3% cap, so the first ~$60K of improvement is absorbed by the cap.
 
 Full objection answers are in `docs/talk_track.md` §8.
@@ -190,6 +240,7 @@ Full objection answers are in `docs/talk_track.md` §8.
 * [x] Quantifies impact in the buyer's KPIs: HRRP $, ERR, HF readmission %, 7-day follow-up %, 48h contact
 * [x] Frames value for the executive sponsor *and* the domain owner: §2, Beat 5
 * [x] Architecture after value: Beat 4 comes after Beats 0–3
+* [x] Explains why the customer couldn't solve it before (siloed data, complex infrastructure, limited ML/AI) and how Databricks solves each: Beat 2b, §4b
 
 **Role-play scoring criteria**
 * [x] Demo setup: Beat 0 frames the customer, the problem and what's coming before any demo
@@ -208,7 +259,7 @@ Full objection answers are in `docs/talk_track.md` §8.
 
 **Four domains**
 * *Industry:* Beats 1–3 (HRRP mechanics, the clinical-operational root cause, the buyer's KPIs)
-* *Product:* Beat 4 / §4 (every layer used for a real purpose and connected)
+* *Product:* Beat 2b + §4b (each technical challenge answered by a specific Databricks capability) and §4 (every layer used for a real purpose and connected)
 * *Build and AI Mindset:* Beat 6 proof plus §9 (evidence it ran; AI as a teammate)
 * *Customer Skills:* §§2, 5, 7 (persona framing, tell-show-tell, objections, the ask)
 
@@ -219,11 +270,11 @@ Full objection answers are in `docs/talk_track.md` §8.
 | Beat | Minutes |
 |---|---|
 | 0 Outcome hook | 1 |
-| 1–3 Situation, complication, insight | 4 |
+| 1–3 Situation, complication (business + technical), insight | 5 |
 | 5 Value (before the demo, so the demo proves it) | 2 |
-| 4 Resolution: the one-thread story | 2 |
-| Demo, 5 stops (tell → show → tell) | 9 |
-| 6 Proof and trust, plus trade-offs | 2 |
+| 4 Resolution: challenges → Databricks capabilities, the one-thread story | 3 |
+| Demo, 5 stops (tell → show → tell) | 8 |
+| 6 Proof and trust, plus trade-offs | 1–2 |
 | 7 Ask | 1 |
 | Q&A / objections | remaining |
 
