@@ -1,0 +1,74 @@
+[
+    {
+        "hospital_id": "CUMC",
+        "hospital_name": "Cedarbrook University Medical Center",
+        "unit_id": "CUMC-6N",
+        "unit_name": "6 North Telemetry",
+        "condition": "HF",
+        "prior_20w_index": 230,
+        "prior_20w_rate_pct": 14.8,
+        "last_20w_index": 209,
+        "last_20w_rate_pct": 23.9,
+        "delta_pts": 9.1
+    },
+    {
+        "hospital_id": "PHMC",
+        "hospital_name": "Pine Hollow Medical Center",
+        "unit_id": "PHMC-TEL",
+        "unit_name": "Telemetry",
+        "condition": "HF",
+        "prior_20w_index": 96,
+        "prior_20w_rate_pct": 26.0,
+        "last_20w_index": 78,
+        "last_20w_rate_pct": 26.9,
+        "delta_pts": 0.9
+    },
+    {
+        "hospital_id": "FCH",
+        "hospital_name": "Fairhaven Community Hospital",
+        "unit_id": "FCH-3A",
+        "unit_name": "3A Telemetry",
+        "condition": "HF",
+        "prior_20w_index": 115,
+        "prior_20w_rate_pct": 26.1,
+        "last_20w_index": 101,
+        "last_20w_rate_pct": 26.7,
+        "delta_pts": 0.6
+    },
+    {
+        "hospital_id": "CUMC",
+        "hospital_name": "Cedarbrook University Medical Center",
+        "unit_id": "CUMC-2W",
+        "unit_name": "2 West Step-Down",
+        "condition": "HF",
+        "prior_20w_index": 12,
+        "prior_20w_rate_pct": 25.0,
+        "last_20w_index": 25,
+        "last_20w_rate_pct": 24.0,
+        "delta_pts": -1.0
+    },
+    {
+        "hospital_id": "CUMC",
+        "hospital_name": "Cedarbrook University Medical Center",
+        "unit_id": "CUMC-5E",
+        "unit_name": "5 East Cardiology",
+        "condition": "HF",
+        "prior_20w_index": 62,
+        "prior_20w_rate_pct": 22.6,
+        "last_20w_index": 52,
+        "last_20w_rate_pct": 21.2,
+        "delta_pts": -1.4
+    },
+    {
+        "hospital_id": "CUMC",
+        "hospital_name": "Cedarbrook University Medical Center",
+        "unit_id": "CUMC-9N",
+        "unit_name": "9 North General Medicine",
+        "condition": "HF",
+        "prior_20w_index": 21,
+        "prior_20w_rate_pct": 23.8,
+        "last_20w_index": 20,
+        "last_20w_rate_pct": 20.0,
+        "delta_pts": -3.8
+    }
+]

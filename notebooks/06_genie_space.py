@@ -45,6 +45,8 @@ Hospitals: CUMC = Cedarbrook University Medical Center, FCH = Fairhaven Communit
 Definitions: readmission rate = readmissions / index admissions, only where outcome_complete = true (full 30-day window observed). Weekend = Friday, Saturday or Sunday discharge (weekend_discharge). 7-day follow-up = fu7_booked (a follow-up within 7 days booked before the patient left).
 'Last 20 weeks' and 'prior 20 weeks' use period_20w ('last_20w', 'prior_20w') or gold.unit_period_summary. 'Trailing 12 months' uses trailing_12m = true. HF = heart failure (condition = 'HF').
 ERR = observed readmission rate / CMS expected rate; ERR > 1 means excess readmissions and a penalty. Penalty contribution = condition base DRG payments x (ERR - 1); hospital penalty is capped at 3% of total base DRG payments.
+Risk-factor questions (follow-up, living alone, transportation, weekend) must use gold.readmission_risk_factors, which is already limited to the trailing 12 months, unless the user asks for another period.
+What-if / scenario / 'how much would we save' questions must read gold.hrrp_whatif (precomputed, deterministic) and never recompute the penalty. Scopes: '6N weekend HF', 'CUMC weekend HF (all units)', 'CUMC all HF discharges'; fu7_target_pct from 40 to 100 in steps of 5.
 ai_lives_alone and ai_transport_barrier were extracted from discharge-note free text by AI Functions. Always show rates as percentages with one decimal and money in dollars."""
 EXAMPLES = [
     ("Which unit's readmission rate rose the most over the last 20 weeks?",
@@ -53,6 +55,10 @@ EXAMPLES = [
      f"SELECT discharge_day_type, discharges, fu7_booked, fu7_booked_pct\nFROM {catalog}.gold.followup_gap\nWHERE unit_id = 'CUMC-6N' AND condition = 'HF' AND period = 'since_2026-06-19'"),
     ("What is the estimated HRRP penalty for each hospital and which condition drives it?",
      f"SELECT hospital_name, estimated_penalty, uncapped_penalty, at_cap, largest_condition, largest_condition_contribution, largest_condition_err\nFROM {catalog}.gold.hrrp_hospital_penalty\nORDER BY estimated_penalty DESC"),
+    ("Do HF patients who live alone readmit more often?",
+     f"SELECT factor, value AS lives_alone, index_admissions, readmissions, readmit_rate_pct\nFROM {catalog}.gold.readmission_risk_factors\nWHERE condition = 'HF' AND factor = 'ai_lives_alone'\nORDER BY value DESC"),
+    ("If 6 North booked follow-up for 80% of weekend HF discharges, how much penalty would we save?",
+     f"SELECT scope, fu7_target_pct, current_fu7_pct, additional_followups, readmissions_avoided, hf_err_current, hf_err_scenario,\n       penalty_current, penalty_scenario, penalty_saved\nFROM {catalog}.gold.hrrp_whatif\nWHERE scope = '6N weekend HF' AND fu7_target_pct = 80"),
 ]
 SAMPLE_QS = [
     "Which unit's HF readmission rate rose the most in the last 20 weeks?",

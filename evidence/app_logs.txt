@@ -1,0 +1,82 @@
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: watchfiles>=0.13 in ./.venv/lib/python3.11/site-packages (from uvicorn[standard]>=0.29->-r requirements.txt (line 2)) (1.2.0)
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: websockets>=10.4 in ./.venv/lib/python3.11/site-packages (from uvicorn[standard]>=0.29->-r requirements.txt (line 2)) (12.0)
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: pyasn1-modules>=0.2.1 in ./.venv/lib/python3.11/site-packages (from google-auth~=2.0->databricks-sdk>=0.60.0->-r requirements.txt (line 4)) (0.4.2)
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: cryptography>=38.0.3 in ./.venv/lib/python3.11/site-packages (from google-auth~=2.0->databricks-sdk>=0.60.0->-r requirements.txt (line 4)) (48.0.0)
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: charset_normalizer<4,>=2 in ./.venv/lib/python3.11/site-packages (from requests<3,>=2.28.1->databricks-sdk>=0.60.0->-r requirements.txt (line 4)) (3.4.7)
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: idna<4,>=2.5 in ./.venv/lib/python3.11/site-packages (from requests<3,>=2.28.1->databricks-sdk>=0.60.0->-r requirements.txt (line 4)) (3.17)
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: anyio<5,>=3.4.0 in ./.venv/lib/python3.11/site-packages (from starlette<0.39.0,>=0.37.2->fastapi>=0.110->-r requirements.txt (line 1)) (4.13.0)
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: cffi>=2.0.0 in ./.venv/lib/python3.11/site-packages (from cryptography>=38.0.3->google-auth~=2.0->databricks-sdk>=0.60.0->-r requirements.txt (line 4)) (2.0.0)
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: pyasn1<0.7.0,>=0.6.1 in ./.venv/lib/python3.11/site-packages (from pyasn1-modules>=0.2.1->google-auth~=2.0->databricks-sdk>=0.60.0->-r requirements.txt (line 4)) (0.6.3)
+2026-11-09T17:47:54Z [BUILD] Requirement already satisfied: pycparser in ./.venv/lib/python3.11/site-packages (from cffi>=2.0.0->cryptography>=38.0.3->google-auth~=2.0->databricks-sdk>=0.60.0->-r requirements.txt (line 4)) (3.0)
+2026-11-09T17:47:54Z [BUILD] Downloading psycopg-3.3.8-py3-none-any.whl (216 kB)
+2026-11-09T17:47:54Z [BUILD]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 216.2/216.2 kB 6.3 MB/s eta 0:00:00
+2026-11-09T17:47:54Z [BUILD] 
+2026-11-09T17:47:54Z [BUILD] Downloading databricks_sdk-0.163.0-py3-none-any.whl (1.2 MB)
+2026-11-09T17:47:54Z [BUILD]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 12.4 MB/s eta 0:00:00
+2026-11-09T17:47:54Z [BUILD] 
+2026-11-09T17:47:54Z [BUILD] Downloading psycopg_binary-3.3.8-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.3 MB)
+2026-11-09T17:47:55Z [BUILD]    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.3/5.3 MB 31.4 MB/s eta 0:00:00
+2026-11-09T17:47:55Z [BUILD] 
+2026-11-09T17:47:55Z [BUILD] Installing collected packages: psycopg-binary, psycopg, databricks-sdk
+2026-11-09T17:47:55Z [BUILD]   Attempting uninstall: databricks-sdk
+2026-11-09T17:47:55Z [BUILD]     Found existing installation: databricks-sdk 0.33.0
+2026-11-09T17:47:55Z [BUILD]     Uninstalling databricks-sdk-0.33.0:
+2026-11-09T17:47:56Z [BUILD]       Successfully uninstalled databricks-sdk-0.33.0
+2026-11-09T17:47:57Z [BUILD] Successfully installed databricks-sdk-0.163.0 psycopg-3.3.8 psycopg-binary-3.3.8
+2026-11-09T17:47:57Z [BUILD] 
+[notice] A new release of pip is available: 24.0 -> 26.3
+[notice] To update, run: python3_apps -m pip install --upgrade pip
+2026-11-09T17:47:57Z [BUILD] [INFO] Requirements installed successfully.
+2026-11-09T17:47:57Z [BUILD] [INFO] Starting app with command: [uvicorn app:app --host 0.0.0.0 --port 8000]
+2026-11-09T17:47:59Z [BUILD] [INFO] Deployment 01f1dc65ad8c1a4eb57e420fd649f0fa ended in 7.970630801s
+2026-11-09T17:47:59Z [BUILD] [INFO] Deployment successful
+2026-11-09T17:47:59Z [APP] INFO:     Started server process [74]
+2026-11-09T17:47:59Z [APP] INFO:     Waiting for application startup.
+2026-11-09T17:48:00Z [APP] 2026-11-09 17:48:00,595 INFO Lakebase ready (user=dd97e436-f2e2-4d19-9910-5e845a1a42f7, host=ep-ancient-haze-d1nu8mwg.database.us-west-2.cloud.databricks.com)
+2026-11-09T17:48:00Z [APP] INFO:     Application startup complete.
+2026-11-09T17:48:00Z [APP] INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-11-09T17:48:11Z [APP] INFO:     10.70.66.166:0 - "GET /api/health HTTP/1.1" 200 OK
+2026-11-09T17:48:11Z [APP] INFO:     10.70.50.106:0 - "GET /api/units/summary?condition=HF HTTP/1.1" 200 OK
+2026-11-09T17:48:12Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:10 +0000] "GET /api/health HTTP/1.1" 200 204 "-" "curl/8.7.1"
+2026-11-09T17:48:12Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:11 +0000] "GET /api/units/summary HTTP/1.1" 200 1512 "-" "curl/8.7.1"
+2026-11-09T17:48:12Z [APP] INFO:     10.117.51.93:0 - "GET /api/followup-gap?unit_id=CUMC-6N&condition=HF HTTP/1.1" 200 OK
+2026-11-09T17:48:13Z [APP] INFO:     10.85.71.98:0 - "GET /api/hrrp HTTP/1.1" 200 OK
+2026-11-09T17:48:13Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:12 +0000] "GET /api/followup-gap HTTP/1.1" 200 508 "-" "curl/8.7.1"
+2026-11-09T17:48:13Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:12 +0000] "GET /api/hrrp HTTP/1.1" 200 6980 "-" "curl/8.7.1"
+2026-11-09T17:48:13Z [APP] INFO:     10.85.48.183:0 - "GET /api/hrrp/whatif?scope=6N%20weekend%20HF HTTP/1.1" 200 OK
+2026-11-09T17:48:14Z [APP] INFO:     10.70.54.157:0 - "GET /api/worklist?unit_id=CUMC-6N&limit=5 HTTP/1.1" 200 OK
+2026-11-09T17:48:14Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:13 +0000] "GET /api/hrrp/whatif HTTP/1.1" 200 4615 "-" "curl/8.7.1"
+2026-11-09T17:48:14Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:13 +0000] "GET /api/worklist HTTP/1.1" 200 3271 "-" "curl/8.7.1"
+2026-11-09T17:48:36Z [APP] INFO:     10.85.59.37:0 - "GET /api/health HTTP/1.1" 200 OK
+2026-11-09T17:48:37Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:36 +0000] "GET /api/health HTTP/1.1" 200 204 "-" "curl/8.7.1"
+2026-11-09T17:48:37Z [APP] INFO:     10.70.69.106:0 - "GET /api/units/summary?condition=HF HTTP/1.1" 200 OK
+2026-11-09T17:48:37Z [APP] INFO:     10.117.57.26:0 - "GET /api/units/summary?condition=ALL HTTP/1.1" 200 OK
+2026-11-09T17:48:38Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:37 +0000] "GET /api/units/summary HTTP/1.1" 200 1512 "-" "curl/8.7.1"
+2026-11-09T17:48:38Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:37 +0000] "GET /api/units/summary HTTP/1.1" 200 4015 "-" "curl/8.7.1"
+2026-11-09T17:48:38Z [APP] INFO:     10.70.54.157:0 - "GET /api/units/CUMC-6N/weekly?condition=HF HTTP/1.1" 200 OK
+2026-11-09T17:48:38Z [APP] INFO:     10.117.51.93:0 - "GET /api/followup-gap?unit_id=CUMC-6N&condition=HF HTTP/1.1" 200 OK
+2026-11-09T17:48:39Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:38 +0000] "GET /api/units/CUMC-6N/weekly HTTP/1.1" 200 10111 "-" "curl/8.7.1"
+2026-11-09T17:48:39Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:38 +0000] "GET /api/followup-gap HTTP/1.1" 200 508 "-" "curl/8.7.1"
+2026-11-09T17:48:39Z [APP] INFO:     10.70.58.207:0 - "GET /api/risk-factors?condition=HF HTTP/1.1" 200 OK
+2026-11-09T17:48:39Z [APP] INFO:     10.117.69.146:0 - "GET /api/hrrp HTTP/1.1" 200 OK
+2026-11-09T17:48:40Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:39 +0000] "GET /api/risk-factors HTTP/1.1" 200 887 "-" "curl/8.7.1"
+2026-11-09T17:48:40Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:39 +0000] "GET /api/hrrp HTTP/1.1" 200 6980 "-" "curl/8.7.1"
+2026-11-09T17:48:40Z [APP] INFO:     10.117.51.93:0 - "GET /api/hrrp/whatif?scope=6N%20weekend%20HF HTTP/1.1" 200 OK
+2026-11-09T17:48:40Z [APP] INFO:     10.85.59.37:0 - "GET /api/worklist?unit_id=CUMC-6N&risk_tier=High&no_followup=true&limit=10 HTTP/1.1" 200 OK
+2026-11-09T17:48:41Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:40 +0000] "GET /api/hrrp/whatif HTTP/1.1" 200 4615 "-" "curl/8.7.1"
+2026-11-09T17:48:41Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:40 +0000] "GET /api/worklist HTTP/1.1" 200 4587 "-" "curl/8.7.1"
+2026-11-09T17:48:41Z [APP] INFO:     10.70.58.64:0 - "GET /api/patients/E1014082 HTTP/1.1" 200 OK
+2026-11-09T17:48:42Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:41 +0000] "GET /api/patients/E1014082 HTTP/1.1" 200 1156 "-" "curl/8.7.1"
+2026-11-09T17:48:46Z [APP] 2026-11-09 17:48:46,843 INFO draft plan c66e94d57e36 for E1014082 (4.4s)
+2026-11-09T17:48:46Z [APP] INFO:     10.70.58.64:0 - "POST /api/patients/E1014082/draft-plan HTTP/1.1" 200 OK
+2026-11-09T17:48:47Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:42 +0000] "POST /api/patients/E1014082/draft-plan HTTP/1.1" 200 2055 "-" "curl/8.7.1"
+2026-11-09T17:48:47Z [APP] INFO:     10.70.58.162:0 - "POST /api/plans/c66e94d57e36/approve HTTP/1.1" 200 OK
+2026-11-09T17:48:48Z [APP] INFO:     10.70.71.57:0 - "GET /api/patients/E1014082 HTTP/1.1" 200 OK
+2026-11-09T17:48:48Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:47 +0000] "POST /api/plans/c66e94d57e36/approve HTTP/1.1" 200 308 "-" "curl/8.7.1"
+2026-11-09T17:48:48Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:47 +0000] "GET /api/patients/E1014082 HTTP/1.1" 200 4628 "-" "curl/8.7.1"
+2026-11-09T17:48:48Z [APP] INFO:     10.70.58.162:0 - "GET /api/outreach-tasks?status=open HTTP/1.1" 200 OK
+2026-11-09T17:48:49Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:48 +0000] "GET /api/outreach-tasks HTTP/1.1" 200 923 "-" "curl/8.7.1"
+2026-11-09T17:48:49Z [APP] INFO:     10.70.50.106:0 - "POST /api/outreach-tasks/cd5be0234608/complete HTTP/1.1" 200 OK
+2026-11-09T17:48:50Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:49 +0000] "POST /api/outreach-tasks/cd5be0234608/complete HTTP/1.1" 200 42 "-" "curl/8.7.1"
+2026-11-09T17:49:03Z [APP] INFO:     10.70.50.106:0 - "POST /api/genie/ask HTTP/1.1" 200 OK
+2026-11-09T17:49:04Z [HTTP] 75.125.237.17 - 848760056777784@1444828305810485 [09/Nov/2026:17:48:49 +0000] "POST /api/genie/ask HTTP/1.1" 200 829 "-" "curl/8.7.1"

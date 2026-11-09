@@ -1,0 +1,610 @@
+[
+    {
+        "discharge_week": "2025-04-28",
+        "index_admissions": 2,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 2
+    },
+    {
+        "discharge_week": "2025-05-05",
+        "index_admissions": 12,
+        "readmissions": 3,
+        "readmit_rate_pct": 25.0,
+        "weekend_discharges": 4,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2025-05-12",
+        "index_admissions": 11,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 5,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2025-05-19",
+        "index_admissions": 10,
+        "readmissions": 1,
+        "readmit_rate_pct": 10.0,
+        "weekend_discharges": 3,
+        "fu7_booked": 5
+    },
+    {
+        "discharge_week": "2025-05-26",
+        "index_admissions": 12,
+        "readmissions": 3,
+        "readmit_rate_pct": 25.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2025-06-02",
+        "index_admissions": 10,
+        "readmissions": 3,
+        "readmit_rate_pct": 30.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2025-06-09",
+        "index_admissions": 6,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 3,
+        "fu7_booked": 4
+    },
+    {
+        "discharge_week": "2025-06-16",
+        "index_admissions": 10,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 6,
+        "fu7_booked": 6
+    },
+    {
+        "discharge_week": "2025-06-23",
+        "index_admissions": 13,
+        "readmissions": 3,
+        "readmit_rate_pct": 23.08,
+        "weekend_discharges": 5,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2025-06-30",
+        "index_admissions": 14,
+        "readmissions": 3,
+        "readmit_rate_pct": 21.43,
+        "weekend_discharges": 2,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2025-07-07",
+        "index_admissions": 13,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 3,
+        "fu7_booked": 11
+    },
+    {
+        "discharge_week": "2025-07-14",
+        "index_admissions": 8,
+        "readmissions": 3,
+        "readmit_rate_pct": 37.5,
+        "weekend_discharges": 1,
+        "fu7_booked": 4
+    },
+    {
+        "discharge_week": "2025-07-21",
+        "index_admissions": 14,
+        "readmissions": 3,
+        "readmit_rate_pct": 21.43,
+        "weekend_discharges": 7,
+        "fu7_booked": 11
+    },
+    {
+        "discharge_week": "2025-07-28",
+        "index_admissions": 12,
+        "readmissions": 2,
+        "readmit_rate_pct": 16.67,
+        "weekend_discharges": 8,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2025-08-04",
+        "index_admissions": 9,
+        "readmissions": 2,
+        "readmit_rate_pct": 22.22,
+        "weekend_discharges": 2,
+        "fu7_booked": 3
+    },
+    {
+        "discharge_week": "2025-08-11",
+        "index_admissions": 13,
+        "readmissions": 1,
+        "readmit_rate_pct": 7.69,
+        "weekend_discharges": 6,
+        "fu7_booked": 12
+    },
+    {
+        "discharge_week": "2025-08-18",
+        "index_admissions": 13,
+        "readmissions": 3,
+        "readmit_rate_pct": 23.08,
+        "weekend_discharges": 3,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2025-08-25",
+        "index_admissions": 11,
+        "readmissions": 1,
+        "readmit_rate_pct": 9.09,
+        "weekend_discharges": 4,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2025-09-01",
+        "index_admissions": 7,
+        "readmissions": 2,
+        "readmit_rate_pct": 28.57,
+        "weekend_discharges": 4,
+        "fu7_booked": 4
+    },
+    {
+        "discharge_week": "2025-09-08",
+        "index_admissions": 11,
+        "readmissions": 3,
+        "readmit_rate_pct": 27.27,
+        "weekend_discharges": 4,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2025-09-15",
+        "index_admissions": 16,
+        "readmissions": 1,
+        "readmit_rate_pct": 6.25,
+        "weekend_discharges": 8,
+        "fu7_booked": 11
+    },
+    {
+        "discharge_week": "2025-09-22",
+        "index_admissions": 10,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 5,
+        "fu7_booked": 6
+    },
+    {
+        "discharge_week": "2025-09-29",
+        "index_admissions": 14,
+        "readmissions": 1,
+        "readmit_rate_pct": 7.14,
+        "weekend_discharges": 5,
+        "fu7_booked": 13
+    },
+    {
+        "discharge_week": "2025-10-06",
+        "index_admissions": 12,
+        "readmissions": 3,
+        "readmit_rate_pct": 25.0,
+        "weekend_discharges": 4,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2025-10-13",
+        "index_admissions": 8,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 1,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2025-10-20",
+        "index_admissions": 13,
+        "readmissions": 2,
+        "readmit_rate_pct": 15.38,
+        "weekend_discharges": 3,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2025-10-27",
+        "index_admissions": 8,
+        "readmissions": 2,
+        "readmit_rate_pct": 25.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2025-11-03",
+        "index_admissions": 9,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 3,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2025-11-10",
+        "index_admissions": 16,
+        "readmissions": 2,
+        "readmit_rate_pct": 12.5,
+        "weekend_discharges": 7,
+        "fu7_booked": 13
+    },
+    {
+        "discharge_week": "2025-11-17",
+        "index_admissions": 9,
+        "readmissions": 1,
+        "readmit_rate_pct": 11.11,
+        "weekend_discharges": 3,
+        "fu7_booked": 6
+    },
+    {
+        "discharge_week": "2025-11-24",
+        "index_admissions": 10,
+        "readmissions": 5,
+        "readmit_rate_pct": 50.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2025-12-01",
+        "index_admissions": 6,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 3
+    },
+    {
+        "discharge_week": "2025-12-08",
+        "index_admissions": 11,
+        "readmissions": 1,
+        "readmit_rate_pct": 9.09,
+        "weekend_discharges": 5,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2025-12-15",
+        "index_admissions": 10,
+        "readmissions": 1,
+        "readmit_rate_pct": 10.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2025-12-22",
+        "index_admissions": 4,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 3,
+        "fu7_booked": 1
+    },
+    {
+        "discharge_week": "2025-12-29",
+        "index_admissions": 11,
+        "readmissions": 1,
+        "readmit_rate_pct": 9.09,
+        "weekend_discharges": 5,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2026-01-05",
+        "index_admissions": 13,
+        "readmissions": 1,
+        "readmit_rate_pct": 7.69,
+        "weekend_discharges": 8,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2026-01-12",
+        "index_admissions": 8,
+        "readmissions": 1,
+        "readmit_rate_pct": 12.5,
+        "weekend_discharges": 3,
+        "fu7_booked": 4
+    },
+    {
+        "discharge_week": "2026-01-19",
+        "index_admissions": 13,
+        "readmissions": 1,
+        "readmit_rate_pct": 7.69,
+        "weekend_discharges": 5,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2026-01-26",
+        "index_admissions": 11,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 6,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2026-02-02",
+        "index_admissions": 11,
+        "readmissions": 2,
+        "readmit_rate_pct": 18.18,
+        "weekend_discharges": 3,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2026-02-09",
+        "index_admissions": 7,
+        "readmissions": 1,
+        "readmit_rate_pct": 14.29,
+        "weekend_discharges": 3,
+        "fu7_booked": 6
+    },
+    {
+        "discharge_week": "2026-02-16",
+        "index_admissions": 13,
+        "readmissions": 2,
+        "readmit_rate_pct": 15.38,
+        "weekend_discharges": 3,
+        "fu7_booked": 10
+    },
+    {
+        "discharge_week": "2026-02-23",
+        "index_admissions": 8,
+        "readmissions": 1,
+        "readmit_rate_pct": 12.5,
+        "weekend_discharges": 1,
+        "fu7_booked": 4
+    },
+    {
+        "discharge_week": "2026-03-02",
+        "index_admissions": 13,
+        "readmissions": 3,
+        "readmit_rate_pct": 23.08,
+        "weekend_discharges": 3,
+        "fu7_booked": 11
+    },
+    {
+        "discharge_week": "2026-03-09",
+        "index_admissions": 7,
+        "readmissions": 1,
+        "readmit_rate_pct": 14.29,
+        "weekend_discharges": 3,
+        "fu7_booked": 4
+    },
+    {
+        "discharge_week": "2026-03-16",
+        "index_admissions": 14,
+        "readmissions": 4,
+        "readmit_rate_pct": 28.57,
+        "weekend_discharges": 4,
+        "fu7_booked": 10
+    },
+    {
+        "discharge_week": "2026-03-23",
+        "index_admissions": 14,
+        "readmissions": 2,
+        "readmit_rate_pct": 14.29,
+        "weekend_discharges": 5,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2026-03-30",
+        "index_admissions": 15,
+        "readmissions": 1,
+        "readmit_rate_pct": 6.67,
+        "weekend_discharges": 7,
+        "fu7_booked": 13
+    },
+    {
+        "discharge_week": "2026-04-06",
+        "index_admissions": 16,
+        "readmissions": 2,
+        "readmit_rate_pct": 12.5,
+        "weekend_discharges": 5,
+        "fu7_booked": 12
+    },
+    {
+        "discharge_week": "2026-04-13",
+        "index_admissions": 10,
+        "readmissions": 3,
+        "readmit_rate_pct": 30.0,
+        "weekend_discharges": 1,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2026-04-20",
+        "index_admissions": 14,
+        "readmissions": 4,
+        "readmit_rate_pct": 28.57,
+        "weekend_discharges": 5,
+        "fu7_booked": 12
+    },
+    {
+        "discharge_week": "2026-04-27",
+        "index_admissions": 9,
+        "readmissions": 1,
+        "readmit_rate_pct": 11.11,
+        "weekend_discharges": 3,
+        "fu7_booked": 5
+    },
+    {
+        "discharge_week": "2026-05-04",
+        "index_admissions": 13,
+        "readmissions": 3,
+        "readmit_rate_pct": 23.08,
+        "weekend_discharges": 5,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2026-05-11",
+        "index_admissions": 10,
+        "readmissions": 0,
+        "readmit_rate_pct": 0.0,
+        "weekend_discharges": 5,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2026-05-18",
+        "index_admissions": 8,
+        "readmissions": 1,
+        "readmit_rate_pct": 12.5,
+        "weekend_discharges": 3,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2026-05-25",
+        "index_admissions": 11,
+        "readmissions": 1,
+        "readmit_rate_pct": 9.09,
+        "weekend_discharges": 5,
+        "fu7_booked": 9
+    },
+    {
+        "discharge_week": "2026-06-01",
+        "index_admissions": 12,
+        "readmissions": 3,
+        "readmit_rate_pct": 25.0,
+        "weekend_discharges": 7,
+        "fu7_booked": 4
+    },
+    {
+        "discharge_week": "2026-06-08",
+        "index_admissions": 13,
+        "readmissions": 1,
+        "readmit_rate_pct": 7.69,
+        "weekend_discharges": 5,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2026-06-15",
+        "index_admissions": 10,
+        "readmissions": 3,
+        "readmit_rate_pct": 30.0,
+        "weekend_discharges": 1,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2026-06-22",
+        "index_admissions": 16,
+        "readmissions": 4,
+        "readmit_rate_pct": 25.0,
+        "weekend_discharges": 6,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2026-06-29",
+        "index_admissions": 14,
+        "readmissions": 4,
+        "readmit_rate_pct": 28.57,
+        "weekend_discharges": 6,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2026-07-06",
+        "index_admissions": 5,
+        "readmissions": 1,
+        "readmit_rate_pct": 20.0,
+        "weekend_discharges": 0,
+        "fu7_booked": 4
+    },
+    {
+        "discharge_week": "2026-07-13",
+        "index_admissions": 11,
+        "readmissions": 1,
+        "readmit_rate_pct": 9.09,
+        "weekend_discharges": 2,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2026-07-20",
+        "index_admissions": 14,
+        "readmissions": 4,
+        "readmit_rate_pct": 28.57,
+        "weekend_discharges": 6,
+        "fu7_booked": 5
+    },
+    {
+        "discharge_week": "2026-07-27",
+        "index_admissions": 8,
+        "readmissions": 2,
+        "readmit_rate_pct": 25.0,
+        "weekend_discharges": 5,
+        "fu7_booked": 5
+    },
+    {
+        "discharge_week": "2026-08-03",
+        "index_admissions": 10,
+        "readmissions": 2,
+        "readmit_rate_pct": 20.0,
+        "weekend_discharges": 1,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2026-08-10",
+        "index_admissions": 13,
+        "readmissions": 2,
+        "readmit_rate_pct": 15.38,
+        "weekend_discharges": 3,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2026-08-17",
+        "index_admissions": 11,
+        "readmissions": 5,
+        "readmit_rate_pct": 45.45,
+        "weekend_discharges": 4,
+        "fu7_booked": 5
+    },
+    {
+        "discharge_week": "2026-08-24",
+        "index_admissions": 5,
+        "readmissions": 2,
+        "readmit_rate_pct": 40.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 3
+    },
+    {
+        "discharge_week": "2026-08-31",
+        "index_admissions": 6,
+        "readmissions": 3,
+        "readmit_rate_pct": 50.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 2
+    },
+    {
+        "discharge_week": "2026-09-07",
+        "index_admissions": 12,
+        "readmissions": 2,
+        "readmit_rate_pct": 16.67,
+        "weekend_discharges": 2,
+        "fu7_booked": 7
+    },
+    {
+        "discharge_week": "2026-09-14",
+        "index_admissions": 8,
+        "readmissions": 2,
+        "readmit_rate_pct": 25.0,
+        "weekend_discharges": 4,
+        "fu7_booked": 4
+    },
+    {
+        "discharge_week": "2026-09-21",
+        "index_admissions": 14,
+        "readmissions": 4,
+        "readmit_rate_pct": 28.57,
+        "weekend_discharges": 4,
+        "fu7_booked": 8
+    },
+    {
+        "discharge_week": "2026-09-28",
+        "index_admissions": 8,
+        "readmissions": 3,
+        "readmit_rate_pct": 37.5,
+        "weekend_discharges": 5,
+        "fu7_booked": 3
+    },
+    {
+        "discharge_week": "2026-10-05",
+        "index_admissions": 8,
+        "readmissions": 2,
+        "readmit_rate_pct": 25.0,
+        "weekend_discharges": 2,
+        "fu7_booked": 3
+    }
+]

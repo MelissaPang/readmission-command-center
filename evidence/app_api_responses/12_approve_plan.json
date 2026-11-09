@@ -1,0 +1,17 @@
+{
+    "plan_id": "c66e94d57e36",
+    "status": "approved",
+    "approved_by": "melissa.pang@databricks.com",
+    "tasks_created": [
+        {
+            "task_id": "cd5be0234608",
+            "task_type": "book_followup",
+            "description": "Book 7-day follow-up"
+        },
+        {
+            "task_id": "38aa7cdc835d",
+            "task_type": "pharmacist_call",
+            "description": "Pharmacist med-reconciliation call"
+        }
+    ]
+}

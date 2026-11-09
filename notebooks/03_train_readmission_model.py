@@ -5,7 +5,7 @@
 # MAGIC * **Data:** `gold.index_admissions` with complete 30-day outcomes, all hospitals and conditions.
 # MAGIC * **Features:** structured EHR fields, the follow-up booking status, and the **AI-extracted free-text flags** (lives alone, transportation barrier).
 # MAGIC * **Split:** time-based. Train on discharges before the last 20 weeks; test on the last 20 weeks.
-# MAGIC * **Model:** scikit-learn HistGradientBoosting, with a logistic-regression baseline for comparison.
+# MAGIC * **Models:** scikit-learn HistGradientBoosting and logistic regression; the one with the higher test AUC becomes `@champion`.
 # MAGIC * **Registered as** `<catalog>.ml.readmit_30d_risk`, alias `@champion`.
 
 # COMMAND ----------
@@ -86,7 +86,10 @@ display(pd.DataFrame(results).T.reset_index().rename(columns={"index": "model"})
 
 # COMMAND ----------
 
-best = models["hist_gbm"]
+champion = max(results, key=lambda k: results[k]["auc"])
+print(f"champion by test AUC: {champion} ({results[champion]['auc']:.4f}) vs "
+      + ", ".join(f"{k} {v['auc']:.4f}" for k, v in results.items() if k != champion))
+best = models[champion]
 p = best.predict_proba(test[FEATURES])[:, 1]
 cal = (pd.DataFrame({"p": p, "y": test.readmit_30d.to_numpy()})
        .assign(decile=lambda d: pd.qcut(d.p, 10, labels=False, duplicates="drop") + 1)
@@ -108,7 +111,7 @@ from mlflow import MlflowClient
 
 MODEL_NAME = f"{catalog}.ml.readmit_30d_risk"
 X_ex = train[FEATURES].head(5)
-with mlflow.start_run(run_id=results["hist_gbm"]["run_id"]):
+with mlflow.start_run(run_id=results[champion]["run_id"]):
     mlflow.log_table(cal, "calibration_deciles.json")
     mlflow.log_table(fi, "permutation_importance.json")
     info = mlflow.sklearn.log_model(best, artifact_path="model", signature=infer_signature(X_ex, best.predict_proba(X_ex)[:, 1]),
@@ -117,11 +120,11 @@ client = MlflowClient()
 version = max(int(v.version) for v in client.search_model_versions(f"name='{MODEL_NAME}'"))
 client.set_registered_model_alias(MODEL_NAME, "champion", version)
 client.update_registered_model(MODEL_NAME, description="30-day all-cause readmission risk for HRRP index admissions (Cedarbrook Health, synthetic). "
-                               "HistGradientBoosting on EHR + AI-extracted discharge-note features.")
+                               f"Champion = best test AUC of HistGradientBoosting vs logistic regression (current: {champion}); EHR + AI-extracted discharge-note features.")
 print(f"registered {MODEL_NAME} version {version} as @champion")
 
-summary = {"model_name": MODEL_NAME, "version": version, "run_id": results["hist_gbm"]["run_id"],
-           **{k: round(v, 4) for k, v in results["hist_gbm"].items() if k != "run_id"},
-           "baseline_logreg_auc": round(results["logreg_baseline"]["auc"], 4)}
+summary = {"model_name": MODEL_NAME, "version": version, "champion_algorithm": champion, "run_id": results[champion]["run_id"],
+           **{k: round(v, 4) for k, v in results[champion].items() if k != "run_id"},
+           "hist_gbm_auc": round(results["hist_gbm"]["auc"], 4), "logreg_auc": round(results["logreg_baseline"]["auc"], 4)}
 spark.createDataFrame([summary]).write.mode("overwrite").option("overwriteSchema", True).saveAsTable(f"{catalog}.ml.model_metrics")
 print(json.dumps(summary, indent=2))

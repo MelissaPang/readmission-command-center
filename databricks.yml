@@ -20,6 +20,9 @@ variables:
   extraction_endpoint:
     description: Foundation Model endpoint used by AI Functions on discharge notes
     default: databricks-claude-haiku-4-5
+  genie_space_id:
+    description: Genie space created by notebooks/06_genie_space.py (stored in gold.app_config)
+    default: 01f1dc641b0f1595b5867a02cfe2abd8
   assistant_endpoint:
     description: Foundation Model endpoint used by the app to draft transition plans
     default: databricks-claude-sonnet-4-6

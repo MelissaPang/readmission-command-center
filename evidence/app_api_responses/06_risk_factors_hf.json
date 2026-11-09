@@ -1,0 +1,58 @@
+[
+    {
+        "factor": "ai_lives_alone",
+        "value": "false",
+        "index_admissions": 1146,
+        "readmissions": 236,
+        "readmit_rate_pct": 20.6
+    },
+    {
+        "factor": "ai_lives_alone",
+        "value": "true",
+        "index_admissions": 157,
+        "readmissions": 52,
+        "readmit_rate_pct": 33.1
+    },
+    {
+        "factor": "ai_transport_barrier",
+        "value": "false",
+        "index_admissions": 1188,
+        "readmissions": 250,
+        "readmit_rate_pct": 21.0
+    },
+    {
+        "factor": "ai_transport_barrier",
+        "value": "true",
+        "index_admissions": 115,
+        "readmissions": 38,
+        "readmit_rate_pct": 33.0
+    },
+    {
+        "factor": "fu7_booked",
+        "value": "false",
+        "index_admissions": 554,
+        "readmissions": 165,
+        "readmit_rate_pct": 29.8
+    },
+    {
+        "factor": "fu7_booked",
+        "value": "true",
+        "index_admissions": 749,
+        "readmissions": 123,
+        "readmit_rate_pct": 16.4
+    },
+    {
+        "factor": "weekend_discharge",
+        "value": "false",
+        "index_admissions": 855,
+        "readmissions": 179,
+        "readmit_rate_pct": 20.9
+    },
+    {
+        "factor": "weekend_discharge",
+        "value": "true",
+        "index_admissions": 448,
+        "readmissions": 109,
+        "readmit_rate_pct": 24.3
+    }
+]

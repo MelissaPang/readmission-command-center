@@ -1,0 +1,20 @@
+resources:
+  apps:
+    rcc_app:
+      name: readmission-command-center
+      description: Cedarbrook Health Readmission Command Center - unit trends, discharge worklist with risk scores, AI transition plans, HRRP what-if, Genie
+      source_code_path: ../app
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+        - name: assistant-endpoint
+          serving_endpoint:
+            name: ${var.assistant_endpoint}
+            permission: CAN_QUERY
+        - name: genie-space
+          genie_space:
+            name: rcc-genie
+            space_id: ${var.genie_space_id}
+            permission: CAN_RUN

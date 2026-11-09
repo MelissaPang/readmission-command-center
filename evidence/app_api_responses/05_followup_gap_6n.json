@@ -1,0 +1,30 @@
+[
+    {
+        "discharge_day_type": "Weekday (Mon-Thu)",
+        "period": "before_2026-06-19",
+        "discharges": 416,
+        "fu7_booked": 299,
+        "fu7_booked_pct": 71.9
+    },
+    {
+        "discharge_day_type": "Weekend (Fri-Sun)",
+        "period": "before_2026-06-19",
+        "discharges": 234,
+        "fu7_booked": 162,
+        "fu7_booked_pct": 69.2
+    },
+    {
+        "discharge_day_type": "Weekday (Mon-Thu)",
+        "period": "since_2026-06-19",
+        "discharges": 137,
+        "fu7_booked": 94,
+        "fu7_booked_pct": 68.6
+    },
+    {
+        "discharge_day_type": "Weekend (Fri-Sun)",
+        "period": "since_2026-06-19",
+        "discharges": 62,
+        "fu7_booked": 11,
+        "fu7_booked_pct": 17.7
+    }
+]

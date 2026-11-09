@@ -1,0 +1,52 @@
+{
+  "name": "readmission-command-center",
+  "url": "https://readmission-command-center-1444828305810485.aws.databricksapps.com",
+  "app_status": {
+    "message": "App has status: App is running",
+    "state": "RUNNING"
+  },
+  "compute_status": {
+    "message": "App compute is running.",
+    "state": "ACTIVE"
+  },
+  "service_principal_client_id": "dd97e436-f2e2-4d19-9910-5e845a1a42f7",
+  "active_deployment": {
+    "create_time": "2026-11-09T17:47:48Z",
+    "creator": "melissa.pang@databricks.com",
+    "deployment_artifacts": {
+      "source_code_path": "/Workspace/Users/dd97e436-f2e2-4d19-9910-5e845a1a42f7/src/01f1dc65ad8c1a4eb57e420fd649f0fa"
+    },
+    "deployment_id": "01f1dc65ad8c1a4eb57e420fd649f0fa",
+    "mode": "SNAPSHOT",
+    "source_code_path": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/app",
+    "status": {
+      "message": "App started successfully",
+      "state": "SUCCEEDED"
+    },
+    "update_time": "2026-11-09T17:48:01Z"
+  },
+  "resources": [
+    {
+      "name": "sql-warehouse",
+      "sql_warehouse": {
+        "id": "12444b712298f9ac",
+        "permission": "CAN_USE"
+      }
+    },
+    {
+      "name": "assistant-endpoint",
+      "serving_endpoint": {
+        "name": "databricks-claude-sonnet-4-6",
+        "permission": "CAN_QUERY"
+      }
+    },
+    {
+      "genie_space": {
+        "name": "rcc-genie",
+        "permission": "CAN_RUN",
+        "space_id": "01f1dc641b0f1595b5867a02cfe2abd8"
+      },
+      "name": "genie-space"
+    }
+  ]
+}

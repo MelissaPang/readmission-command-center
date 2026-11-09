@@ -1,0 +1,38 @@
+[
+    {
+        "task_id": "cd5be0234608",
+        "encounter_id": "E1014082",
+        "plan_id": "c66e94d57e36",
+        "task_type": "book_followup",
+        "description": "Book 7-day follow-up",
+        "assignee": "care-transitions-queue",
+        "due_ts": "2026-11-11T17:48:47.567149+00:00",
+        "status": "open",
+        "created_ts": "2026-11-09T17:48:47.567149+00:00",
+        "completed_by": null,
+        "completed_ts": null,
+        "first_name": "Sarah",
+        "last_name": "Hernandez",
+        "unit_name": "6 North Telemetry",
+        "risk_tier": "High",
+        "home_phone": "(630) 555-9113"
+    },
+    {
+        "task_id": "38aa7cdc835d",
+        "encounter_id": "E1014082",
+        "plan_id": "c66e94d57e36",
+        "task_type": "pharmacist_call",
+        "description": "Pharmacist med-reconciliation call",
+        "assignee": "care-transitions-queue",
+        "due_ts": "2026-11-11T17:48:47.567149+00:00",
+        "status": "open",
+        "created_ts": "2026-11-09T17:48:47.567149+00:00",
+        "completed_by": null,
+        "completed_ts": null,
+        "first_name": "Sarah",
+        "last_name": "Hernandez",
+        "unit_name": "6 North Telemetry",
+        "risk_tier": "High",
+        "home_phone": "(630) 555-9113"
+    }
+]
