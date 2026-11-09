@@ -1,0 +1,8 @@
+command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+env:
+  - name: LAKEBASE_INSTANCE
+    value: rcc-lakebase
+  - name: ASSISTANT_ENDPOINT
+    valueFrom: assistant-endpoint
+  - name: GENIE_SPACE_ID
+    valueFrom: genie-space
