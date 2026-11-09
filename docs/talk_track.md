@@ -1,315 +1,375 @@
-# Talk track: Readmission Command Center (role-play script)
+# Talk track: Readmission Command Center (presentation and role-play script)
 
-A spoken script for the 20–30 minute role-play with two AI personas in the room:
-* **Business stakeholder:** the executive who funds the decision (CFO / Chief Quality Officer at Cedarbrook Health)
-* **Technical stakeholder:** the data architect / platform lead who has to live with the build
+The spoken script for the 20–30 minute session. Slide numbers match `docs/deck_walkthrough.md` / `docs/deck.md` (16 slides).
+Lines in quotes are meant to be said roughly as written; *italics* are stage directions. Every demo stop is **tell → show → tell**.
 
-Slide numbers refer to `docs/deck_walkthrough.md`. Lines in *italics* are stage directions. Everything else is meant to be
-said roughly as written. Keep the demo tight. Every demo stop follows **tell → show → tell**.
+**Who is in the room.** The role-play has two AI personas. Map them to the Cedarbrook leaders:
 
-**Timing plan (~22 min presenting + Q&A)**
+| Persona in the room | Speaks for | Their numbers |
+|---|---|---|
+| **Business stakeholder** (the executive who funds it) | **Jordan Whitfield, CFO** and **Dr. Naomi Brooks, CEO** (plus **Dr. Elena Vasquez, VP of Quality** on quality questions) | HRRP penalty $1.62M → $1.38M; star rating 3★ → 4★; HF referrals 420 → 470; payer withhold $300K → $100K forfeited; HF ERR 1.19 → 1.14 |
+| **Technical stakeholder** (lives with the build) | **Kenji Tanaka, Chief Data & Analytics Officer** | 5 silos → 1 governed copy; ~2 min refresh; quality gates on every run |
+| *(referenced, the app's main user)* | **Priya Raman, RN, Manager of Transitional Care** | weekend 7-day follow-up 18% → ≥ 80%; ≥ 90% of high-risk patients contacted within 48h |
+
+If the personas introduce themselves with other names, use **their** names and keep the same role mapping.
+
+> All numbers are from the prototype on synthetic Cedarbrook data (job run 601827272748584: 11/11 tasks, 33/33 checks). Say "on Cedarbrook-like
+> data". The strategic scorecard values (Care Compare category, stars, referrals, contract) and the ~$60K follow-up capacity cost are **synthetic or
+> illustrative**: say so if asked. Real-time scoring at discharge is the **production design**: say "in production".
+
+---
+
+## Timing plan (~24 min presenting + Q&A)
 
 | Segment | Slides | Time |
 |---|---|---|
-| Setup and outcome | 1–2 | 2 min |
-| Problem and root cause | 3–5 | 4 min |
-| Value case | 6 | 2 min |
-| Solution journey | 7 | 2 min |
-| Live demo (5 stops) | 8–9 | 9 min |
-| Trust and trade-offs | 10–11 | 2 min |
-| Path to production and ask | 12 | 1 min |
+| Opening and outcome | 1–2 | 1.5 min |
+| Stakes, accountability, strategic scorecard | 3–5 | 3 min |
+| Problem and why it couldn't be solved | 6–7 | 2.5 min |
+| Root cause | 8 | 1.5 min |
+| Value by role | 9 | 1.5 min |
+| Solution and one-patient journey | 10–12 | 3 min |
+| Live demo (5 stops) | 13–14 | 8–9 min |
+| Trust, quality gates, trade-offs | 15 | 1.5 min |
+| Pilot and the ask | 16 | 1 min |
 | Q&A / objections | n/a | remaining |
 
-**Before you start:** have the app open on the Unit Trends tab, the Genie tab pre-loaded, the deck on slide 1, and a 6 North
-weekend high-risk patient with no plan yet. To find one, run `scripts/capture_app_evidence.sh` or filter the worklist: Unit = 6 North, Tier = High, No follow-up.
+---
+
+## Before you start (5 minutes before the session)
+
+* [ ] **Start the Lakebase instance and the app** if they were stopped (`rcc-lakebase`, app `readmission-command-center`). Open the app URL and wait for the **Unit Trends** tab to load. That warms the SQL warehouse too.
+* [ ] **Pre-pick the demo patient.**
+  * In **Discharge Worklist**, set Hospital = CUMC, Unit = 6 North Telemetry, Tier = High, and tick **No 7-day follow-up**.
+  * Pick a **weekend heart-failure** discharge with **no plan** in the Plan column. Note the name.
+* [ ] Have the **Ask Genie** tab open in a second browser tab, with the question ready to paste.
+* [ ] Deck on slide 1. Repo link ready: https://github.com/MelissaPang/readmission-command-center
 
 ---
 
-## 1. Setup and outcome (slides 1–2, ~2 min)
+## 1. Opening and outcome (slides 1–2, ~1.5 min)
 
-> "Thank you both for the time. Here's what I'd like to do in the next twenty minutes. I'll start with what we found in
-> Cedarbrook's data and what it's worth. Then I'll show you live how a care-transitions nurse and your finance team would use it.
-> Then I'll walk through how it's built and what it takes to put it into production. I'll leave plenty of time for your questions."
+**Slide 1**
+> "Thank you for the time. In the next twenty minutes I'll show you what we found in Cedarbrook's data, what it's worth, and a live demo of
+> how your care-transitions team and your finance team would use it. Then I'll cover how it's built, and what it takes to go live. I'll leave
+> plenty of time for questions."
 
-> "The headline: **heart-failure readmissions on 6 North are costing Cedarbrook University Medical Center about $240,000 a year
-> in avoidable HRRP penalty, and the fix is operational, not clinical.** If 6 North books a 7-day follow-up for 80% of its weekend
-> heart-failure discharges, we avoid about seven readmissions a year and move the HF excess readmission ratio from 1.19 to 1.14.
-> Apply the same fix to all heart-failure discharges at CUMC and the opportunity grows to about $870,000."
+**Slide 2**
+> "Here's the headline: **booking a 7-day follow-up for weekend heart-failure discharges on one unit is worth about $240,000 a year.** And the fix is operational, not clinical."
 
-*Look at the executive:*
-> "For you, this turns a penalty line into a decision you can fund, with a number attached."
+*Point at each tile as you name its owner:*
+> "**Jordan**, for you: the HRRP penalty goes from $1.62 million to $1.38 million. That's $238,000 a year on one unit, and about $874,000 if we apply it to all heart failure at CUMC.
+> **Dr. Vasquez**: the heart-failure excess readmission ratio goes from 1.19 to 1.14.
+> And for **Priya's** team: weekend follow-up goes from 18% to 80%, and every high-risk discharge comes with a two-sentence briefing on who to call and why."
 
-*Look at the domain owner role / technical stakeholder:*
-> "For the transitional-care team, it's a ranked daily worklist that tells nurses who to call and why. And all of it runs on one
-> governed platform, which I know matters to you."
-
----
-
-## 2. Problem and root cause (slides 3–5, ~4 min)
-
-**Slide 3**
-> "Cedarbrook runs three hospitals. At the flagship, CUMC, heart-failure 30-day readmissions on 6 North Telemetry went from
-> **14.8% to 23.9%** in twenty weeks. That's nine points. Every other unit in the system stayed within about a point and a half. So this
-> isn't a system-wide quality drift. It's one unit, and it started at a specific time."
-
-> "It matters financially because heart failure is the largest line of CUMC's estimated **$1.62 million HRRP penalty**: **$1.14 million**,
-> with an excess readmission ratio of **1.19**. CMS penalizes anything above 1.0."
-
-**Slide 4**
-> "Why didn't anyone catch this? Three reasons. First, the cause is operational. In June, 6 North lost its weekend transitions pharmacist,
-> and a week later the HF Bridge Clinic stopped offering Friday afternoon slots. Second, part of the evidence lives only in free text:
-> the discharge note says 'patient to call the clinic on Monday', and whether the patient lives alone is only in the note. Third, the data
-> is split: Quality sees rates, Finance sees the penalty, nurses see a flat discharge list."
-
-**Slide 5**
-> "When we put it together, the story is very clear. Since June 19th, only **18%** of 6 North's weekend heart-failure discharges leave
-> with a booked follow-up, against **69%** on weekdays. Before June, weekends were at about 69% as well."
-
-> "And it matters: across all three hospitals, heart-failure patients without a 7-day follow-up readmit at **29.8%**, compared with **16.4%** with one."
-
-> "One more finding that nobody could see before: we used AI to read every one of the 16,584 discharge notes. Patients who live alone, which is only
-> written in the note, readmit at **33% versus 21%**. That's a risk factor your structured data simply doesn't have."
+> "And it isn't only financial. **Dr. Brooks**, the same fix moves Cedarbrook out of Care Compare's 'worse than national' category, and it's worth a star and about fifty heart-failure referrals a year. I'll show you those numbers in a moment."
 
 ---
 
-## 3. Value case (slide 6, ~2 min)
+## 2. Stakes, accountability, strategic scorecard (slides 3–5, ~3 min)
 
-> "So what is fixing it worth? This is a fixed-rule calculation, no black box. Finance can reproduce every dollar."
+**Slide 3: the stakes**
+> "Quick context. Under CMS's Hospital Readmissions Reduction Program, if readmissions run above expected, CMS cuts payments on *all* Medicare
+> discharges, by up to 3%. CUMC's estimated penalty is $1.62 million, and that's already at the cap. Heart failure is the biggest line, $1.14 million, with an excess readmission ratio of 1.19.
+> And it's public: the same performance is on Care Compare, where CUMC heart failure shows as *worse than the national rate*, and it feeds a 3-star rating."
 
-> "Take 6 North's weekend heart-failure discharges over the last twelve months: about 196 of them, 55% booked today. Raise that to **80%** and
-> that's about 49 more patients leaving with an appointment. At the readmission gap we measured, that's about **six and a half avoided
-> readmissions**, the ERR moves from **1.19 to 1.14**, and the penalty drops by about **$238,000**."
+**Slide 4: who owns which number**
+> "What I want to be precise about is who owns which number, because they all move together:
+> * Jordan owns the penalty.
+> * Dr. Vasquez owns the readmission ratio and the public rating.
+> * Priya owns the 7-day follow-up rate.
+> * Kenji owns the platform.
+> * Dr. Brooks owns the star rating and referral volume.
+>
+> All five numbers move with **one action**: a follow-up booked before a high-risk patient goes home."
 
-> "Every ten points of weekend follow-up is worth roughly $120,000 here. Scale the fix to all heart-failure discharges at CUMC and it's about **$874,000**."
+**Slide 5: beyond the penalty (the strategic scorecard)**
+> "This is the slide I'd want in the boardroom. The penalty is only the floor."
 
-*To the executive:*
-> "To put that against a cost: if restoring weekend pharmacist coverage is around 0.4 of an FTE, call it $60,000 a year (that's my assumption,
-> we'd validate it with your finance team), that's roughly a four-times return on the penalty alone. That's before counting what the readmissions
-> themselves cost the hospital."
+*Walk the table row by row, naming the owner:*
+> * "**Care Compare**, Dr. Vasquez: heart-failure readmissions go from 19.4% to 18.6%. That takes CUMC from *worse than national* to *no different than national*.
+> * **Star rating**, Dr. Brooks: readmission is one of the five star-rating groups. With it back at national, we project 3 stars to 4.
+> * **Referrals**, Dr. Brooks: heart-failure referrals from ACO and cardiology partners have been sliding, now 420 a year and down 6%. We project 470. That's 50 admissions, about $372,000 of revenue.
+> * **Payer contracts**, Jordan: on a $20 million Medicare Advantage contract with a 2% readmission withhold, we're projected to forfeit $300,000 of $400,000. With the fix, it's $100,000, so you keep $200,000."
+
+> "So: **financial**, $238,000 less penalty. **Strategic**, out of 'worse than national', plus a star, plus 50 referrals, plus $200,000 of contract withhold retained."
+
+*If asked:* "The rate change comes from the model. The category, stars, referral and contract figures are illustrative for Cedarbrook. We'd confirm them with your strategy and managed-care teams."
 
 ---
 
-## 4. Solution journey (slide 7, ~2 min)
+## 3. Problem and why it couldn't be solved (slides 6–7, ~2.5 min)
 
-> "Here's how it works end to end. The important point is that this is one connected flow, not five tools stitched together."
+**Slide 6: the peak**
+> "Here's what happened. On 6 North Telemetry, heart-failure readmissions went from **14.8% to 23.9%** in twenty weeks. Every other unit stayed within a point and a half.
+> And Cedarbrook found out the way most hospitals do: after the fact, from the quality report and the penalty estimate. Nobody could answer the two questions that matter: when did it start, and why?"
 
-> "Raw EHR extracts land in the platform and **Lakeflow** ingests them incrementally, with data-quality rules. It caught every bad record
-> we planted. Everything is governed in **Unity Catalog**: one copy of the data, with patient identifiers masked for anyone who isn't on the care team."
+**Slide 7: why it couldn't be solved before**
+> "That isn't anyone's fault. It's the data. Three reasons.
+> * **First, silos.** Discharges, follow-up appointments, notes and penalty data live in different systems. And critically, the **readmission prediction is disconnected from the discharge**: if there's a score, it's calculated weeks later, not in front of the nurse while a follow-up can still be booked. There's also no view of readmissions over time by unit.
+> * **Second, infrastructure.** A warehouse, a lake, BI and an app database, each with its own copy of patient data. Every question becomes an IT project, and Quality's and Finance's numbers don't match.
+> * **Third, ML and AI.** There's no governed way to put a model in the nurse's workflow, use AI on notes, learn from what nurses do, or check that an AI answer is right."
 
-> "**AI Functions** read every discharge note and turn sentences like 'lives alone' into structured columns. Those columns feed a **30-day risk model**,
-> and the model's scores and reasons feed the nurse worklist. **Lakebase** serves that worklist to the app in milliseconds, and it stores what nurses
-> do back: approved plans and outreach tasks. **Genie** lets Finance ask questions in plain English, on the same governed data."
-
-> "So the flag the AI pulls from a note becomes a model feature, which becomes a priority on Priya's worklist, which becomes a dollar figure on the
-> HRRP page. Same data, all the way through."
+*To the technical persona (Kenji):* "Every new question meant another copy of PHI and another integration."
 
 ---
 
-## 5. Live demo (slides 8–9, ~9 min)
+## 4. Root cause (slide 8, ~1.5 min)
 
-**Tell (slide 8):**
-> "Let me show you this live. I'll follow one weekend discharge from the data to an approved care plan, in five stops: the trend, the worklist, a patient,
-> the dollars, and a plain-English question to Genie."
+> "Once you unify discharges, predictions and follow-ups, and trend them over time, the answer is obvious.
+> * **When:** the trend shows exactly when 6 North's peak started, and that it's only 6 North.
+> * **Why:** weekend heart-failure discharges with a booked 7-day follow-up fell to **18%**, against **69%** on weekdays.
+> * **So what:** patients without that follow-up readmit at **29.8%**, compared with **16.4%** with one.
+> * **Who, right now:** every discharge now carries its prediction and a nurse briefing, so we catch the high-risk patient *before* they go home.
+>
+> This isn't a clinical mystery. It's a missing appointment, and that's a process gap the team can fix."
+
+*Hold in reserve (Appendix E), only if asked "why weekends?":* "It lines up with two late-June changes, a vacated weekend transitions-pharmacist role and fewer Friday clinic slots."
+
+---
+
+## 5. Value by role (slide 9, ~1.5 min)
+
+> "Here's what fixing it is worth, using a fixed-rule calculation. Jordan, your team can reproduce every line.
+> At **80%** weekend follow-up: about six and a half avoided readmissions, the ratio goes to 1.14, and **$238,000** less penalty. Every ten points of follow-up is worth about $120,000. At hospital scale, about $874,000."
+
+> * "**Jordan:** if restoring weekend follow-up capacity costs around $60,000 a year (that's my assumption, we'd validate it), it's roughly a four-times return on the penalty alone. Add the $200,000 of withhold and the referral revenue on top.
+> * **Dr. Vasquez:** 1.19 to 1.14, heading toward the 1.00 benchmark.
+> * **Priya:** right now there are 54 high-risk patients in the window, and 41 have no follow-up. Booking those is how we get from 18% to 80%."
+
+---
+
+## 6. Solution and one-patient journey (slides 10–12, ~3 min)
+
+**Slide 10: the solution**
+> "Here's the solution in six steps:
+> 1. **unify** the data
+> 2. **predict** risk for every discharge
+> 3. **visualize** readmissions over time
+> 4. **brief and act:** a nurse briefing, an AI-drafted plan the nurse approves, outreach tasks created automatically
+> 5. **measure** the dollars
+> 6. **learn**: every nurse edit becomes a training signal."
+
+**Slide 11: one patient, one platform** *(the integration slide: slow down here)*
+> "Let me follow one Friday discharge through it, because this is what makes it one platform and not five tools.
+> * The discharge record, the appointment (none booked) and the note, *'patient to call the clinic on Monday… lives alone'*, land as raw files.
+> * **Lakeflow** ingests them with data-quality rules. **Unity Catalog** governs one copy, with the name masked for analysts and the note quote visible only to care transitions.
+> * **AI Functions** read the note: 'lives alone', 'patient to call'.
+> * The **model** scores the patient High: no follow-up is 16.8 points, living alone is 13.5.
+> * AI turns that into a **briefing**: 'book the 7-day follow-up and start a home-health referral.'
+> * **Lakebase** serves it to the app. Claude drafts the plan, and the nurse **edits** and approves it.
+> * That edit becomes a **training signal** for the next model run.
+> * The follow-up moves the **ERR**, and **Genie** can answer questions on all of it.
+>
+> The discharge, its prediction and its follow-up finally live together, and every nurse decision teaches the system."
+
+**Slide 12: challenge → capability** *(look at the technical persona)*
+> "Kenji, to close the loop on the three challenges:
+> * The silos go into **Lakeflow** and one gold layer. In production, discharge events trigger the scoring.
+> * The infrastructure becomes **one platform**: Lakeflow, SQL, Lakebase and Apps, deployed as code, serverless.
+> * Governance is **Unity Catalog**: PHI masks, a role-based mask on the AI note quotes, hospital row filters and lineage.
+> * ML is **MLflow** and the model registry.
+> * AI on notes is **AI Functions**, inside the governed pipeline.
+> * Learning comes from the **Lakebase write-back**, which we read back through Unity Catalog.
+> * Trusting AI answers is **Genie** plus an **LLM judge** that grades its answers on every run."
+
+---
+
+## 7. Live demo (slides 13–14, ~8–9 min)
+
+**Tell (slide 13):**
+> "Let me show you. Five stops: the peak, a briefed patient list, a plan the nurse edits and approves, the dollars, and a plain-English question."
 
 *Switch to the app.*
 
-### Stop 1: Unit Trends (~1.5 min)
-* **Tell:** "First, what Priya sees when she opens it in the morning."
+### Stop 1: Unit Trends (~1.5 min), for Dr. Vasquez
+* **Tell:** "First, when did it start and why? This is what Dr. Vasquez's team sees."
 * **Show:**
-  * The KPI tiles: 6 North at 23.9%, up from 14.8%; every other unit within about a point and a half; weekend follow-up 18% vs 69%.
-  * The line chart: point at the dashed lines for June 19 and June 26.
-  * The follow-up bar chart: the red weekend bar collapses after June 19.
-* **Tell:** "Without anyone writing a query, the system has connected the spike to the date of the staffing change and to the weekend follow-up gap.
-  That's the root cause on one screen."
+  * The KPI tiles: 6 North 23.9%, up from 14.8%; every other unit within about a point and a half; weekend follow-up 18% vs 69%.
+  * The **weekly line chart**: the rolling rate climbs after the dashed lines for late June.
+  * The **follow-up bar chart**: the red weekend bar collapses after June 19.
+  * The unit table at the bottom: 6 North at the top, every other unit flat.
+* **Tell:** "The peak and its cause on one screen, with no query written. You'd see the next one the week it starts, not when CMS reports it."
 
-### Stop 2: Discharge Worklist (~1.5 min)
-* **Tell:** "Now the question is what to do about it today."
+### Stop 2: Discharge Worklist (~1.5 min), for Priya
+* **Tell:** "Now, who do we act on today?"
 * **Show:**
-  * Open Discharge Worklist and filter to Unit = 6 North, Tier = High, No 7-day follow-up.
-  * Point at the risk %, the AI note flags (lives alone, transport) and the top drivers.
-* **Tell:** "Across the system there are 54 high-risk patients in their 30-day window right now, and 41 of them have no follow-up booked. This is the
-  list Priya's nurses work from: ranked by risk, with the reason next to each name, so a nurse knows what to do on the call."
+  * The **Discharge Worklist** tab, with filters Hospital CUMC, Unit 6 North, Tier High, No 7-day follow-up.
+  * The **Nurse briefing** column: read one aloud.
+* **Tell:** "Each discharge has its prediction attached and a two-sentence briefing written from the model's drivers. It reads like a handoff, not a scored table. Priya's team knows who to call and why before the follow-up window closes."
 
-### Stop 3: Patient detail, AI plan, approval (~2.5 min)
-* **Tell:** "Let's open one patient and go from insight to action."
+### Stop 3: Patient → AI plan → nurse edit → approve (~2.5 min), for Priya and Kenji
+* **Tell:** "Let's go from insight to action, and see the system learn."
 * **Show:**
-  * Click the top patient.
-  * Point at the model drivers (e.g. "No 7-day follow-up booked +X pts") and the **note evidence quote** extracted by AI.
-  * Click **Draft transition plan with AI**. Claude drafts in a few seconds.
-  * Point at the plan:
-    * it uses only this patient's facts
-    * it has sections for 48 hours, 7 days, social needs and teach-back
-    * it ends with "requires RN review"
-  * Click **Approve**.
-  * Show that the outreach tasks were created, and open the Outreach Queue tab.
-* **Tell:** "The AI drafts and the nurse decides. Writing that plan by hand takes most of the time per patient. Now it's a review. And the approval and
-  every task are recorded in an audit trail that's queryable on the platform, so Quality can see what was done for whom."
+  1. Click your pre-picked patient. Point at the **Nurse briefing**, the model drivers with their points, and the **note evidence quote**: "that quote is visible to care transitions only; an analyst sees it masked."
+  2. Click **✨ Draft transition plan with AI**. Claude drafts in a few seconds. Point at the sections (48 hours, 7 days, social needs, teach-back) and the closing "requires RN review".
+  3. **Edit the draft** in the text box. For example, under *Within 48 hours*, add: "Call patient today to book the HF Bridge Clinic slot before end of shift."
+  4. Click **Approve plan & create outreach tasks**. Point at the plan header: **"RN edited (xx% similar; +N/−0 chars; Within 48 hours)"**.
+  5. Open the **Outreach Queue** tab: the new tasks, such as booking the follow-up and the pharmacist call.
+* **Tell:** "The AI drafts and the nurse decides. Drafting time goes away. And that edit isn't lost: it's recorded and becomes a training signal. Our last model run picked up three reviewed plans and a 33% edit rate. Every decision Priya's nurses make teaches the next version."
 
-### Stop 4: HRRP & What-if (~2 min)
-* **Tell:** "Now the same action, in the CFO's language."
+### Stop 4: HRRP & What-if (~1.5 min), for Jordan and Dr. Vasquez
+* **Tell:** "Now the same action in Jordan's language."
 * **Show:**
-  * The HRRP tiles: CUMC $1.62M at the cap, heart failure $1.14M, ERR 1.19.
-  * Move the slider from 55% → 80%. Read out: ~6.5 readmissions avoided, ERR 1.14, **$238K saved**.
-  * Switch the scope to "CUMC all HF discharges": ~$874K.
-* **Tell:** "Every follow-up Priya's team books moves this number. That's the link that didn't exist before: the nurse's action and the CFO's KPI on the same data."
+  * The tiles: $1.62M at the cap, heart failure $1.14M, ERR 1.19.
+  * Move the slider from today's ~55% to **80%**: about 6.5 avoided readmissions, ERR **1.14**, **$238K** saved.
+  * Switch the scope to **CUMC all HF discharges**: about **$874K**.
+* **Tell:** "Every follow-up Priya's team books shows up here. And slide 5 showed you what the same number means for stars, referrals and your payer contract."
 
-### Stop 5: Ask Genie (~1.5 min)
-* **Tell:** "Finally, your finance and quality analysts won't always have a dashboard for the question they have. So they can just ask."
+### Stop 5: Ask Genie (~1.5 min), for Kenji and Jordan's analysts
+* **Tell:** "Finally, the questions nobody built a dashboard for."
 * **Show:**
   * Ask: *"Compare 7-day follow-up booking on 6 North for weekend vs weekday HF discharges since 2026-06-19."*
-  * Genie answers 17.7% vs 68.6%. Expand the SQL.
-* **Tell:** "It answers in plain English and shows the SQL, so it's verifiable, on the same governed tables. And patient identifiers stay masked for analysts."
+  * Genie answers 17.7% vs 68.6%. Expand **SQL**.
+* **Tell:** "It answers in plain English and shows its SQL, on the same governed tables, with patient identifiers masked. And on every run an LLM judge grades Genie's answers against SQL-computed correct answers. It passed five out of five last run, so you know when it's right."
 
-**Tell back (slide 9):**
-> "So in five minutes we went from a trend, to the cause, to the patients who need a call today, to an approved plan, to the dollars. Insight, action and
-> value in one workflow, on one governed platform."
-
----
-
-## 6. Trust and trade-offs (slides 10–11, ~2 min)
-
-> "Two things I'd want to know in your seat: can I trust it, and what did you compromise?"
-
-> "On trust:
-> * patient identifiers are masked by policy, and access is scoped by hospital
-> * the pipeline enforces data-quality rules
-> * the model separates risk well: the highest-risk tier readmits at 45% versus 9% for the lowest
-> * every AI output is reviewed by a nurse and audited."
-
-> "On trade-offs, three deliberate choices.
-> * I built on **synthetic data shaped like Cedarbrook's**, so we'd have zero PHI risk and every number reproduces. The AI extraction was 100% accurate on it, but
->   real notes are messier, so re-validating that is the first thing in the pilot.
-> * I let the data choose the model, and the **simpler logistic regression beat gradient boosting**. It's also easier for clinicians to trust.
-> * I kept the **what-if fixed-rule and auditable** rather than modeled, on a simplified version of CMS's method, so Finance can reproduce it.
->   It assumes the follow-up effect is causal, which the pilot will test."
+**Tell back (slide 14):**
+> "So: from the peak, to the cause, to a briefed patient, to a plan the nurse improved, to the dollars.
+> * Jordan, every booked follow-up is visible as dollars, and your team can audit the method.
+> * Dr. Vasquez, you see the next peak the week it starts.
+> * Priya, your nurses get a briefed list and a drafted plan, and their edits make it better.
+> * Kenji, it's one governed copy, with quality gated on every run."
 
 ---
 
-## 7. Path to production and the ask (slide 12, ~1 min)
+## 8. Trust, quality gates, trade-offs (slide 15, ~1.5 min)
 
-> "Here's what I'd propose: a **90-day pilot on 6 North**.
-> * The first month: connect your real Epic feeds into the same pipeline.
-> * The second month: validate the AI and the model on your data with your nurses and Quality team.
-> * The third month: 6 North works from the worklist every day, and we measure weekend follow-up, contact within 48 hours, and readmissions weekly."
-
-> "Success is weekend follow-up going from 18% to 80%, and readmissions trending back toward 15%. If we hit that, we scale to all heart failure at CUMC,
-> then COPD and pneumonia, then Fairhaven and Pine Hollow."
-
-*To the executive:*
-> "What I need from you is a sponsor for the pilot and a decision on weekend follow-up coverage. Would you be open to that?"
+> "Two things I'd want to know in your seat: can I trust it, and what did you compromise?
+>
+> **On trust:**
+> * patient identifiers are masked by policy, the AI note quotes are masked by role, and access is scoped by hospital
+> * the model separates risk: High-risk patients readmit at 45% against 9% for Low
+> * Genie is checked by a judge on every run
+> * briefings are grounded in the patient's own record, and the nurse always decides
+> * it ran end to end, 11 of 11 tasks, with all 33 validation checks passing.
+>
+> **On trade-offs, three choices:**
+> * I used **synthetic data shaped like Cedarbrook's**, so there's no PHI risk and every number reproduces. Real notes are messier, so re-validating the AI is the first thing in the pilot.
+> * I let the data choose the model, and the **simpler logistic regression won**. It's easier for clinicians to trust.
+> * The what-if is **fixed-rule and auditable**, on a simplified version of CMS's method, so Jordan's team can reproduce it. It assumes the follow-up effect is causal, which is what the pilot tests.
+>
+> And to be clear on the limits: the feedback loop only has three reviewed plans so far, and real-time scoring at discharge is the production design."
 
 ---
 
-## 8. Objection handling
+## 9. Pilot and the ask (slide 16, ~1 min)
 
-Answer the person who asked, at their altitude, then bridge to the other stakeholder in one sentence.
-Pattern: **acknowledge → answer with a number or a fact → connect to the outcome**.
+> "Here's my proposal: a **90-day pilot on 6 North**.
+> * Weeks one to four: connect your Epic feeds and turn on scoring at discharge.
+> * Weeks four to eight: Priya's nurses and Dr. Vasquez's team validate the AI and the model on real data.
+> * Weeks eight to twelve: 6 North works the briefed list every day, with a weekly scorecard."
 
-### From the business stakeholder (cost, risk, time to value)
+> "Success, by owner:
+> * Jordan: the penalty trajectory toward minus $238,000.
+> * Dr. Vasquez: 6 North back toward 15%.
+> * Priya: weekend follow-up at 80% or better, and 90% of high-risk patients contacted within 48 hours.
+> * Dr. Brooks: the Care Compare rate, the star rating's readmission group, and partner referrals, all on the same scorecard.
+>
+> What I'm asking for:
+> * Jordan, funding for weekend follow-up capacity.
+> * Dr. Vasquez, sponsorship and chairing the weekly review.
+> * Priya, a nurse champion on 6 North.
+> * Kenji, data access and an Epic contact."
 
-**"What does this cost?"**
-> "There are two pieces. The platform runs serverless and pay-per-use. The heaviest step was reading all 16,600 notes with AI once, and after that it only processes
-> new notes, a few hundred a week. The serving database is the smallest size. I'd size it precisely with your team in the pilot, but the run cost is small
-> next to a $238,000 penalty reduction on one unit. The bigger cost decision is the operational one: weekend follow-up coverage, which we estimate at around
-> $60,000 a year against $238,000 in avoided penalty."
-*Bridge to tech:* "And because it's one platform, you're not paying to integrate five tools."
+> "**What would you need to see to move forward?**"
 
-**"How quickly do we see value?"**
-> "The penalty is calculated on a rolling performance period, so the ERR improves as the readmissions you avoid roll into the window. Operationally, value
-> starts the first week nurses work the list. We track weekend follow-up weekly. The pilot is 90 days, and the data connection is the longest part, about four weeks."
+---
 
-**"How do I know the $240K is real?"**
-> "Three things. It's fixed-rule: additional follow-ups × the measured readmission gap, then CMS's penalty formula. Your finance team can reproduce it line by line.
-> I'm also explicit about the assumption: it treats the follow-up effect as causal. And the pilot is designed to prove it: we measure 6 North against the other
-> units before and after."
+## 10. Objection handling (by role)
 
-**"Why does the savings curve jump? 70% gives $119K but 80% gives $238K."**
-> "Good catch. CUMC is currently above the 3% cap. Uncapped it would be $1.68M, but the cap holds it at $1.62M. So the first $60,000 of improvement is absorbed by
-> the cap, and every dollar after that is real savings."
+Pattern: **acknowledge → answer with their number or a fact → bridge to the other stakeholder in one sentence.**
 
-**"What's the risk of AI giving bad clinical advice?"**
-> "The AI never acts on its own. It drafts, and a nurse reviews, edits and approves. The prompt restricts it to this patient's facts, it's labelled as an AI draft,
-> and every approval is audited with who approved it and when. The model behind the risk score is a transparent logistic regression with per-patient reasons."
+### Business stakeholder: Jordan (CFO), Dr. Brooks (CEO), Dr. Vasquez (Quality)
 
-**"Our EHR vendor already has a readmission risk score. Why this?"**
-> "A risk score alone doesn't tell you *why* readmissions went up on one unit, or what it costs you. What's new here is connecting the operational cause, the
-> free-text risk factors, the nurse's actions and the HRRP dollars. We can also bring your existing vendor score in as a feature and compare."
+**Jordan: "What does this cost?"**
+> "Two parts. The platform is serverless and pay-per-use. The heaviest step, AI reading all 16,600 notes, ran once, and after that only new notes are processed: a few hundred a week. We'd size it exactly in the pilot. The bigger decision is operational: weekend follow-up capacity, around $60,000 a year by my assumption, against $238,000 of penalty plus $200,000 of contract withhold."
+*Bridge:* "And Kenji, it's one platform, so there's no integration bill for five tools."
 
-**"What about PHI and HIPAA?"**
-> "Patient identifiers are masked by policy for anyone who isn't on the care team, access is restricted by hospital, and everything is audited and traceable.
-> For the prototype we used synthetic data, so no real patient data was touched."
+**Jordan: "How do I know the $238K is real?"**
+> "It's fixed-rule: additional follow-ups times the readmission gap we measured, then CMS's formula. Your team can reproduce it line by line. The one assumption I'll name is causality, and the pilot is designed to test it: 6 North against the other units, before and after."
 
-### From the technical stakeholder (architecture, data quality, security, integration)
+**Jordan: "Why does savings jump from $119K at 70% to $238K at 80%?"**
+> "CUMC is above the 3% cap: uncapped, the penalty would be $1.68 million. So the first $60,000 of improvement is absorbed by the cap, and after that every dollar is real."
+
+**Dr. Brooks: "Is one star really on the table? That sounds optimistic."**
+> "Fair challenge. The rate improvement is from our model. The star projection is illustrative. Readmission is one of five groups, at 22% of the weighting, and the scenario assumes CUMC is close to the 4-star cutoff with readmissions holding it back. The pilot scorecard tracks the readmission group directly, so we'll know."
+
+**Dr. Brooks: "Where do the 50 extra referrals come from?"**
+> "It's an illustrative scenario: partners who've been moving heart-failure patients away as the published rate worsened (it's down 6% this year) coming back once you're out of 'worse than national'. At $7,444 per heart-failure admission, that's about $372,000. We'd validate it with your strategy team's referral data."
+
+**Dr. Vasquez: "Will this move our public ratio, and when?"**
+> "The ratio is calculated on a rolling performance period, so avoided readmissions roll into it over time. That's why the pilot tracks 6 North's rate weekly: that's the leading indicator, and the ratio follows."
+
+**Dr. Vasquez / Jordan: "What's the risk of AI giving bad clinical advice?"**
+> "The AI never acts on its own. It drafts and briefs, and a nurse reviews, edits and approves. It's restricted to the patient's own facts, labeled as an AI draft, and every approval and edit is audited. The risk model is a transparent logistic regression with per-patient reasons."
+
+**Dr. Brooks: "Our EHR vendor already has a readmission score."**
+> "A score alone doesn't tell you *why* readmissions rose on one unit, or what it's costing you in penalty, stars and contracts. What's new is joining the cause, the free-text risk, the nurse's action and the dollars. We can bring the vendor score in as a feature and compare the two."
+
+**Anyone: "How fast is time to value?"**
+> "Operational value starts in the first week nurses work the list. The 90-day pilot proves it, and the longest part is connecting the data, about four weeks."
+
+### Technical stakeholder: Kenji (CDAO)
 
 **"How does this integrate with Epic?"**
-> "The pipeline starts from file or stream extracts in a governed landing zone. In production that's Epic Clarity / Caboodle extracts via Lakeflow Connect or
-> JDBC, or HL7/FHIR ADT messages for near-real-time discharges. Bronze is schema-on-read with Auto Loader, so we map your feeds to the same silver
-> schema and everything downstream (gold, model, app) is unchanged."
-*Bridge to business:* "So the four-week connect phase is mapping, not rebuilding."
+> "The pipeline starts from extracts in a governed landing zone. In production that's Epic Clarity or Caboodle through Lakeflow Connect or JDBC, or HL7/FHIR ADT messages for discharge events. Bronze is schema-on-read with Auto Loader, so we map your feeds to the same silver schema, and everything downstream stays the same."
+*Bridge:* "So, Jordan, the first four weeks are mapping, not rebuilding."
 
 **"How do you handle data quality?"**
-> "Lakeflow expectations on every silver table: valid IDs, discharge after admit, valid reference rates. Invalid rows are dropped and counted, and bad reference
-> data fails the update. We planted defects to prove it: 6 bad timestamps and 45 duplicates, all caught, and it's in the event log. Every story number is
-> re-checked by a validation notebook, 27 of 27 checks, on every run."
+> "Lakeflow expectations on every silver table: valid IDs, discharge after admit, valid reference rates. Bad rows are dropped and counted; bad reference data fails the update. We planted defects to prove it: six bad timestamps and 45 duplicates, all caught and logged. Then 33 validation checks run on every job run."
 
-**"How is PHI secured, technically?"**
-> "Unity Catalog column masks on the PHI columns of the patients table, declared in the pipeline. A row-filter function on the patient-level score table scopes
-> rows by hospital. Both read an entitlements table that maps to account groups in production. Tags classify the data as RESTRICTED. The app runs as its own
-> service principal with least privilege: read-only on the served tables, and owner only of its own write schema in Postgres. Lineage is captured end to end."
+**"How is PHI secured?"**
+> "Unity Catalog column masks on the patient table, declared in the pipeline. A **role-based mask** on the AI-extracted note quotes, so only care transitions sees them. A row filter by hospital. The app runs as its own service principal with least privilege: read-only on served tables, no access to raw notes. Lineage runs end to end."
 
-**"Why Lakebase? Why not just query the warehouse from the app?"**
-> "The app is operational: many small reads and writes with concurrent nurses, sub-second. That's an OLTP pattern. Lakebase gives us Postgres latency and
-> transactions for plan approvals and tasks, while staying in Unity Catalog. Gold tables sync in. The app's writes are readable back in UC, so Genie and
-> Quality can report on what nurses did, with no separate ETL."
+**"Why Lakebase instead of querying the warehouse?"**
+> "The app is operational: many small reads and writes from concurrent nurses, sub-second. That's an OLTP pattern. Lakebase gives Postgres latency and transactions for approvals and edits, and it stays in Unity Catalog. The nurses' writes are readable in UC, which is exactly what feeds the learning loop, with no ETL."
 
-**"How fresh is the data in the app?"**
-> "Today the synced tables use snapshot mode, refreshed at the end of each pipeline run. In production I'd enable Change Data Feed on the gold tables and switch to
-> triggered or continuous sync, and run the pipeline on discharge-event triggers. Then a weekend discharge reaches the worklist within minutes."
+**"How fresh is the app's data?"**
+> "Today the synced tables refresh at the end of each pipeline run. In production I'd enable Change Data Feed and triggered sync, and run the pipeline on discharge events, so a weekend discharge reaches the worklist within minutes."
 
-**"How accurate is the AI extraction, really?"**
-> "It ran on all 16,584 notes with zero errors and matched ground truth 100%, but I won't oversell that, because the synthetic notes are uniform. The extraction
-> uses structured output with an evidence quote, so every flag is explainable. In the pilot, RNs review a stratified sample of real notes and we report
-> precision and recall before the flags are trusted in the model."
+**"How do you know the AI is right?"**
+> "Three gates.
+> * Note extraction is scored against ground truth. It was 100% on synthetic notes, which I won't oversell, so it's re-validated on real notes.
+> * Briefings are generated only from the patient's own row.
+> * Genie is graded by an LLM judge against SQL-computed correct answers, every run, with the history stored."
 
-**"What about model drift and monitoring?"**
-> "Training uses a time-based split, testing on the most recent 20 weeks. The champion is re-selected by test AUC and registered in UC with an alias, so
-> scoring always pulls `@champion`. Calibration by decile is logged in MLflow. In production I'd add Lakehouse Monitoring on the score table for drift and
-> retrain on a schedule."
+**"Is the feedback loop real, or a slide?"**
+> "It's real and running. The app records similarity, characters changed and sections changed on every approval. A pipeline step turns that into weak labels, and training logs them. Today that's three reviewed plans and a 33% edit rate, so it's small. The plumbing is done, and the signal grows with use."
 
-**"How does the AI cost scale?"**
-> "The extraction is an incremental streaming table, so each note goes to the model exactly once. The first full pass took about 24 minutes. Incremental
-> reruns take about 2 minutes. Volume scales with new discharges, not with history."
+**"Model drift and monitoring?"**
+> "A time-based split, testing on the latest 20 weeks. The champion is re-selected by test AUC each run and registered with an alias, so scoring always uses the champion. Calibration is logged in MLflow. In production I'd add Lakehouse Monitoring on the score table."
 
 **"How is it deployed and operated?"**
-> "One Databricks Asset Bundle defines the schemas, volumes, pipeline, 11-task job, dashboard and app. `bundle deploy` and `bundle run` rebuild it in any
-> workspace, and it's in Git with CI-friendly validation."
+> "One Databricks Asset Bundle: schemas, pipeline, an 11-task job, the dashboard and the app. `bundle deploy` and `bundle run` rebuild it anywhere, from Git."
 
 **"What would you change for production?"**
-> "Four things:
-> * account groups instead of the entitlements table
-> * CDF plus triggered sync for freshness
-> * real EHR connectors
-> * the full CMS method: 3-year, risk-adjusted, Medicare fee-for-service only."
+> * "Account groups instead of the entitlements table.
+> * Change Data Feed plus triggered sync.
+> * Real EHR connectors.
+> * The full CMS method: 3-year, risk-adjusted, Medicare fee-for-service only.
+> * Using the retraining signals as labels once there's volume."
 
 ### Switching altitude mid-answer (practice line)
-> *"…technically, that's a column mask declared in the pipeline that checks the user's entitlement. **What that means for you** is that a finance analyst can
-> use Genie on the same data without ever seeing a patient's name."*
+> *"…technically, it's a column mask that checks the user's role before returning the note quote. **What that means for you, Dr. Brooks**, is that
+> a finance analyst can use Genie on the same data without ever seeing a patient's clinical note."*
 
 ---
 
-## 9. Closing (30 seconds)
+## 11. Closing (30 seconds)
 
-> "To summarize: one unit's weekend follow-up gap is costing about $240,000 a year, with a path to nearly $900,000 across CUMC. The platform shows
-> why it's happening, who to call today, and what each call is worth, all governed and audited. I'd like to propose the 90-day pilot on 6 North.
-> What would you need to see to move forward?"
+> "To summarize: one unit's weekend follow-up gap is costing about $240,000 a year in penalty, plus a star, referrals and contract withhold, with a
+> path to nearly $900,000 across CUMC. The platform shows when it started and why, who to call today, and what each call is worth, and it learns from every nurse.
+> I'd like to propose the 90-day pilot on 6 North. What would you need to see to move forward?"
 
 ---
 
 ## Rehearsal checklist
 
-* [ ] Say the headline number in the first 60 seconds
-* [ ] Every demo stop: tell → show → tell (say what it means for the business)
-* [ ] Use the buyer's words: ERR, HRRP penalty, 7-day follow-up, readmission rate, not product names first
-* [ ] When the technical persona asks, go deep, then bridge back to the outcome in one sentence
-* [ ] Name the assumptions yourself (causality, the pharmacist cost, synthetic notes) before they're raised as objections
-* [ ] End with a concrete ask and a question
+* [ ] The headline number **and its owner's name** in the first 60 seconds
+* [ ] Slide 5: say "financial *and* strategic" out loud
+* [ ] Every demo stop: tell → show → tell, and name whose number it moves
+* [ ] Demo stop 3: **edit** the plan before approving, and point at the edit stats
+* [ ] Use their words (ERR, HRRP penalty, Care Compare, star rating, 7-day follow-up), not product names first
+* [ ] Name the assumptions yourself (causality, the ~$60K capacity, the synthetic strategic figures, synthetic notes) before they're raised
+* [ ] When Kenji asks, go deep, then bridge to Jordan or Dr. Brooks in one sentence
+* [ ] End with the ask by role and a question
