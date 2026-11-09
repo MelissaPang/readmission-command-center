@@ -22,6 +22,10 @@ def sql(q):
     body = {"warehouse_id": WH, "wait_timeout": "50s", "statement": q}
     r = json.loads(subprocess.run(["databricks", "api", "post", "/api/2.0/sql/statements", *P, "--json", json.dumps(body)],
                                   capture_output=True, text=True, check=True).stdout)
+    while r["status"]["state"] in ("PENDING", "RUNNING"):  # warehouse may be cold-starting
+        __import__("time").sleep(5)
+        r = json.loads(subprocess.run(["databricks", "api", "get", f"/api/2.0/sql/statements/{r['statement_id']}", *P],
+                                      capture_output=True, text=True, check=True).stdout)
     if r["status"]["state"] != "SUCCEEDED":
         return None, [], r["status"].get("error", {}).get("message")
     return [c["name"] for c in r["manifest"]["schema"]["columns"]], (r.get("result") or {}).get("data_array") or [], None

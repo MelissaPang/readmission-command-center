@@ -1,6 +1,6 @@
 # Executed notebook: train_model
 
-job run `206873801708733` · task run `216815783985081` · result **SUCCESS** · 2026-11-09 17:53:47 UTC
+job run `601827272748584` · task run `543652077699556` · result **SUCCESS** · 2026-11-09 22:09:21 UTC
 
 # 03 · Train the 30-day readmission risk model (MLflow + UC registry)
 
@@ -36,9 +36,9 @@ print("mlflow", mlflow.__version__, "| sklearn", sklearn.__version__)
 Output:
 
 ```text
-{"ts": "2026-11-09 17:54:04.775", "level": "WARNING", "logger": "pyspark.sql.connect.logging", "msg": "Effective usage policy for this session is cct.Cilqb2JzLzU4MjYyODExNjMyNTQxMy9ydW5zLzIwNjg3MzgwMTcwODczMxABIAEqJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOTIkMDFhMWMxNzEtZGZkZC03ZmJiLWI4NjctNzFlNTUzNzU3NWMyOiQ2Y2EzMmIwMy01MzlmLTMwZjMtYjNmOS1hMmVlYTgwYTFlNjJCJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOUoMCKuRyNcGEMCGtNsDUAJYAWABaLXIt++EwsgCiAEA.", "context": {}}
-{"ts": "2026-11-09 17:54:04.775", "level": "WARNING", "logger": "pyspark.sql.connect.logging", "msg": "Effective usage policy for this session is cct.Cilqb2JzLzU4MjYyODExNjMyNTQxMy9ydW5zLzIwNjg3MzgwMTcwODczMxABIAEqJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOTIkMDFhMWMxNzEtZGZkZC03ZmJiLWI4NjctNzFlNTUzNzU3NWMyOiQ2Y2EzMmIwMy01MzlmLTMwZjMtYjNmOS1hMmVlYTgwYTFlNjJCJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOUoMCKuRyNcGEMCGtNsDUAJYAWABaLXIt++EwsgCiAEA.", "context": {}}
-{"ts": "2026-11-09 17:54:04.775", "level": "WARNING", "logger": "pyspark.sql.connect.logging", "msg": "Effective usage policy for this session is cct.Cilqb2JzLzU4MjYyODExNjMyNTQxMy9ydW5zLzIwNjg3MzgwMTcwODczMxABIAEqJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOTIkMDFhMWMxNzEtZGZkZC03ZmJiLWI4NjctNzFlNTUzNzU3NWMyOiQ2Y2EzMmIwMy01MzlmLTMwZjMtYjNmOS1hMmVlYTgwYTFlNjJCJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOUoMCKuRyNcGEMCGtNsDUAJYAWABaLXIt++EwsgCiAEA.", "context": {}}
+{"ts": "2026-11-09 22:09:37.780", "level": "WARNING", "logger": "pyspark.sql.connect.logging", "msg": "Effective usage policy for this session is cct.Cilqb2JzLzU4MjYyODExNjMyNTQxMy9ydW5zLzYwMTgyNzI3Mjc0ODU4NBABIAEqJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOTIkMDFhMWMyNWItZGNiNS03ZjdmLTg4ZjYtYjQ5YmE2YzJmODM5OiQ2Y2EzMmIwMy01MzlmLTMwZjMtYjNmOS1hMmVlYTgwYTFlNjJCJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOUoMCJKJydcGEMDGpqQCUAJYAWABaLXIt++EwsgCiAEA.", "context": {}}
+{"ts": "2026-11-09 22:09:37.780", "level": "WARNING", "logger": "pyspark.sql.connect.logging", "msg": "Effective usage policy for this session is cct.Cilqb2JzLzU4MjYyODExNjMyNTQxMy9ydW5zLzYwMTgyNzI3Mjc0ODU4NBABIAEqJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOTIkMDFhMWMyNWItZGNiNS03ZjdmLTg4ZjYtYjQ5YmE2YzJmODM5OiQ2Y2EzMmIwMy01MzlmLTMwZjMtYjNmOS1hMmVlYTgwYTFlNjJCJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOUoMCJKJydcGEMDGpqQCUAJYAWABaLXIt++EwsgCiAEA.", "context": {}}
+{"ts": "2026-11-09 22:09:37.780", "level": "WARNING", "logger": "pyspark.sql.connect.logging", "msg": "Effective usage policy for this session is cct.Cilqb2JzLzU4MjYyODExNjMyNTQxMy9ydW5zLzYwMTgyNzI3Mjc0ODU4NBABIAEqJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOTIkMDFhMWMyNWItZGNiNS03ZjdmLTg4ZjYtYjQ5YmE2YzJmODM5OiQ2Y2EzMmIwMy01MzlmLTMwZjMtYjNmOS1hMmVlYTgwYTFlNjJCJDViNjJmYTAyLTg2NzEtNDZkMy05NmFjLTY0YzE3MjVkYzlkOUoMCJKJydcGEMDGpqQCUAJYAWABaLXIt++EwsgCiAEA.", "context": {}}
 mlflow 3.12.0 | sklearn 1.7.2
 ```
 
@@ -102,8 +102,8 @@ Output:
 ```text
 | model           | run_id                           | auc                | avg_precision      | brier               | top_decile_readmit_rate | base_rate           | top_decile_lift    |
 |-----------------|----------------------------------|--------------------|--------------------|---------------------|-------------------------|---------------------|--------------------|
-| hist_gbm        | b04cc4400c6648e6bdeccf81340aeff0 | 0.7136612819921373 | 0.3017709243674952 | 0.11146778646540828 | 0.3729281767955801      | 0.14112458654906285 | 2.6425457527624308 |
-| logreg_baseline | 7c321ae48dc940c9a5142bd0a4e299ee | 0.7245053253369704 | 0.3225631796489283 | 0.11004263788986973 | 0.3674033149171271      | 0.14112458654906285 | 2.6033969267955803 |
+| hist_gbm        | 81127455aa3b4494a4f3c4eff048264a | 0.7136612819921373 | 0.3017709243674952 | 0.11146778646540828 | 0.3729281767955801      | 0.14112458654906285 | 2.6425457527624308 |
+| logreg_baseline | 30de7decba2d4e0db993340f3adf6928 | 0.7245053253369704 | 0.3225631796489283 | 0.11004263788986973 | 0.3674033149171271      | 0.14112458654906285 | 2.6033969267955803 |
 (2 rows shown)
 ```
 
@@ -168,7 +168,18 @@ from mlflow import MlflowClient
 
 MODEL_NAME = f"{catalog}.ml.readmit_30d_risk"
 X_ex = train[FEATURES].head(5)
+# Closed-loop signal from the app (notebook 08): RN plan reviews as weak labels for the next retraining
+fb = {"feedback_plans_reviewed": 0, "feedback_nurse_edit_rate": 0.0, "feedback_rn_confirmed_high_risk": 0, "feedback_rn_disputed": 0}
+if spark.catalog.tableExists(f"{catalog}.ml.retraining_signals"):
+    r = spark.sql(f"""SELECT count(*) AS n, avg(CAST(weak_label = 'nurse_edited' AS INT)) AS edit_rate,
+                             count_if(risk_signal = 'rn_confirmed_high_risk') AS confirmed, count_if(risk_signal = 'rn_disputed') AS disputed
+                      FROM {catalog}.ml.retraining_signals WHERE weak_label <> 'pending_review'""").first()
+    fb = {"feedback_plans_reviewed": int(r.n), "feedback_nurse_edit_rate": float(r.edit_rate or 0),
+          "feedback_rn_confirmed_high_risk": int(r.confirmed), "feedback_rn_disputed": int(r.disputed)}
+print("weak-label feedback available for retraining:", fb)
+
 with mlflow.start_run(run_id=results[champion]["run_id"]):
+    mlflow.log_metrics(fb)
     mlflow.log_table(cal, "calibration_deciles.json")
     mlflow.log_table(fi, "permutation_importance.json")
     info = mlflow.sklearn.log_model(best, artifact_path="model", signature=infer_signature(X_ex, best.predict_proba(X_ex)[:, 1]),
@@ -182,7 +193,7 @@ print(f"registered {MODEL_NAME} version {version} as @champion")
 
 summary = {"model_name": MODEL_NAME, "version": version, "champion_algorithm": champion, "run_id": results[champion]["run_id"],
            **{k: round(v, 4) for k, v in results[champion].items() if k != "run_id"},
-           "hist_gbm_auc": round(results["hist_gbm"]["auc"], 4), "logreg_auc": round(results["logreg_baseline"]["auc"], 4)}
+           "hist_gbm_auc": round(results["hist_gbm"]["auc"], 4), "logreg_auc": round(results["logreg_baseline"]["auc"], 4), **fb}
 spark.createDataFrame([summary]).write.mode("overwrite").option("overwriteSchema", True).saveAsTable(f"{catalog}.ml.model_metrics")
 print(json.dumps(summary, indent=2))
 ```
@@ -190,18 +201,19 @@ print(json.dumps(summary, indent=2))
 Output:
 
 ```text
+weak-label feedback available for retraining: {'feedback_plans_reviewed': 3, 'feedback_nurse_edit_rate': 0.3333333333333333, 'feedback_rn_confirmed_high_risk': 2, 'feedback_rn_disputed': 0}
 /databricks/python/lib/python3.12/site-packages/mlflow/types/utils.py:440: UserWarning: Hint: Inferred schema contains integer column(s). Integer columns in Python cannot represent missing values. If your input data contains missing values at inference time, it will be encoded as floats and will cause a schema enforcement error. The best way to avoid this problem is to infer the model schema based on a realistic data sample (training dataset) that includes missing values. Alternatively, you can declare integer columns as doubles (float64) whenever these columns may have missing values. See `Handling Integers With Missing Values <https://www.mlflow.org/docs/latest/models.html#handling-integers-with-missing-values>`_ for more details.
   warnings.warn(
-2026/11/09 17:54:32 WARNING mlflow.models.model: `artifact_path` is deprecated. Please use `name` instead.
-🔗 View Logged Model at: https://e2-demo-field-eng.cloud.databricks.com/ml/experiments/3464532796422956/models/m-0f9bc778b0934c16b4e28d7e8f113dfe?o=1444828305810485
+2026/11/09 22:09:57 WARNING mlflow.models.model: `artifact_path` is deprecated. Please use `name` instead.
+🔗 View Logged Model at: https://e2-demo-field-eng.cloud.databricks.com/ml/experiments/3464532796422956/models/m-47cb8e1107494368b6c2b2d4f188e034?o=1444828305810485
 Registered model 'cedarbrook_rcc.ml.readmit_30d_risk' already exists. Creating a new version of this model...
-🔗 Created version '2' of model 'cedarbrook_rcc.ml.readmit_30d_risk': https://e2-demo-field-eng.cloud.databricks.com/explore/data/models/cedarbrook_rcc/ml/readmit_30d_risk/version/2?o=1444828305810485
-registered cedarbrook_rcc.ml.readmit_30d_risk version 2 as @champion
+🔗 Created version '5' of model 'cedarbrook_rcc.ml.readmit_30d_risk': https://e2-demo-field-eng.cloud.databricks.com/explore/data/models/cedarbrook_rcc/ml/readmit_30d_risk/version/5?o=1444828305810485
+registered cedarbrook_rcc.ml.readmit_30d_risk version 5 as @champion
 {
   "model_name": "cedarbrook_rcc.ml.readmit_30d_risk",
-  "version": 2,
+  "version": 5,
   "champion_algorithm": "logreg_baseline",
-  "run_id": "7c321ae48dc940c9a5142bd0a4e299ee",
+  "run_id": "30de7decba2d4e0db993340f3adf6928",
   "auc": 0.7245,
   "avg_precision": 0.3226,
   "brier": 0.11,
@@ -209,6 +221,10 @@ registered cedarbrook_rcc.ml.readmit_30d_risk version 2 as @champion
   "base_rate": 0.1411,
   "top_decile_lift": 2.6034,
   "hist_gbm_auc": 0.7137,
-  "logreg_auc": 0.7245
+  "logreg_auc": 0.7245,
+  "feedback_plans_reviewed": 3,
+  "feedback_nurse_edit_rate": 0.3333333333333333,
+  "feedback_rn_confirmed_high_risk": 2,
+  "feedback_rn_disputed": 0
 }
 ```

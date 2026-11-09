@@ -150,3 +150,56 @@ import pandas as pd
 tdf = pd.DataFrame([{**t, "columns": json.dumps(t["columns"]), "rows": json.dumps(t["rows"]), "space_id": space_id} for t in transcript])
 spark.createDataFrame(tdf.astype(str)).write.mode("overwrite").option("overwriteSchema", True).saveAsTable(f"{catalog}.gold.genie_eval_transcript")
 print("completed:", sum(t["status"] == "COMPLETED" for t in transcript), "/", len(transcript))
+
+# COMMAND ----------
+
+# MAGIC %md ### LLM judge: a repeatable quality check on Genie's answers
+# MAGIC For every question, the **expected answer is computed directly from the gold tables** (deterministic SQL, not by an LLM).
+# MAGIC A judge model then compares Genie's answer (text plus result rows) with it and returns PASS/FAIL, a 1–5 score and a rationale.
+# MAGIC Results are **appended** to `gold.genie_eval_judgements` with a run timestamp, so Genie quality is tracked run over run.
+
+# COMMAND ----------
+
+dbutils.widgets.text("judge_endpoint", "databricks-claude-sonnet-4-6")
+judge_endpoint = dbutils.widgets.get("judge_endpoint")
+G = f"{catalog}.gold"
+EXPECTED_SQL = {
+    SAMPLE_QS[0]: f"SELECT unit_name, prior_20w_rate_pct, last_20w_rate_pct, delta_pts FROM {G}.unit_period_summary WHERE condition='HF' AND prior_20w_index >= 30 ORDER BY delta_pts DESC LIMIT 1",
+    SAMPLE_QS[1]: f"SELECT discharge_day_type, discharges, fu7_booked, fu7_booked_pct FROM {G}.followup_gap WHERE unit_id='CUMC-6N' AND condition='HF' AND period='since_2026-06-19'",
+    SAMPLE_QS[2]: f"SELECT hrrp_condition, err, penalty_contribution FROM {G}.hrrp_condition_err WHERE hospital_id='CUMC' AND hrrp_condition='HF'",
+    SAMPLE_QS[3]: f"SELECT value AS lives_alone, index_admissions, readmit_rate_pct FROM {G}.readmission_risk_factors WHERE condition='HF' AND factor='ai_lives_alone'",
+    SAMPLE_QS[4]: f"SELECT fu7_target_pct, readmissions_avoided, hf_err_scenario, penalty_saved FROM {G}.hrrp_whatif WHERE scope='6N weekend HF' AND fu7_target_pct=80",
+}
+JUDGE_SYSTEM = ("You are a strict evaluator of an analytics assistant. Compare the ASSISTANT ANSWER (its text and result rows) with the EXPECTED "
+                "ANSWER computed from the source tables. PASS only if the key numbers and entities in the assistant answer match the expected answer "
+                "(allow rounding to 1 decimal place and equivalent formatting). Return ONLY JSON: "
+                '{"verdict": "PASS" or "FAIL", "score": integer 1-5, "rationale": "one sentence"}')
+
+def judge(question, expected, answer):
+    msg = {"question": question, "expected_answer_rows": expected,
+           "assistant_answer": {"text": answer.get("text"), "columns": answer.get("columns"), "rows": (answer.get("rows") or [])[:10]}}
+    r = w.api_client.do("POST", f"/serving-endpoints/{judge_endpoint}/invocations",
+                        body={"messages": [{"role": "system", "content": JUDGE_SYSTEM},
+                                           {"role": "user", "content": json.dumps(msg, default=str)}],
+                              "max_tokens": 300, "temperature": 0})
+    content = r["choices"][0]["message"]["content"]
+    if isinstance(content, list):
+        content = "".join(p.get("text", "") for p in content if isinstance(p, dict))
+    out = json.loads(content[content.find("{"): content.rfind("}") + 1])
+    return out["verdict"].upper(), int(out["score"]), out["rationale"]
+
+run_ts = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
+judgements = []
+for t in transcript:
+    expected = [r.asDict() for r in spark.sql(EXPECTED_SQL[t["question"]]).collect()]
+    verdict, score, rationale = judge(t["question"], expected, t)
+    judgements.append({"run_ts": run_ts, "space_id": space_id, "question": t["question"], "genie_status": t["status"],
+                       "genie_sql": t["sql"], "genie_text": t["text"], "genie_rows": json.dumps(t["rows"], default=str),
+                       "expected_rows": json.dumps(expected, default=str), "judge_model": judge_endpoint,
+                       "verdict": verdict, "score": score, "rationale": rationale})
+    print(f"{verdict} ({score}/5)  {t['question']}\n   expected: {json.dumps(expected, default=str)[:200]}\n   judge: {rationale}\n")
+
+jdf = pd.DataFrame(judgements)
+spark.createDataFrame(jdf).write.mode("append").option("mergeSchema", True).saveAsTable(f"{catalog}.gold.genie_eval_judgements")
+display(spark.sql(f"""SELECT run_ts, count(*) AS questions, count_if(verdict='PASS') AS passed, round(avg(score), 2) AS avg_score
+                      FROM {catalog}.gold.genie_eval_judgements GROUP BY run_ts ORDER BY run_ts DESC LIMIT 10"""))

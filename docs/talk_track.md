@@ -281,7 +281,7 @@ Pattern: **acknowledge → answer with a number or a fact → connect to the out
 > reruns take about 2 minutes. Volume scales with new discharges, not with history."
 
 **"How is it deployed and operated?"**
-> "One Databricks Asset Bundle defines the schemas, volumes, pipeline, 10-task job, dashboard and app. `bundle deploy` and `bundle run` rebuild it in any
+> "One Databricks Asset Bundle defines the schemas, volumes, pipeline, 11-task job, dashboard and app. `bundle deploy` and `bundle run` rebuild it in any
 > workspace, and it's in Git with CI-friendly validation."
 
 **"What would you change for production?"**

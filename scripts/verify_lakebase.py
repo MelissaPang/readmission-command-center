@@ -35,6 +35,10 @@ def uc(q):
     body = {"warehouse_id": WH, "wait_timeout": "50s", "statement": q}
     r = json.loads(subprocess.run(["databricks", "api", "post", "/api/2.0/sql/statements", "-p", PROFILE, "--json", json.dumps(body)],
                                   capture_output=True, text=True, check=True).stdout)
+    while r["status"]["state"] in ("PENDING", "RUNNING"):  # warehouse may be cold-starting
+        __import__("time").sleep(5)
+        r = json.loads(subprocess.run(["databricks", "api", "get", f"/api/2.0/sql/statements/{r['statement_id']}", "-p", PROFILE],
+                                      capture_output=True, text=True, check=True).stdout)
     assert r["status"]["state"] == "SUCCEEDED", r["status"]
     return r["result"]["data_array"]
 

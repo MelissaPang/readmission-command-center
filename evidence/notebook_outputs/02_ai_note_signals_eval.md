@@ -1,6 +1,6 @@
 # Executed notebook: ai_note_signals_eval
 
-job run `206873801708733` · task run `7906194763031` · result **SUCCESS** · 2026-11-09 17:53:47 UTC
+job run `601827272748584` · task run `944292661098822` · result **SUCCESS** · 2026-11-09 21:57:37 UTC
 
 # 02 · AI Functions on discharge notes: what the free text adds
 

@@ -11,19 +11,19 @@
   },
   "service_principal_client_id": "dd97e436-f2e2-4d19-9910-5e845a1a42f7",
   "active_deployment": {
-    "create_time": "2026-11-09T17:47:48Z",
+    "create_time": "2026-11-09T21:53:13Z",
     "creator": "melissa.pang@databricks.com",
     "deployment_artifacts": {
-      "source_code_path": "/Workspace/Users/dd97e436-f2e2-4d19-9910-5e845a1a42f7/src/01f1dc65ad8c1a4eb57e420fd649f0fa"
+      "source_code_path": "/Workspace/Users/dd97e436-f2e2-4d19-9910-5e845a1a42f7/src/01f1dc87f6371ca8a7719ac95e70d485"
     },
-    "deployment_id": "01f1dc65ad8c1a4eb57e420fd649f0fa",
+    "deployment_id": "01f1dc87f6371ca8a7719ac95e70d485",
     "mode": "SNAPSHOT",
     "source_code_path": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/app",
     "status": {
       "message": "App started successfully",
       "state": "SUCCEEDED"
     },
-    "update_time": "2026-11-09T17:48:01Z"
+    "update_time": "2026-11-09T21:53:19Z"
   },
   "resources": [
     {

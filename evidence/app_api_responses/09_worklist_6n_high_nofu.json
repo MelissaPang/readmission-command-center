@@ -21,6 +21,7 @@
         "driver_1": "No 7-day follow-up booked",
         "driver_2": "High comorbidity burden",
         "recommended_actions": "Book 7-day follow-up (HF Bridge Clinic / PCP); Pharmacist med-reconciliation call within 48h",
+        "nurse_briefing": "This 87-year-old with heart failure has 55% readmission risk driven by no 7-day follow-up booked (18 pts), high comorbidity burden (17 pts), and prolonged hospitalization (10.4 pts). Book 7-day follow-up with HF Bridge Clinic or PCP immediately and arrange pharmacist medication reconciliation call within 48 hours.",
         "plan_status": null
     },
     {
@@ -45,6 +46,7 @@
         "driver_1": "No 7-day follow-up booked",
         "driver_2": "Prior admissions in last 12 months",
         "recommended_actions": "Book 7-day follow-up (HF Bridge Clinic / PCP); Caregiver check + home-health referral",
+        "nurse_briefing": "This 83-year-old discharged Saturday to home alone carries 45% readmission risk driven by no 7-day follow-up scheduled (16.8 pts), prior admissions in last 12 months (13.6 pts), and living alone without caregiver (13.5 pts). Immediately book the 7-day follow-up appointment and initiate home health referral.",
         "plan_status": null
     },
     {
@@ -69,6 +71,7 @@
         "driver_1": "No 7-day follow-up booked",
         "driver_2": "High comorbidity burden",
         "recommended_actions": "Book 7-day follow-up (HF Bridge Clinic / PCP); Caregiver check + home-health referral",
+        "nurse_briefing": "This 72-year-old has 39% readmission risk driven by no 7-day follow-up booked (15.5 pts), high comorbidity burden (14.7 pts), and living alone without caregiver support (12.6 pts). Immediately book the overdue 7-day follow-up appointment and initiate home health referral given living situation and comorbidities.",
         "plan_status": null
     },
     {
@@ -93,6 +96,7 @@
         "driver_1": "No 7-day follow-up booked",
         "driver_2": "Prior admissions in last 12 months",
         "recommended_actions": "Book 7-day follow-up (HF Bridge Clinic / PCP); Caregiver check + home-health referral; Pharmacist med-reconciliation call within 48h",
+        "nurse_briefing": "76-year-old with heart failure at 34% readmission risk driven by no 7-day follow-up booked (14.3 pts), prior admissions in last 12 months (11.7 pts), and living alone (11.7 pts). Immediately book 7-day cardiology or primary care follow-up appointment and arrange pharmacist medication reconciliation call within 48 hours.",
         "plan_status": null
     },
     {
@@ -117,6 +121,7 @@
         "driver_1": "No 7-day follow-up booked",
         "driver_2": "Lives alone / no caregiver (from note)",
         "recommended_actions": "Book 7-day follow-up (HF Bridge Clinic / PCP); Caregiver check + home-health referral; Pharmacist med-reconciliation call within 48h",
+        "nurse_briefing": "This 73-year-old with heart failure is at 33% readmission risk due to no scheduled 7-day follow-up (13.9 pts), living alone without caregiver support (11.4 pts), and high comorbidity burden (9.3 pts). Immediately book the 7-day cardiology or PCP follow-up and arrange a pharmacist medication reconciliation call within 48 hours.",
         "plan_status": null
     },
     {
@@ -141,7 +146,8 @@
         "driver_1": "No 7-day follow-up booked",
         "driver_2": "High comorbidity burden",
         "recommended_actions": "Book 7-day follow-up (HF Bridge Clinic / PCP); Pharmacist med-reconciliation call within 48h",
-        "plan_status": null
+        "nurse_briefing": "This 86-year-old with heart failure discharged to SNF on a Friday faces 32% readmission risk, driven by no 7-day follow-up booked (13.6 pts), high comorbidity burden (9.1 pts), and prior admissions (6.0 pts). Book the 7-day follow-up appointment immediately with HF Bridge Clinic or PCP.",
+        "plan_status": "approved"
     },
     {
         "encounter_id": "E1014451",
@@ -165,6 +171,7 @@
         "driver_1": "High comorbidity burden",
         "driver_2": "No 7-day follow-up booked",
         "recommended_actions": "Book 7-day follow-up (HF Bridge Clinic / PCP)",
+        "nurse_briefing": "This 62-year-old with AMI is at 32% readmission risk driven by high comorbidity burden (16.3 pts), no scheduled 7-day follow-up (13.6 pts), and prior admissions (6.0 pts). Immediately book a 7-day follow-up appointment with HF Bridge Clinic or PCP.",
         "plan_status": null
     },
     {
@@ -189,6 +196,7 @@
         "driver_1": "No 7-day follow-up booked",
         "driver_2": "Lives alone / no caregiver (from note)",
         "recommended_actions": "Book 7-day follow-up (HF Bridge Clinic / PCP); Caregiver check + home-health referral; Pharmacist med-reconciliation call within 48h",
+        "nurse_briefing": "80-year-old with HF discharged to home alone carries 32% readmission risk driven by no 7-day follow-up booked (13.5 pts), living alone without caregiver (11.1 pts), and high comorbidity burden (9.1 pts). Immediately book 7-day HF Bridge Clinic or PCP follow-up and arrange home health evaluation.",
         "plan_status": null
     }
 ]

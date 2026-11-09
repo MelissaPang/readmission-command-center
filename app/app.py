@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import datetime as dt
 import decimal
+import difflib
 import hashlib
 import json
 import logging
@@ -93,6 +94,12 @@ CREATE TABLE IF NOT EXISTS {APP_SCHEMA}.transition_plans (
   draft_text TEXT NOT NULL, final_text TEXT, model_endpoint TEXT, prompt_sha256 TEXT,
   risk_score DOUBLE PRECISION, created_by TEXT, created_ts TIMESTAMPTZ DEFAULT now(),
   approved_by TEXT, approved_ts TIMESTAMPTZ);
+ALTER TABLE {APP_SCHEMA}.transition_plans ADD COLUMN IF NOT EXISTS edited BOOLEAN;
+ALTER TABLE {APP_SCHEMA}.transition_plans ADD COLUMN IF NOT EXISTS edit_similarity DOUBLE PRECISION;
+ALTER TABLE {APP_SCHEMA}.transition_plans ADD COLUMN IF NOT EXISTS chars_added INTEGER;
+ALTER TABLE {APP_SCHEMA}.transition_plans ADD COLUMN IF NOT EXISTS chars_removed INTEGER;
+ALTER TABLE {APP_SCHEMA}.transition_plans ADD COLUMN IF NOT EXISTS sections_changed TEXT;
+ALTER TABLE {APP_SCHEMA}.transition_plans ADD COLUMN IF NOT EXISTS reject_reason TEXT;
 CREATE TABLE IF NOT EXISTS {APP_SCHEMA}.outreach_tasks (
   task_id TEXT PRIMARY KEY, encounter_id TEXT NOT NULL, plan_id TEXT, task_type TEXT NOT NULL,
   description TEXT, assignee TEXT, due_ts TIMESTAMPTZ, status TEXT NOT NULL DEFAULT 'open',
@@ -179,7 +186,7 @@ def worklist(hospital_id: str | None = None, unit_id: str | None = None, risk_ti
     return q(f"""SELECT w.encounter_id, w.first_name, w.last_name, w.mrn, w.age, w.hospital_id, w.unit_id, w.unit_name, w.condition,
                         w.discharge_ts, w.discharge_dow, w.weekend_discharge, w.days_since_discharge, w.fu7_booked,
                         w.ai_lives_alone, w.ai_transport_barrier, w.risk_score, w.risk_tier, w.driver_1, w.driver_2,
-                        w.recommended_actions, p.status AS plan_status
+                        w.recommended_actions, w.nurse_briefing, p.status AS plan_status
                  FROM public.discharge_worklist w
                  LEFT JOIN LATERAL (SELECT status FROM {APP_SCHEMA}.transition_plans t WHERE t.encounter_id = w.encounter_id
                                     ORDER BY created_ts DESC LIMIT 1) p ON true
@@ -220,7 +227,7 @@ def draft_plan(encounter_id: str, req: Request):
                                   "discharge_disposition", "days_since_discharge", "fu7_booked", "first_followup_ts",
                                   "ai_lives_alone", "ai_transport_barrier", "ai_followup_status", "ai_evidence",
                                   "risk_score", "risk_tier", "driver_1", "driver_2", "driver_3", "recommended_actions",
-                                  "primary_language")}
+                                  "nurse_briefing", "primary_language")}
     prompt = "Patient context (JSON):\n" + json.dumps(ctx, default=str, indent=1)
     t0 = time.time()
     text = _llm([{"role": "system", "content": PLAN_SYSTEM}, {"role": "user", "content": prompt}])
@@ -242,6 +249,33 @@ class Approve(BaseModel):
     final_text: str | None = None
 
 
+SECTIONS = ["Why this patient is at risk", "Within 48 hours", "Within 7 days", "Social needs", "Teach-back topics"]
+
+
+def _section(text: str, name: str) -> str:
+    """Text of one markdown section (from its heading to the next known heading)."""
+    i = text.find(name)
+    if i < 0:
+        return ""
+    ends = [text.find(n, i + len(name)) for n in SECTIONS if n != name]
+    ends = [e for e in ends if e > i]
+    return text[i:min(ends) if ends else len(text)].strip()
+
+
+def edit_stats(draft: str, final: str) -> dict:
+    """How much the nurse changed the AI draft: similarity, characters added/removed, sections changed."""
+    sm = difflib.SequenceMatcher(None, draft, final)
+    added = removed = 0
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag in ("replace", "delete"):
+            removed += i2 - i1
+        if tag in ("replace", "insert"):
+            added += j2 - j1
+    changed = [n for n in SECTIONS if _section(draft, n) != _section(final, n)]
+    return {"edited": draft.strip() != final.strip(), "edit_similarity": round(sm.ratio(), 4),
+            "chars_added": added, "chars_removed": removed, "sections_changed": changed}
+
+
 TASKS = [
     ("book_followup", "Book 7-day follow-up", lambda p: not p.get("fu7_booked"), 2),
     ("caregiver_check", "Caregiver check + home-health referral", lambda p: p.get("ai_lives_alone"), 3),
@@ -259,9 +293,13 @@ def approve(plan_id: str, body: Approve, req: Request):
     plan = plans[0]
     p = q("SELECT * FROM public.discharge_worklist WHERE encounter_id = %s", (plan["encounter_id"],))[0]
     created = []
+    final = body.final_text or plan["draft_text"]
+    es = edit_stats(plan["draft_text"], final)
     with pg() as c, c.cursor() as cur:
-        cur.execute(f"""UPDATE {APP_SCHEMA}.transition_plans SET status='approved', final_text=%s, approved_by=%s, approved_ts=now()
-                        WHERE plan_id=%s""", (body.final_text or plan["draft_text"], user, plan_id))
+        cur.execute(f"""UPDATE {APP_SCHEMA}.transition_plans SET status='approved', final_text=%s, approved_by=%s, approved_ts=now(),
+                        edited=%s, edit_similarity=%s, chars_added=%s, chars_removed=%s, sections_changed=%s
+                        WHERE plan_id=%s""", (final, user, es["edited"], es["edit_similarity"], es["chars_added"],
+                                               es["chars_removed"], ",".join(es["sections_changed"]), plan_id))
         for ttype, desc, cond, due_days in TASKS:
             if cond(p):
                 tid = uuid.uuid4().hex[:12]
@@ -269,20 +307,26 @@ def approve(plan_id: str, body: Approve, req: Request):
                                 VALUES (%s,%s,%s,%s,%s,%s, now() + make_interval(days => %s))""",
                             (tid, plan["encounter_id"], plan_id, ttype, desc, "care-transitions-queue", due_days))
                 created.append({"task_id": tid, "task_type": ttype, "description": desc})
-        _audit(cur, "plan_approved", user, plan_id, plan["encounter_id"], {"tasks_created": len(created),
-                                                                            "edited": bool(body.final_text)})
-    return {"plan_id": plan_id, "status": "approved", "approved_by": user, "tasks_created": created}
+        _audit(cur, "plan_edited" if es["edited"] else "plan_accepted_as_is", user, plan_id, plan["encounter_id"], es)
+        _audit(cur, "plan_approved", user, plan_id, plan["encounter_id"], {"tasks_created": len(created), **es})
+    return {"plan_id": plan_id, "status": "approved", "approved_by": user, "edit_stats": es, "tasks_created": created}
+
+
+class Reject(BaseModel):
+    reason: str | None = None
 
 
 @app.post("/api/plans/{plan_id}/reject")
-def reject(plan_id: str, req: Request):
+def reject(plan_id: str, req: Request, body: Reject | None = None):
     user = _user(req)
+    reason = (body.reason if body else None) or "not specified"
     with pg() as c, c.cursor() as cur:
-        cur.execute(f"UPDATE {APP_SCHEMA}.transition_plans SET status='rejected' WHERE plan_id=%s RETURNING encounter_id", (plan_id,))
+        cur.execute(f"UPDATE {APP_SCHEMA}.transition_plans SET status='rejected', reject_reason=%s WHERE plan_id=%s RETURNING encounter_id",
+                    (reason, plan_id))
         r = cur.fetchone()
         if not r:
             raise HTTPException(404, "plan not found")
-        _audit(cur, "plan_rejected", user, plan_id, r["encounter_id"])
+        _audit(cur, "plan_rejected", user, plan_id, r["encounter_id"], {"reason": reason})
     return {"plan_id": plan_id, "status": "rejected"}
 
 

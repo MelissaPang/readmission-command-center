@@ -1,6 +1,6 @@
 # Executed notebook: uc_governance
 
-job run `206873801708733` · task run `865858147930142` · result **SUCCESS** · 2026-11-09 17:50:47 UTC
+job run `601827272748584` · task run `914466581394331` · result **SUCCESS** · 2026-11-09 21:55:01 UTC
 
 # 01 · Unity Catalog governance (before ingest)
 
@@ -11,6 +11,7 @@ Creates the governance objects the pipeline needs **before** it runs:
   account groups, so entitlements are data-driven instead.
 * Column-mask functions `gold.mask_phi` (STRING) and `gold.mask_phi_date` (DATE). The Lakeflow pipeline attaches them to the
   PHI columns of `silver.patients` (`MASK` clause), so only `care_transitions` principals see names, MRN, DOB and phone.
+* Role-based column mask `gold.mask_clinical_text` for AI-extracted evidence quotes (verbatim snippets of clinical notes). Only `care_transitions` sees them; analysts, finance and Genie see a placeholder.
 * Row-filter function `gold.hospital_scope` restricts patient-level gold tables to the hospitals a principal may see.
 * Governance tags on catalog and schemas.
 
@@ -49,8 +50,8 @@ Output:
 ```text
 | principal                            | role             | hospital_scope |
 |--------------------------------------|------------------|----------------|
-| dd97e436-f2e2-4d19-9910-5e845a1a42f7 | analyst          | *              |
 | melissa.pang@databricks.com          | care_transitions | *              |
+| dd97e436-f2e2-4d19-9910-5e845a1a42f7 | analyst          | *              |
 (2 rows shown)
 ```
 
@@ -72,6 +73,15 @@ RETURN CASE WHEN EXISTS (SELECT 1 FROM {catalog}.gold.rcc_user_entitlements e
             THEN v ELSE make_date(year(v), 1, 1) END
 """)
 spark.sql(f"""
+CREATE OR REPLACE FUNCTION {catalog}.gold.mask_clinical_text(v STRING)
+RETURNS STRING
+COMMENT 'Role-based column mask for AI-extracted free-text evidence quotes from clinical notes: only care_transitions principals see the quote; everyone else (analysts, finance, the app SP used by Genie) sees a placeholder.'
+RETURN CASE WHEN v IS NULL THEN NULL
+            WHEN EXISTS (SELECT 1 FROM {catalog}.gold.rcc_user_entitlements e
+                         WHERE e.principal = current_user() AND e.role = 'care_transitions')
+            THEN v ELSE '[restricted: care-transitions only]' END
+""")
+spark.sql(f"""
 CREATE OR REPLACE FUNCTION {catalog}.gold.hospital_scope(hid STRING)
 RETURNS BOOLEAN
 COMMENT 'Row filter: principals see patient-level rows only for hospitals in their entitlement scope.'
@@ -85,12 +95,13 @@ display(spark.sql("SHOW USER FUNCTIONS IN gold"))
 Output:
 
 ```text
-| function                           |
-|------------------------------------|
-| cedarbrook_rcc.gold.hospital_scope |
-| cedarbrook_rcc.gold.mask_phi       |
-| cedarbrook_rcc.gold.mask_phi_date  |
-(3 rows shown)
+| function                               |
+|----------------------------------------|
+| cedarbrook_rcc.gold.hospital_scope     |
+| cedarbrook_rcc.gold.mask_clinical_text |
+| cedarbrook_rcc.gold.mask_phi           |
+| cedarbrook_rcc.gold.mask_phi_date      |
+(4 rows shown)
 ```
 
 ```python

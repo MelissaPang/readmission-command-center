@@ -144,9 +144,9 @@ SELECT scope, fu7_target_pct, discharges_12m, booked_12m, current_fu7_pct, addit
 SELECT * FROM cedarbrook_rcc.ml.model_metrics
 ```
 
-| auc | avg_precision | base_rate | brier | champion_algorithm | hist_gbm_auc | logreg_auc | model_name | run_id | top_decile_lift | top_decile_readmit_rate | version |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0.7245 | 0.3226 | 0.1411 | 0.11 | logreg_baseline | 0.7137 | 0.7245 | cedarbrook_rcc.ml.readmit_30d_risk | 7c321ae48dc940c9a5142bd0a4e299ee | 2.6034 | 0.3674 | 2 |
+| auc | avg_precision | base_rate | brier | champion_algorithm | feedback_nurse_edit_rate | feedback_plans_reviewed | feedback_rn_confirmed_high_risk | feedback_rn_disputed | hist_gbm_auc | logreg_auc | model_name | run_id | top_decile_lift | top_decile_readmit_rate | version |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0.7245 | 0.3226 | 0.1411 | 0.11 | logreg_baseline | 0.3333333333333333 | 3 | 2 | 0 | 0.7137 | 0.7245 | cedarbrook_rcc.ml.readmit_30d_risk | 30de7decba2d4e0db993340f3adf6928 | 2.6034 | 0.3674 | 5 |
 
 (1 rows)
 
@@ -196,9 +196,11 @@ SELECT plan_id, encounter_id, status, model_endpoint, approved_by, approved_ts F
 
 | plan_id | encounter_id | status | model_endpoint | approved_by | approved_ts |
 |---|---|---|---|---|---|
+| 477eeb3bc178 | E1014381 | approved | databricks-claude-sonnet-4-6 | melissa.pang@databricks.com | 2026-11-09T21:53:42.170Z |
+| a070ebfd8570 | E1014074 | approved | databricks-claude-sonnet-4-6 | melissa.pang@databricks.com | 2026-11-09T18:06:45.839Z |
 | c66e94d57e36 | E1014082 | approved | databricks-claude-sonnet-4-6 | melissa.pang@databricks.com | 2026-11-09T17:48:47.567Z |
 
-(1 rows)
+(3 rows)
 
 ### Story validation results (notebook 99)
 
@@ -226,15 +228,21 @@ SELECT * FROM cedarbrook_rcc.gold.story_validation
 | What-if 80%: readmissions avoided | 6.52 | ~7 | true |
 | What-if 80%: HF ERR | 1.14 | 1.14 | true |
 | What-if 80%: penalty saved | $238,438 | ~$240K | true |
-| UC model registered @champion | cedarbrook_rcc.ml.readmit_30d_risk v2 | exists | true |
+| UC model registered @champion | cedarbrook_rcc.ml.readmit_30d_risk v5 | exists | true |
 | Model test AUC | 0.7245 | > 0.65 | true |
 | Lakebase synced table public.discharge_worklist | SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE | ONLINE* | true |
 | Lakebase synced table public.hrrp_whatif | SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE | ONLINE* | true |
 | Lakebase synced table public.unit_weekly | SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE | ONLINE* | true |
 | Lakebase synced table public.hrrp_hospital | SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE | ONLINE* | true |
-| App-approved transition plans visible in UC via Lakebase catalog | 1 approved / 1 plans | >= 1 approved | true |
+| App-approved transition plans visible in UC via Lakebase catalog | 3 approved / 3 plans | >= 1 approved | true |
+| Closed loop: RN plan edits captured as weak labels (gold.plan_feedback) | 3 plans (1 nurse_edited, 2 accepted_as_is) | >= 1 nurse_edited | true |
+| Closed loop: retraining signals joined to features/score/outcome | 3 | = plans | true |
+| Nurse briefing generated for every worklist patient (AI Functions) | 705/705 | all | true |
+| Genie answers pass the LLM judge (latest run) | 5/5 PASS, avg score 5.0 | all PASS | true |
 | Genie answered story questions | 5/5 | all COMPLETED | true |
 | Column mask hides PHI for non care_transitions | ***MASKED*** | ***MASKED*** | true |
 | Row filter limits patient rows to hospital scope | 3424 of 14475 | < total | true |
+| Role-based mask hides AI evidence quotes from non care_transitions | [restricted: care-transitions only] | [restricted: care-transitions only] | true |
+| gold.index_admissions (analyst-facing) no longer exposes verbatim evidence | False | False | true |
 
-(27 rows)
+(33 rows)

@@ -84,6 +84,17 @@ display(spark.sql("""SELECT p.plan_id, p.encounter_id, p.status, p.model_endpoin
                      FROM rcc_lakebase.app_rcc.transition_plans p LEFT JOIN rcc_lakebase.app_rcc.outreach_tasks t USING (plan_id)
                      GROUP BY ALL ORDER BY p.approved_ts DESC NULLS LAST LIMIT 10"""))
 check("App-approved transition plans visible in UC via Lakebase catalog", f"{wb.approved} approved / {wb.plans} plans", ">= 1 approved", wb.approved >= 1)
+fb = spark.sql(f"""SELECT count(*) AS n, count_if(weak_label='nurse_edited') AS edited, count_if(weak_label='accepted_as_is') AS as_is
+                   FROM {catalog}.gold.plan_feedback""").first()
+check("Closed loop: RN plan edits captured as weak labels (gold.plan_feedback)", f"{fb.n} plans ({fb.edited} nurse_edited, {fb.as_is} accepted_as_is)", ">= 1 nurse_edited", fb.edited >= 1)
+rs = spark.sql(f"SELECT count(*) AS n FROM {catalog}.ml.retraining_signals").first().n
+check("Closed loop: retraining signals joined to features/score/outcome", rs, "= plans", rs == fb.n)
+br = spark.sql(f"SELECT count(*) AS n, count_if(nurse_briefing IS NOT NULL AND length(nurse_briefing) > 40) AS ok FROM {catalog}.gold.discharge_worklist").first()
+check("Nurse briefing generated for every worklist patient (AI Functions)", f"{br.ok}/{br.n}", "all", br.ok == br.n)
+jd = spark.sql(f"""WITH last AS (SELECT max(run_ts) AS t FROM {catalog}.gold.genie_eval_judgements)
+                   SELECT count(*) AS n, count_if(verdict='PASS') AS passed, round(avg(score), 2) AS avg_score
+                   FROM {catalog}.gold.genie_eval_judgements, last WHERE run_ts = last.t""").first()
+check("Genie answers pass the LLM judge (latest run)", f"{jd.passed}/{jd.n} PASS, avg score {jd.avg_score}", "all PASS", jd.passed == jd.n and jd.n > 0)
 g = spark.sql(f"SELECT status FROM {catalog}.gold.genie_eval_transcript").toPandas()
 check("Genie answered story questions", f"{(g.status == 'COMPLETED').sum()}/{len(g)}", "all COMPLETED", (g.status == "COMPLETED").all())
 
@@ -96,18 +107,24 @@ check("Genie answered story questions", f"{(g.status == 'COMPLETED').sum()}/{len
 
 q_mask = f"SELECT patient_id, mrn, first_name, last_name, date_of_birth, home_phone FROM {catalog}.silver.patients ORDER BY patient_id LIMIT 3"
 q_rows = f"SELECT count(*) AS visible_rows FROM {catalog}.gold.patient_risk_scores"
+q_evid = f"SELECT encounter_id, risk_tier, ai_evidence FROM {catalog}.gold.patient_risk_scores WHERE ai_evidence IS NOT NULL AND ai_evidence <> '' ORDER BY encounter_id LIMIT 3"
 print("WITH care_transitions entitlement:")
-spark.sql(q_mask).show(truncate=False); spark.sql(q_rows).show()
+spark.sql(q_mask).show(truncate=False); spark.sql(q_rows).show(); spark.sql(q_evid).show(truncate=80)
 spark.sql(f"UPDATE {catalog}.gold.rcc_user_entitlements SET role='analyst', hospital_scope='FCH' WHERE principal='{me}'")
 try:
     print("AS analyst scoped to FCH only:")
     masked = spark.sql(q_mask).collect(); spark.sql(q_mask).show(truncate=False)
     rows_fch = spark.sql(q_rows).first().visible_rows; spark.sql(q_rows).show()
+    evid_masked = spark.sql(q_evid).collect(); spark.sql(q_evid).show(truncate=80)
 finally:
     spark.sql(f"UPDATE {catalog}.gold.rcc_user_entitlements SET role='care_transitions', hospital_scope='*' WHERE principal='{me}'")
 total = spark.sql(q_rows).first().visible_rows
 check("Column mask hides PHI for non care_transitions", masked[0].mrn, "***MASKED***", masked[0].mrn == "***MASKED***")
 check("Row filter limits patient rows to hospital scope", f"{rows_fch} of {total}", "< total", 0 < rows_fch < total)
+check("Role-based mask hides AI evidence quotes from non care_transitions", evid_masked[0].ai_evidence if evid_masked else None,
+      "[restricted: care-transitions only]", bool(evid_masked) and evid_masked[0].ai_evidence == "[restricted: care-transitions only]")
+check("gold.index_admissions (analyst-facing) no longer exposes verbatim evidence", "ai_evidence" in spark.table(f"{catalog}.gold.index_admissions").columns,
+      False, "ai_evidence" not in spark.table(f"{catalog}.gold.index_admissions").columns)
 
 # COMMAND ----------
 
@@ -127,7 +144,8 @@ def lineage(table):
     return sorted({f"{u.get('catalog_name')}.{u.get('schema_name')}.{u.get('name')}" for u in ups if u.get("name")})
 
 for t in ["bronze.encounters", "silver.encounters", "silver.discharge_note_signals", "gold.index_admissions",
-          "gold.hrrp_condition_err", "gold.patient_risk_scores", "gold.discharge_worklist", "gold.hrrp_whatif"]:
+          "gold.hrrp_condition_err", "gold.patient_risk_scores", "gold.discharge_worklist", "gold.hrrp_whatif",
+          "gold.plan_feedback", "ml.retraining_signals"]:
     print(f"{catalog}.{t:32s} <- {lineage(f'{catalog}.{t}')}")
 
 # COMMAND ----------

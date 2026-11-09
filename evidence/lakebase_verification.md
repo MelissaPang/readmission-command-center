@@ -1,4 +1,4 @@
-# Lakebase verification (2026-11-09 18:10 UTC)
+# Lakebase verification (2026-11-09 22:17 UTC)
 
 * instance `rcc-lakebase`: state **AVAILABLE**, capacity CU_1, PG PG_VERSION_16, host `ep-ancient-haze-d1nu8mwg.database.us-west-2.cloud.databricks.com`
 
@@ -36,13 +36,13 @@ match: ✅
 ## 3. App-owned write tables and app SP privileges
 
 * schema `app_rcc` owner: `dd97e436-f2e2-4d19-9910-5e845a1a42f7` (app service principal `dd97e436-f2e2-4d19-9910-5e845a1a42f7`)
-* row counts: {'transition_plans': 2, 'outreach_tasks': 4, 'plan_audit_log': 6}
-* audit log actions: [('draft_generated', 2), ('plan_approved', 2), ('task_completed', 2)]
+* row counts: {'transition_plans': 3, 'outreach_tasks': 6, 'plan_audit_log': 10}
+* audit log actions: [('draft_generated', 3), ('plan_approved', 3), ('plan_edited', 1), ('task_completed', 3)]
 * SP SELECT on synced `public.discharge_worklist`: **True** · SP INSERT on it: **False** (read-only, as intended)
 
 ## 4. App connection and lakehouse read-back
 
 * `GET /api/health` → `{"status": "ok", "lakebase": "ok", "worklist_rows": 705, "assistant_endpoint": "databricks-claude-sonnet-4-6", "genie_space_id": "01f1dc641b0f1595b5867a02cfe2abd8", "pg_user": "dd97e436-f2e2-4d19-9910-5e845a1a42f7"}`
-* `SELECT ... FROM rcc_lakebase.app_rcc.transition_plans` via SQL warehouse (UC) → 2 plans, 2 approved; PG says 2
+* `SELECT ... FROM rcc_lakebase.app_rcc.transition_plans` via SQL warehouse (UC) → 3 plans, 3 approved; PG says 3
 
 **Overall: PASS ✅**

@@ -262,7 +262,7 @@ Left, **trust:**
 * PHI masked by policy; hospital-scoped row filters; a least-privilege app identity; lineage raw → app.
 * Data-quality rules caught every planted bad record.
 * The prediction separates risk: the High tier readmits at **45%**, the Low tier at **9%** (test AUC 0.72).
-* AI drafts, a nurse approves, everything is audited. It really ran: **10/10 job tasks**, **27/27 checks**.
+* AI drafts, a nurse approves, everything is audited. It really ran: **11/11 job tasks**, **33/33 checks**.
 
 Right, **three trade-offs:**
 * **Synthetic data shaped like Cedarbrook's:** zero PHI risk and reproducible numbers. *Trade-off:* real notes are messier, so AI accuracy is re-validated in the pilot.
@@ -302,13 +302,13 @@ Close: *"What would you need to see to move forward?"*
 * **ML:** scikit-learn models in MLflow; champion by test AUC → `ml.readmit_30d_risk@champion`; counterfactual drivers per patient
 * **Serving:** Lakebase (Postgres 16) synced tables (snapshot; *production:* Change Data Feed + triggered sync); the app's own schema `app_rcc`, readable in UC via the `rcc_lakebase` catalog
 * **App:** Databricks App (FastAPI + JS) running as its own service principal; Foundation Model API (Claude Sonnet); Genie Conversation API
-* **Deployment:** one Asset Bundle, a 10-task job; `bundle deploy && bundle run`
+* **Deployment:** one Asset Bundle, a 11-task job; `bundle deploy && bundle run`
 
 **Visual:** the diagram from `ARCHITECTURE.md` §1.
 
 ## Appendix B · Evidence the build ran
 
-* Job run `206873801708733`: 10/10 tasks SUCCESS; validation **27/27**
+* Job run `601827272748584`: 11/11 tasks SUCCESS; validation **33/33**
 * Lakebase 9/9 synced tables match their source; dashboard: 9 datasets executed, 15 widgets resolved
 * All evidence committed as text: `notebooks/executed/`, `evidence/`
 * Repo: https://github.com/MelissaPang/readmission-command-center

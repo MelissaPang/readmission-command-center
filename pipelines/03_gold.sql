@@ -72,7 +72,8 @@ SELECT
   fu.first_followup_ts,
   coalesce(sig.ai_lives_alone, false) AS ai_lives_alone,
   coalesce(sig.ai_transport_barrier, false) AS ai_transport_barrier,
-  sig.ai_followup_status, sig.ai_evidence,
+  sig.ai_followup_status,
+  -- verbatim evidence quotes are NOT exposed here (analyst-facing); they live in silver and in the masked gold.patient_risk_scores.ai_evidence
   coalesce(s.next_admit_ts > s.discharge_ts AND s.next_admit_ts <= s.discharge_ts + INTERVAL 30 DAYS, false) AS readmit_30d,
   CASE WHEN s.next_admit_ts > s.discharge_ts AND s.next_admit_ts <= s.discharge_ts + INTERVAL 30 DAYS
        THEN s.next_encounter_id END AS readmit_encounter_id,

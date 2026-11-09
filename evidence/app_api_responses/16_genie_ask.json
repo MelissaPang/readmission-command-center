@@ -1,7 +1,7 @@
 {
-    "conversation_id": "01f1dc6854af1948b81af35adb61ad51",
+    "conversation_id": "01f1dc8808ac128db23bb8732e701c73",
     "status": "COMPLETED",
-    "text": "On **6 North** for HF discharges since **2026-06-19**, 7-day follow-up booking was much higher for **weekdays** than **weekends**: **68.6%** (**94 of 137**) for **Weekday (Mon-Thu)** versus **17.7%** (**11 of 62**) for **Weekend (Fri-Sun)**. This means weekday discharges were booked at a rate **50.9 percentage points** higher than weekend discharges.",
+    "text": "On **6 North** for HF discharges since **2026-06-19**, 7-day follow-up booking was much higher for **weekday discharges** than for **weekend discharges**: **68.6%** (**94 of 137**) vs **17.7%** (**11 of 62**). Across the **2 discharge-day groups** shown, weekday discharges had a **50.9 percentage point** higher follow-up booking rate than weekend discharges.\n\n- **Weekday (Mon-Thu):** **68.6%** booked within 7 days (**94 of 137**)\n- **Weekend (Fri-Sun):** **17.7%** booked within 7 days (**11 of 62**)",
     "sql": "SELECT `discharge_day_type`, `discharges`, `fu7_booked`, `fu7_booked_pct`\nFROM `cedarbrook_rcc`.`gold`.`followup_gap`\nWHERE `unit_id` = 'CUMC-6N'\n  AND `condition` = 'HF'\n  AND `period` = 'since_2026-06-19'\n  AND `discharge_day_type` IS NOT NULL\nORDER BY `discharge_day_type`",
     "columns": [
         "discharge_day_type",

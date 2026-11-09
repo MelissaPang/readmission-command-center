@@ -111,7 +111,18 @@ from mlflow import MlflowClient
 
 MODEL_NAME = f"{catalog}.ml.readmit_30d_risk"
 X_ex = train[FEATURES].head(5)
+# Closed-loop signal from the app (notebook 08): RN plan reviews as weak labels for the next retraining
+fb = {"feedback_plans_reviewed": 0, "feedback_nurse_edit_rate": 0.0, "feedback_rn_confirmed_high_risk": 0, "feedback_rn_disputed": 0}
+if spark.catalog.tableExists(f"{catalog}.ml.retraining_signals"):
+    r = spark.sql(f"""SELECT count(*) AS n, avg(CAST(weak_label = 'nurse_edited' AS INT)) AS edit_rate,
+                             count_if(risk_signal = 'rn_confirmed_high_risk') AS confirmed, count_if(risk_signal = 'rn_disputed') AS disputed
+                      FROM {catalog}.ml.retraining_signals WHERE weak_label <> 'pending_review'""").first()
+    fb = {"feedback_plans_reviewed": int(r.n), "feedback_nurse_edit_rate": float(r.edit_rate or 0),
+          "feedback_rn_confirmed_high_risk": int(r.confirmed), "feedback_rn_disputed": int(r.disputed)}
+print("weak-label feedback available for retraining:", fb)
+
 with mlflow.start_run(run_id=results[champion]["run_id"]):
+    mlflow.log_metrics(fb)
     mlflow.log_table(cal, "calibration_deciles.json")
     mlflow.log_table(fi, "permutation_importance.json")
     info = mlflow.sklearn.log_model(best, artifact_path="model", signature=infer_signature(X_ex, best.predict_proba(X_ex)[:, 1]),
@@ -125,6 +136,6 @@ print(f"registered {MODEL_NAME} version {version} as @champion")
 
 summary = {"model_name": MODEL_NAME, "version": version, "champion_algorithm": champion, "run_id": results[champion]["run_id"],
            **{k: round(v, 4) for k, v in results[champion].items() if k != "run_id"},
-           "hist_gbm_auc": round(results["hist_gbm"]["auc"], 4), "logreg_auc": round(results["logreg_baseline"]["auc"], 4)}
+           "hist_gbm_auc": round(results["hist_gbm"]["auc"], 4), "logreg_auc": round(results["logreg_baseline"]["auc"], 4), **fb}
 spark.createDataFrame([summary]).write.mode("overwrite").option("overwriteSchema", True).saveAsTable(f"{catalog}.ml.model_metrics")
 print(json.dumps(summary, indent=2))

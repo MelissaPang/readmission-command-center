@@ -1,15 +1,24 @@
 {
-    "plan_id": "a070ebfd8570",
+    "plan_id": "477eeb3bc178",
     "status": "approved",
     "approved_by": "melissa.pang@databricks.com",
+    "edit_stats": {
+        "edited": true,
+        "edit_similarity": 0.9507,
+        "chars_added": 107,
+        "chars_removed": 0,
+        "sections_changed": [
+            "Within 48 hours"
+        ]
+    },
     "tasks_created": [
         {
-            "task_id": "adbcca599851",
+            "task_id": "cb42261ef82c",
             "task_type": "book_followup",
             "description": "Book 7-day follow-up"
         },
         {
-            "task_id": "a1602a25908b",
+            "task_id": "0b7cadae0a37",
             "task_type": "pharmacist_call",
             "description": "Pharmacist med-reconciliation call"
         }

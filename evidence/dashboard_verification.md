@@ -1,4 +1,4 @@
-# Dashboard verification (2026-11-09 18:32 UTC)
+# Dashboard verification (2026-11-09 22:17 UTC)
 
 * dashboard `Readmissions & HRRP Executive (Cedarbrook Health)` id `01f1dc5df28f1375969046237b7df646`, lifecycle **ACTIVE**, published revision 2026-11-09T16:52:28.853Z, warehouse `12444b712298f9ac`
 * 9 datasets, 15 widgets (definition read back from the workspace, not from the repo)
@@ -50,14 +50,14 @@ FROM cedarbrook_rcc.gold.unit_weekly_readmissions WHERE condition = 'HF' AND dis
 
 | discharge_week | unit_group | readmissions | index_admissions | readmit_rate_pct |
 |---|---|---|---|---|
-| 2026-02-02 | 6 North Telemetry | 2 | 11 | 18.2 |
-| 2026-02-16 | All other units | 3 | 16 | 18.8 |
-| 2026-06-01 | All other units | 2 | 9 | 22.2 |
-| 2026-07-27 | 6 North Telemetry | 2 | 8 | 25.0 |
-| 2026-08-31 | All other units | 2 | 13 | 15.4 |
-| 2026-04-06 | All other units | 2 | 9 | 22.2 |
-| 2026-05-11 | All other units | 4 | 11 | 36.4 |
+| 2026-07-06 | All other units | 3 | 13 | 23.1 |
+| 2026-03-02 | All other units | 2 | 16 | 12.5 |
+| 2026-04-20 | 6 North Telemetry | 4 | 14 | 28.6 |
+| 2026-02-23 | All other units | 2 | 16 | 12.5 |
+| 2026-09-21 | All other units | 2 | 13 | 15.4 |
+| 2026-08-24 | 6 North Telemetry | 2 | 5 | 40.0 |
 | 2026-08-17 | All other units | 2 | 14 | 14.3 |
+| 2026-05-11 | All other units | 4 | 11 | 36.4 |
 
 (82 rows, first 8 shown)
 

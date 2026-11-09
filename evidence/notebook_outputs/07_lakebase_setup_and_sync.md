@@ -1,6 +1,6 @@
 # Executed notebook: lakebase_sync
 
-job run `206873801708733` · task run `1123241612241153` · result **SUCCESS** · 2026-11-09 17:55:27 UTC
+job run `601827272748584` · task run `353275271416366` · result **SUCCESS** · 2026-11-09 22:12:24 UTC
 
 # 07 · Lakebase: operational serving for the app
 
@@ -169,15 +169,15 @@ assert not pending, f"sync timed out for {pending}"
 Output:
 
 ```text
-hrrp_whatif            synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
 discharge_worklist     synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
+followup_gap           synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
+hrrp_whatif            synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
+unit_weekly            synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
+unit_period_summary    synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
+hrrp_condition         synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
 hrrp_hospital          synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
 risk_factors           synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
-unit_period_summary    synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
-unit_weekly            synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
 staffing_events        synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
-followup_gap           synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
-hrrp_condition         synced  state=SyncedTableState.SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE
 ```
 
 ### Verify in Postgres (direct connection, OAuth credential)

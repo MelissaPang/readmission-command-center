@@ -95,7 +95,7 @@ async function loadWorklist() {
   if ($("#wlTier").value) p.set("risk_tier", $("#wlTier").value);
   if ($("#wlNoFu").checked) p.set("no_followup", "true");
   const rows = await api(`/api/worklist?${p}`);
-  $("#wlTable").innerHTML = `<tr><th>Risk</th><th>Patient</th><th>Unit</th><th>Cond.</th><th>Discharged</th><th>7-day FU</th><th>Note flags (AI)</th><th>Top drivers</th><th>Plan</th></tr>` +
+  $("#wlTable").innerHTML = `<tr><th>Risk</th><th>Patient</th><th>Unit</th><th>Cond.</th><th>Discharged</th><th>7-day FU</th><th>Note flags (AI)</th><th>Nurse briefing (AI, from model drivers)</th><th>Plan</th></tr>` +
     rows.map((r) => `<tr class="click" data-id="${r.encounter_id}">
       <td><span class="pill ${r.risk_tier}">${r.risk_tier}</span> ${(100 * r.risk_score).toFixed(0)}%</td>
       <td><b>${esc(r.last_name)}, ${esc(r.first_name)}</b><br><small>${esc(r.mrn)} · ${r.age}y</small></td>
@@ -103,7 +103,7 @@ async function loadWorklist() {
       <td>${r.discharge_ts.slice(0, 10)} ${r.weekend_discharge ? "<small>(wknd)</small>" : ""}<br><small>${r.days_since_discharge} days ago</small></td>
       <td>${r.fu7_booked ? "✅" : "❌"}</td>
       <td>${r.ai_lives_alone ? '<span class="pill flag">lives alone</span> ' : ""}${r.ai_transport_barrier ? '<span class="pill flag">transport</span>' : ""}</td>
-      <td><small>${esc(r.driver_1 || "")}${r.driver_2 ? "<br>" + esc(r.driver_2) : ""}</small></td>
+      <td><small>${esc(r.nurse_briefing || [r.driver_1, r.driver_2].filter(Boolean).join("; "))}</small></td>
       <td>${r.plan_status ? `<span class="pill ${r.plan_status}">${r.plan_status}</span>` : ""}</td></tr>`).join("");
   document.querySelectorAll("#wlTable tr.click").forEach((tr) => tr.addEventListener("click", () => openPatient(tr.dataset.id)));
 }
@@ -120,6 +120,7 @@ async function openPatient(id) {
     <p><b>${esc(p.principal_dx_desc)}</b><br>${esc(p.unit_name)}, ${esc(p.hospital_name)} · discharged ${p.discharge_ts.slice(0, 16).replace("T", " ")} (${p.discharge_dow}) to ${p.discharge_disposition}</p>
     <div class="kpis small">${kpi(`${(100 * p.risk_score).toFixed(0)}%`, "30-day readmission risk", `<span class="pill ${p.risk_tier}">${p.risk_tier}</span> · model v${p.model_version}`)}
       ${kpi(p.fu7_booked ? "Booked" : "Not booked", "7-day follow-up", p.first_followup_ts ? p.first_followup_ts.slice(0, 10) : "")}</div>
+    ${p.nurse_briefing ? `<h4>Nurse briefing</h4><p class="evidence" style="font-style:normal">${esc(p.nurse_briefing)}</p>` : ""}
     <h4>Why the model flags this patient</h4><ul>${drivers || "<li>No single dominant driver</li>"}</ul>
     <h4>From the discharge note (AI Functions)</h4>
     <div>${p.ai_lives_alone ? '<span class="pill flag">lives alone / no caregiver</span> ' : ""}${p.ai_transport_barrier ? '<span class="pill flag">transportation barrier</span> ' : ""}<span class="pill">${esc(p.ai_followup_status)}</span></div>
@@ -141,7 +142,8 @@ async function openPatient(id) {
     openPatient(id); loadWorklist();
   }));
   document.querySelectorAll(".rejectBtn").forEach((b) => (b.onclick = async () => {
-    await api(`/api/plans/${b.dataset.plan}/reject`, { method: "POST" }); openPatient(id);
+    const reason = prompt("Why are you rejecting this draft? (used to improve future drafts)") || "not specified";
+    await api(`/api/plans/${b.dataset.plan}/reject`, { method: "POST", body: JSON.stringify({ reason }) }); openPatient(id);
   }));
 }
 function planHtml(pl) {
@@ -150,7 +152,9 @@ function planHtml(pl) {
       <textarea id="txt-${pl.plan_id}">${esc(pl.draft_text)}</textarea>
       <div class="row"><button class="approveBtn" data-plan="${pl.plan_id}">Approve plan &amp; create outreach tasks</button>
       <button class="secondary rejectBtn" data-plan="${pl.plan_id}">Reject</button></div></div>`;
-  return `<div class="plan"><span class="pill ${pl.status}">${pl.status}</span> <small>${pl.approved_by ? "by " + esc(pl.approved_by) + " · " + (pl.approved_ts || "").slice(0, 16) : ""}</small>
+  const edits = pl.status === "approved" && pl.edit_similarity != null
+    ? ` · ${pl.edited ? `RN edited (${Math.round(100 * pl.edit_similarity)}% similar; +${pl.chars_added}/−${pl.chars_removed} chars${pl.sections_changed ? "; " + esc(pl.sections_changed) : ""})` : "accepted as drafted"}` : "";
+  return `<div class="plan"><span class="pill ${pl.status}">${pl.status}</span> <small>${pl.approved_by ? "by " + esc(pl.approved_by) + " · " + (pl.approved_ts || "").slice(0, 16) : ""}${edits}</small>
     <div>${marked.parse(pl.final_text || pl.draft_text)}</div></div>`;
 }
 $("#drawerClose").onclick = () => $("#drawer").classList.add("hidden");

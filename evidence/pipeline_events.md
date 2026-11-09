@@ -7,6 +7,8 @@
 
 | update_id | state | full_refresh | full_refresh_selection | cause |
 |---|---|---|---|---|
+| 07afabf3-5c78-4792-b0d4-260938b34454 | COMPLETED | False |  | JOB_TASK |
+| 90af9f96-7d91-436e-9c83-1f03ead45ca7 | COMPLETED | False |  | JOB_TASK |
 | 24a45c9a-feba-40b3-96be-5edeb5987ce2 | COMPLETED | False |  | JOB_TASK |
 | 29e5a90c-1309-46de-9247-239fce052852 | COMPLETED | False |  | API_CALL |
 | a3a33e90-22b1-4671-8dcf-bc9861b6e4fc | COMPLETED | False | cedarbrook_rcc.bronze.encounters,cedarbrook_rcc.bronze.patients,cedarbrook_rcc.b | API_CALL |
@@ -28,22 +30,22 @@ GROUP BY flow_name ORDER BY flow_name
 
 | flow_name | last_num_output_rows | last_completed |
 |---|---|---|
-| cedarbrook_rcc.gold.encounters_enriched | 16584 | 2026-11-09T17:52:39.435Z |
-| cedarbrook_rcc.gold.followup_gap | 160 | 2026-11-09T17:53:15.409Z |
-| cedarbrook_rcc.gold.hrrp_condition_err | 16 | 2026-11-09T17:53:06.350Z |
-| cedarbrook_rcc.gold.hrrp_hospital_penalty | 3 | 2026-11-09T17:53:17.902Z |
-| cedarbrook_rcc.gold.index_admissions | 14475 | 2026-11-09T17:52:50.747Z |
-| cedarbrook_rcc.gold.readmission_risk_factors | 56 | 2026-11-09T17:53:15.376Z |
-| cedarbrook_rcc.gold.unit_period_summary | 56 | 2026-11-09T17:53:15.394Z |
-| cedarbrook_rcc.gold.unit_weekly_readmissions | 2825 | 2026-11-09T17:53:15.389Z |
-| cedarbrook_rcc.silver.cms_hrrp_reference | 16 | 2026-11-09T17:52:19.436Z |
-| cedarbrook_rcc.silver.encounters | 16584 | 2026-11-09T17:52:19.482Z |
-| cedarbrook_rcc.silver.followup_appointments | 11329 | 2026-11-09T17:52:19.490Z |
-| cedarbrook_rcc.silver.hospitals | 3 | 2026-11-09T17:52:21.357Z |
-| cedarbrook_rcc.silver.icd10_hrrp_map | 23 | 2026-11-09T17:52:23.816Z |
-| cedarbrook_rcc.silver.patients | 14615 | 2026-11-09T17:52:21.495Z |
-| cedarbrook_rcc.silver.staffing_events | 4 | 2026-11-09T17:52:19.476Z |
-| cedarbrook_rcc.silver.units | 16 | 2026-11-09T17:52:19.450Z |
+| cedarbrook_rcc.gold.encounters_enriched | 16584 | 2026-11-09T21:56:46.739Z |
+| cedarbrook_rcc.gold.followup_gap | 160 | 2026-11-09T21:57:24.249Z |
+| cedarbrook_rcc.gold.hrrp_condition_err | 16 | 2026-11-09T21:57:14.032Z |
+| cedarbrook_rcc.gold.hrrp_hospital_penalty | 3 | 2026-11-09T21:57:26.603Z |
+| cedarbrook_rcc.gold.index_admissions | 14475 | 2026-11-09T21:56:58.921Z |
+| cedarbrook_rcc.gold.readmission_risk_factors | 56 | 2026-11-09T21:57:24.190Z |
+| cedarbrook_rcc.gold.unit_period_summary | 56 | 2026-11-09T21:57:24.220Z |
+| cedarbrook_rcc.gold.unit_weekly_readmissions | 2825 | 2026-11-09T21:57:24.178Z |
+| cedarbrook_rcc.silver.cms_hrrp_reference | 16 | 2026-11-09T21:56:29.912Z |
+| cedarbrook_rcc.silver.encounters | 16584 | 2026-11-09T21:56:29.969Z |
+| cedarbrook_rcc.silver.followup_appointments | 11329 | 2026-11-09T21:56:29.979Z |
+| cedarbrook_rcc.silver.hospitals | 3 | 2026-11-09T21:56:29.809Z |
+| cedarbrook_rcc.silver.icd10_hrrp_map | 23 | 2026-11-09T21:56:31.556Z |
+| cedarbrook_rcc.silver.patients | 14615 | 2026-11-09T21:56:29.947Z |
+| cedarbrook_rcc.silver.staffing_events | 4 | 2026-11-09T21:56:29.950Z |
+| cedarbrook_rcc.silver.units | 16 | 2026-11-09T21:56:29.839Z |
 
 (16 rows)
 
@@ -61,14 +63,14 @@ GROUP BY ALL ORDER BY flow, expectation
 
 | flow | expectation | passed | failed |
 |---|---|---|---|
-| cedarbrook_rcc.silver.cms_hrrp_reference | expected_rate_valid | 48 | 0 |
+| cedarbrook_rcc.silver.cms_hrrp_reference | expected_rate_valid | 80 | 0 |
 | cedarbrook_rcc.silver.discharge_notes | note_has_text | 16584 | 0 |
-| cedarbrook_rcc.silver.encounters | discharge_after_admit | 49752 | 18 |
-| cedarbrook_rcc.silver.encounters | encounter_id_present | 49770 | 0 |
-| cedarbrook_rcc.silver.encounters | patient_id_present | 49770 | 0 |
-| cedarbrook_rcc.silver.encounters | unit_present | 49770 | 0 |
-| cedarbrook_rcc.silver.followup_appointments | appointment_has_encounter | 33987 | 0 |
-| cedarbrook_rcc.silver.patients | patient_id_present | 43845 | 0 |
+| cedarbrook_rcc.silver.encounters | discharge_after_admit | 82920 | 30 |
+| cedarbrook_rcc.silver.encounters | encounter_id_present | 82950 | 0 |
+| cedarbrook_rcc.silver.encounters | patient_id_present | 82950 | 0 |
+| cedarbrook_rcc.silver.encounters | unit_present | 82950 | 0 |
+| cedarbrook_rcc.silver.followup_appointments | appointment_has_encounter | 56645 | 0 |
+| cedarbrook_rcc.silver.patients | patient_id_present | 73075 | 0 |
 
 (8 rows)
 
@@ -103,7 +105,7 @@ GROUP BY ALL ORDER BY flow
 | cedarbrook_rcc.silver.cms_hrrp_reference | 0 |
 | cedarbrook_rcc.silver.discharge_note_signals | 0 |
 | cedarbrook_rcc.silver.discharge_notes | 0 |
-| cedarbrook_rcc.silver.encounters | 18 |
+| cedarbrook_rcc.silver.encounters | 30 |
 | cedarbrook_rcc.silver.followup_appointments | 0 |
 | cedarbrook_rcc.silver.hospitals | 0 |
 | cedarbrook_rcc.silver.icd10_hrrp_map | 0 |

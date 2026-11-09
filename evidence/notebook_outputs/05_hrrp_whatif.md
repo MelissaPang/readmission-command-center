@@ -1,6 +1,6 @@
 # Executed notebook: hrrp_whatif
 
-job run `206873801708733` · task run `301344254297234` · result **SUCCESS** · 2026-11-09 17:53:47 UTC
+job run `601827272748584` · task run `1041298962712479` · result **SUCCESS** · 2026-11-09 21:57:37 UTC
 
 # 05 · HRRP penalty and deterministic what-if
 

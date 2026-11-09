@@ -36,11 +36,11 @@ Common failure modes, and how the build avoids them:
 | Product | How it is used (beyond a checkbox) | Evidence |
 |---|---|---|
 | **Lakeflow** | Serverless declarative pipeline; Auto Loader streaming bronze; expectations (drop / fail); MVs; incremental AI streaming table | `evidence/pipeline_events.md` |
-| **Unity Catalog** | Column masks declared in the pipeline; row-filter function; tag policies honoured; lineage; UC model registry with alias; Lakebase registered as a UC catalog | `notebooks/executed/99_validate_story.ipynb` (mask/filter demo, lineage), `01_uc_governance.ipynb` |
+| **Unity Catalog** | PHI column masks declared in the pipeline; **role-based mask on AI evidence quotes** (care-transitions only); row-filter function; tag policies honoured; lineage; UC model registry with alias; Lakebase registered as a UC catalog | `notebooks/executed/99_validate_story.ipynb` (mask/filter demo, lineage), `01_uc_governance.ipynb` |
 | **Lakebase** | Synced tables for serving; app-owned OLTP schema; least-privilege SP role; write-back readable in UC | `evidence/lakebase_verification.md` (9/9 tables match source) |
 | **ML** | MLflow experiments, two models, champion by test AUC, calibration, permutation importance, UC registry → batch scoring | `notebooks/executed/03_*.ipynb`, `04_*.ipynb` |
-| **Gen AI** | AI Functions with structured output in the pipeline; Foundation Model API for grounded plan drafting | `02_ai_note_signals_eval.ipynb`, `evidence/app_api_responses/11_draft_plan.json` |
-| **Genie** | Space with instructions, example SQL, sample questions; evaluated through the Conversation API; embedded in the app | `06_genie_space.ipynb` (5/5), `16_genie_ask.json` |
+| **Gen AI** | AI Functions with structured output in the pipeline; **AI nurse briefing** per worklist patient; Foundation Model API for grounded plan drafting; **closed loop**: RN edits become weak labels for retraining | `02_ai_note_signals_eval.ipynb`, `evidence/app_api_responses/11_draft_plan.json` |
+| **Genie** | Space with instructions, example SQL, sample questions; evaluated through the Conversation API **and an LLM judge against SQL reference answers, appended every run**; embedded in the app | `06_genie_space.ipynb` (5/5), `16_genie_ask.json` |
 | **Databricks App** | Bundle-deployed FastAPI app with bound resources; SP auth; reads Lakebase, writes plans, calls FM API and Genie | `evidence/app_deploy.log`, `evidence/app_api_responses/*` |
 | **AI/BI dashboard** | 15-widget executive dashboard, deployed and published | `evidence/dashboard_verification.md` |
 | **Asset Bundles** | Everything is code; `bundle deploy && bundle run` | `databricks.yml`, `resources/` |
@@ -58,14 +58,16 @@ Common failure modes, and how the build avoids them:
 
 | Evidence | Where |
 |---|---|
-| Raw data → app on one platform; the job run `206873801708733` had **10/10 tasks SUCCESS** | `evidence/job_run_summary.md`, `evidence/job_run_206873801708733.json` |
+| Raw data → app on one platform; the job run `601827272748584` had **11/11 tasks SUCCESS** | `evidence/job_run_summary.md`, `evidence/job_run_601827272748584.json` |
 | Executed notebooks with real outputs (not screenshots) | `notebooks/executed/*.ipynb`, `evidence/notebook_outputs/*.md` |
 | Logged run output and query results | `evidence/pipeline_events.md`, `evidence/query_results.md` |
 | Real model output: Claude plan, Genie answers, AI extraction | `evidence/app_api_responses/11_draft_plan.json`, `16_genie_ask.json`, `02_ai_note_signals_eval.ipynb` |
-| Independent verifiers: story 27/27, Lakebase 9/9, dashboard 9 datasets + 15 widgets | `99_validate_story.ipynb`, `evidence/lakebase_verification.md`, `evidence/dashboard_verification.md` |
+| Independent verifiers: story 33/33, Lakebase 9/9, dashboard 9 datasets + 15 widgets | `99_validate_story.ipynb`, `evidence/lakebase_verification.md`, `evidence/dashboard_verification.md` |
 | Decisions and trade-offs | `ARCHITECTURE.md` §7, README, deck slide 11 |
 | AI tools, actual prompts, patterns, build workflow (including the bugs found and how) | `docs/ai_workflow.md` |
 | Reproducible: seeded data, bundle, scripts | README *Run it yourself* |
+
+* *Added after the first review:* closed-loop weak labels from RN edits; Genie LLM judge; grounded nurse briefings; role-based evidence mask.
 
 **Self-rating: meets.** **To lift to exceeds:**
 * **CI:** a GitHub Action running `bundle validate`, `scripts/local_story_check.py` and unit tests for the generator and gold SQL.

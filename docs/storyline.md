@@ -105,7 +105,7 @@ Once discharge records, readmission predictions and follow-up data are **unified
 * For **both:** the nurse's action and the CFO's KPI are on the same data, on the same screen.
 
 ### Beat 6: Proof and trust (why they can believe it)
-* **Live demo** (tell → show → tell), then the evidence that it really ran: 10/10 job tasks, 27/27 checks.
+* **Live demo** (tell → show → tell), then the evidence that it really ran: 11/11 job tasks, 33/33 checks.
 * **Governance:** PHI masked for analysts, hospital-scoped row filters, lineage, an audit trail of every AI draft and approval.
 * **Model:** AUC 0.72; High-risk patients readmit at 45% vs 9% for Low.
 * **Honesty up front:**
@@ -155,7 +155,7 @@ addresses the "layers present but not connected" failure mode.
 | Challenge (Beat 2b) | What was hard | How Databricks solves it | Proof in this build |
 |---|---|---|---|
 | **Siloed data; predictions disconnected from discharges** | Discharges, follow-ups, notes and penalty data in separate systems; risk scores, if any, calculated weeks later and not at discharge; no trend view of readmissions | **Lakeflow** ingests every feed incrementally into one lakehouse (Auto Loader; Lakeflow Connect for Epic Clarity / FHIR in production) with data-quality rules. **One gold layer** joins each discharge to its follow-up status, its prediction and its outcome; the **AI/BI dashboard** trends readmissions by unit over time. In production, the pipeline runs on discharge events, so the prediction reaches the worklist near real time. | 9 raw feeds → bronze → silver → 10 gold tables in one pipeline; planted bad records caught (6 invalid, 45 duplicates); Quality, Finance, the app and Genie all read the same `gold.*` (`evidence/pipeline_events.md`) |
-| **Complicated infrastructure** | Separate warehouse, lake, BI, app database and ML tools; PHI copied everywhere; every question is an IT project | **One platform:** Lakeflow + SQL warehouse + AI/BI + **Lakebase** (Postgres for the app) + **Databricks Apps**, all under **Unity Catalog**. No copies to secure. Serving tables *sync* from gold, and app writes are readable back in UC. Deployed as code with **Asset Bundles**; serverless, so no clusters to manage. | One bundle deploys schemas, the pipeline, a 10-task job, the dashboard and the app; Lakebase synced tables verified 9/9 identical to their source; app approvals queryable in UC (`evidence/lakebase_verification.md`) |
+| **Complicated infrastructure** | Separate warehouse, lake, BI, app database and ML tools; PHI copied everywhere; every question is an IT project | **One platform:** Lakeflow + SQL warehouse + AI/BI + **Lakebase** (Postgres for the app) + **Databricks Apps**, all under **Unity Catalog**. No copies to secure. Serving tables *sync* from gold, and app writes are readable back in UC. Deployed as code with **Asset Bundles**; serverless, so no clusters to manage. | One bundle deploys schemas, the pipeline, a 11-task job, the dashboard and the app; Lakebase synced tables verified 9/9 identical to their source; app approvals queryable in UC (`evidence/lakebase_verification.md`) |
 | **Governance across copies** | Each system has its own access rules; PHI audits are hard | **Unity Catalog:** column masks, row filters, tags, lineage and audit on one copy; the app runs as a least-privilege service principal | Analysts see `***MASKED***`; an FCH-only user sees 3,424 of 14,475 rows; lineage raw → app (`99_validate_story.ipynb`) |
 | **Limited ML capability** | No MLOps; models can't reach the workflow | **MLflow + UC model registry:** tracked experiments, champion by test AUC, governed alias, batch scoring into the worklist, explanations per patient | Two models compared; champion `ml.readmit_30d_risk@champion` (AUC 0.7245); scores and drivers in the nurse worklist (`03_*.ipynb`, `04_*.ipynb`) |
 | **Unstructured data, AI on PHI** | Signal locked in notes; no safe way to use LLMs | **AI Functions** (`ai_query` with structured output) run Claude *inside the governed pipeline*, so PHI never leaves the platform. **Foundation Model API** drafts plans with grounding and human approval. | 16,584 notes → structured flags, 0 errors, an evidence quote per flag; AI plan in 4.4 s, RN-approved, audited (`02_*.ipynb`, `11_draft_plan.json`) |
@@ -202,7 +202,7 @@ Keep the demo to ~9 minutes and close with: *"Insight → action → dollars in 
 | AI plan | 4.4 s, grounded, RN-approved, 2 tasks created | `evidence/app_api_responses/11_*.json`, `12_*.json` |
 | Genie | 5/5 story questions correct | `06_genie_space.ipynb` |
 | Governance | masked PHI; row filter 3,424 / 14,475 | `99_validate_story.ipynb` |
-| It really ran | 10/10 tasks; 27/27 checks; Lakebase 9/9 match | `evidence/job_run_summary.md`, `evidence/lakebase_verification.md` |
+| It really ran | 11/11 tasks; 33/33 checks; Lakebase 9/9 match | `evidence/job_run_summary.md`, `evidence/lakebase_verification.md` |
 
 ---
 

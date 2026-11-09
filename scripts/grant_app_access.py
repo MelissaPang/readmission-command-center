@@ -2,8 +2,9 @@
 
 Lakebase : CAN_USE on the instance, a Postgres role for the SP, SELECT on synced public.* tables, CREATE on database rcc
            (the app creates and owns schema app_rcc for its write tables).
-UC       : USE CATALOG/SCHEMA + SELECT on gold (used by Genie, which runs as the app SP), and an entitlement row
-           role='analyst' (PHI masked by gold.mask_phi; row filter scope '*').
+UC       : USE CATALOG/SCHEMA + SELECT on gold (used by Genie, which runs as the app SP), SELECT on silver.staffing_events only
+           (no access to raw note text), and an entitlement row role='analyst' (PHI masked by gold.mask_phi, AI evidence quotes
+           masked by gold.mask_clinical_text; row filter scope '*').
 
 Usage: uv run --with databricks-sdk --with "psycopg[binary]" python scripts/grant_app_access.py
 """
@@ -60,7 +61,10 @@ def sql(stmt):
 
 for stmt in [f"GRANT USE CATALOG ON CATALOG {CATALOG} TO `{sp}`",
              f"GRANT USE SCHEMA, SELECT, EXECUTE ON SCHEMA {CATALOG}.gold TO `{sp}`",
-             f"GRANT USE SCHEMA, SELECT ON SCHEMA {CATALOG}.silver TO `{sp}`",
+             # least privilege: no schema-wide silver access (raw note text, verbatim evidence); only the table Genie needs
+             f"REVOKE SELECT ON SCHEMA {CATALOG}.silver FROM `{sp}`",
+             f"GRANT USE SCHEMA ON SCHEMA {CATALOG}.silver TO `{sp}`",
+             f"GRANT SELECT ON TABLE {CATALOG}.silver.staffing_events TO `{sp}`",
              f"MERGE INTO {CATALOG}.gold.rcc_user_entitlements t USING (SELECT '{sp}' AS principal, 'analyst' AS role, '*' AS hospital_scope) s "
              f"ON t.principal = s.principal WHEN NOT MATCHED THEN INSERT *"]:
     sql(stmt)

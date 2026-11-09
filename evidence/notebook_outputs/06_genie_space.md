@@ -1,6 +1,6 @@
 # Executed notebook: genie_space
 
-job run `206873801708733` · task run `18587706205861` · result **SUCCESS** · 2026-11-09 17:55:27 UTC
+job run `601827272748584` · task run `337405637413394` · result **SUCCESS** · 2026-11-09 22:12:24 UTC
 
 # 06 · Genie space: "Readmission & HRRP Analyst"
 
@@ -163,7 +163,7 @@ Output:
 ====================================================================================================
 Q: Which unit's HF readmission rate rose the most in the last 20 weeks?
 status: COMPLETED
-Genie: **6 North Telemetry** at **Cedarbrook University Medical Center** had the largest rise in HF readmission rate in the last 20 weeks. The HF readmission rate for unit **CUMC-6N** increased from **14.8%** with **34** readmissions out of **230** index admissions in the prior 20 weeks to **23.9%** with **50** readmissions out of **209** index admissions in the last 20 weeks, a rise of **9.1 percentage points**.
+Genie: **6 North Telemetry** at **Cedarbrook University Medical Center** had the largest rise in HF readmission rate in the last 20 weeks. The HF readmission rate for unit **CUMC-6N** increased from **14.8%** with **34 readmissions out of 230 index admissions** in the prior 20 weeks to **23.9%** with **50 readmissions out of 209 index admissions** in the last 20 weeks, a rise of **9.1 percentage points**.
 SQL:
 WITH ranked_units AS (
   SELECT
@@ -171,7 +171,6 @@ WITH ranked_units AS (
     `hospital_name`,
     `unit_id`,
     `unit_name`,
-    `condition`,
     `prior_20w_index`,
     `prior_20w_readmits`,
     `prior_20w_rate_pct`,
@@ -179,18 +178,17 @@ WITH ranked_units AS (
     `last_20w_readmits`,
     `last_20w_rate_pct`,
     `delta_pts`,
-    RANK() OVER (ORDER BY `delta_pts` DESC) AS `rnk`
+    RANK() OVER (ORDER BY `delta_pts` DESC) AS `rate_rise_rank`
   FROM `cedarbrook_rcc`.`gold`.`unit_period_summary`
   WHERE `condition` = 'HF'
-    AND `unit_name` IS NOT NULL
     AND `delta_pts` IS NOT NULL
+    AND `unit_name` IS NOT NULL
 )
 SELECT
   `hospital_id`,
   `hospital_name`,
   `unit_id`,
   `unit_name`,
-  `condition`,
   `prior_20w_index`,
   `prior_20w_readmits`,
   `prior_20w_rate_pct`,
@@ -199,14 +197,14 @@ SELECT
   `last_20w_rate_pct`,
   `delta_pts`
 FROM ranked_units
-WHERE `rnk` = 1
-ORDER BY `unit_name`
-columns: ['hospital_id', 'hospital_name', 'unit_id', 'unit_name', 'condition', 'prior_20w_index', 'prior_20w_readmits', 'prior_20w_rate_pct', 'last_20w_index', 'last_20w_readmits', 'last_20w_rate_pct', 'delta_pts']
-   ['CUMC', 'Cedarbrook University Medical Center', 'CUMC-6N', '6 North Telemetry', 'HF', '230', '34', '14.8', '209', '50', '23.9', '9.1']
+WHERE `rate_rise_rank` = 1
+ORDER BY `delta_pts` DESC, `unit_name`
+columns: ['hospital_id', 'hospital_name', 'unit_id', 'unit_name', 'prior_20w_index', 'prior_20w_readmits', 'prior_20w_rate_pct', 'last_20w_index', 'last_20w_readmits', 'last_20w_rate_pct', 'delta_pts']
+   ['CUMC', 'Cedarbrook University Medical Center', 'CUMC-6N', '6 North Telemetry', '230', '34', '14.8', '209', '50', '23.9', '9.1']
 ====================================================================================================
 Q: Compare 7-day follow-up booking on 6 North for weekend vs weekday HF discharges since 2026-06-19
 status: COMPLETED
-Genie: On **6 North** since **2026-06-19**, 7-day follow-up booking for **HF** discharges was much lower on **weekends** than **weekdays**: **17.7%** (**11 of 62**) for **Weekend (Fri-Sun)** versus **68.6%** (**94 of 137**) for **Weekday (Mon-Thu)**. That is a **50.9 percentage point** gap, showing weekend HF discharges on 6 North are booking follow-up far less often than weekday discharges.
+Genie: On **6 North** for HF discharges since **2026-06-19**, 7-day follow-up booking was much higher for **weekday** discharges than **weekend** discharges: **68.6%** (**94 of 137**) vs **17.7%** (**11 of 62**). This means weekday discharges were booked at a rate **50.9 percentage points** higher than weekend discharges.
 SQL:
 SELECT `discharge_day_type`, `discharges`, `fu7_booked`, `fu7_booked_pct`
 FROM `cedarbrook_rcc`.`gold`.`followup_gap`
@@ -214,31 +212,34 @@ WHERE `unit_id` = 'CUMC-6N'
   AND `condition` = 'HF'
   AND `period` = 'since_2026-06-19'
   AND `discharge_day_type` IS NOT NULL
+ORDER BY `discharge_day_type`
 columns: ['discharge_day_type', 'discharges', 'fu7_booked', 'fu7_booked_pct']
-   ['Weekend (Fri-Sun)', '62', '11', '17.7']
    ['Weekday (Mon-Thu)', '137', '94', '68.6']
+   ['Weekend (Fri-Sun)', '62', '11', '17.7']
 ====================================================================================================
 Q: What is CUMC's HF ERR and how much of the HRRP penalty comes from heart failure?
 status: COMPLETED
-Genie: For **Cedarbrook University Medical Center**, **HF ERR = 1.19** in **FY2027 (synthetic)**, and **heart failure penalty contribution = $1,139,986.98**. In this result, **HF** is the only condition shown for **Cedarbrook University Medical Center**, so the visible heart failure contribution is **$1,139,986.98**.
+Genie: For **Cedarbrook University Medical Center (CUMC)** in **FY2027 (synthetic)**, the **heart failure (HF) ERR is 1.19** and the **HF penalty contribution is $1,139,986.98**. This result shows **HF is contributing a penalty** for CUMC because an **ERR of 1.19** is above 1.
 SQL:
-SELECT
-  `hospital_name`,
-  `hrrp_condition`,
-  `err`,
-  `penalty_contribution`,
-  `program_year`
+SELECT `hospital_id`, `hospital_name`, `hrrp_condition`, `err`, `penalty_contribution`, `program_year`
 FROM `cedarbrook_rcc`.`gold`.`hrrp_condition_err`
-WHERE (`hospital_name` ILIKE '%Cedarbrook University Medical Center%' OR `hospital_id` ILIKE '%CUMC%')
+WHERE `hospital_id` IS NOT NULL
+  AND `hrrp_condition` IS NOT NULL
+  AND `hospital_id` ILIKE '%CUMC%'
   AND `hrrp_condition` ILIKE '%HF%'
-columns: ['hospital_name', 'hrrp_condition', 'err', 'penalty_contribution', 'program_year']
-   ['Cedarbrook University Medical Center', 'HF', '1.19', '1139986.98', 'FY2027 (synthetic)']
+columns: ['hospital_id', 'hospital_name', 'hrrp_condition', 'err', 'penalty_contribution', 'program_year']
+   ['CUMC', 'Cedarbrook University Medical Center', 'HF', '1.19', '1139986.98', 'FY2027 (synthetic)']
 ====================================================================================================
 Q: Do HF patients who live alone readmit more often?
 status: COMPLETED
-Genie: Yes. Among HF patients in the trailing 12 months, those flagged as **living alone** had a higher readmission rate than those **not living alone**: **33.1%** (52 of 157) vs **20.6%** (236 of 1,146). This means HF patients living alone readmitted more often in the available data, by **12.5 percentage points**.
+Genie: Yes. Among HF patients in the trailing 12 months, those flagged as **living alone** had a higher readmission rate than those **not living alone**: **33.1%** (52 of 157) vs **20.6%** (236 of 1,146). This means HF patients who live alone readmitted more often in this data, by **12.5 percentage points**.
 SQL:
-SELECT `factor`, `value` AS `lives_alone`, `index_admissions`, `readmissions`, `readmit_rate_pct`
+SELECT
+  `factor`,
+  `value` AS `lives_alone`,
+  `index_admissions`,
+  `readmissions`,
+  `readmit_rate_pct`
 FROM `cedarbrook_rcc`.`gold`.`readmission_risk_factors`
 WHERE `condition` ILIKE '%HF%'
   AND `factor` ILIKE '%ai_lives_alone%'
@@ -250,7 +251,7 @@ columns: ['factor', 'lives_alone', 'index_admissions', 'readmissions', 'readmit_
 ====================================================================================================
 Q: If 6 North booked follow-up for 80% of weekend HF discharges, how much penalty would we save?
 status: COMPLETED
-Genie: For **6 North weekend HF** discharges, raising follow-up booking to **80.0%** would save **$238,438.15** in HRRP penalty. In this scenario, **current follow-up booking = 55.1%**, **additional follow-ups = 48.8**, **readmissions avoided = 6.52**, **HF ERR falls from 1.19 to 1.1403**, and **penalty drops from $1,620,000.00 to $1,381,561.85**.
+Genie: For **6 North weekend HF** discharges, increasing booked 7-day follow-up from **55.1%** to **80.0%** is projected to save **$238,438.15** in HRRP penalty, reducing the penalty from **$1,620,000.00** to **$1,381,561.85**. In this scenario, **48.8** additional follow-ups are associated with **6.52** avoided readmissions, and the HF excess readmission ratio improves from **1.19** to **1.1403**.
 SQL:
 SELECT `scope`, `fu7_target_pct`, `current_fu7_pct`, `additional_followups`, `readmissions_avoided`, `hf_err_current`, `hf_err_scenario`, `penalty_current`, `penalty_scenario`, `penalty_saved`
 FROM `cedarbrook_rcc`.`gold`.`hrrp_whatif`
@@ -270,4 +271,84 @@ Output:
 
 ```text
 completed: 5 / 5
+```
+
+### LLM judge: a repeatable quality check on Genie's answers
+For every question, the **expected answer is computed directly from the gold tables** (deterministic SQL, not by an LLM).
+A judge model then compares Genie's answer (text plus result rows) with it and returns PASS/FAIL, a 1–5 score and a rationale.
+Results are **appended** to `gold.genie_eval_judgements` with a run timestamp, so Genie quality is tracked run over run.
+
+```python
+dbutils.widgets.text("judge_endpoint", "databricks-claude-sonnet-4-6")
+judge_endpoint = dbutils.widgets.get("judge_endpoint")
+G = f"{catalog}.gold"
+EXPECTED_SQL = {
+    SAMPLE_QS[0]: f"SELECT unit_name, prior_20w_rate_pct, last_20w_rate_pct, delta_pts FROM {G}.unit_period_summary WHERE condition='HF' AND prior_20w_index >= 30 ORDER BY delta_pts DESC LIMIT 1",
+    SAMPLE_QS[1]: f"SELECT discharge_day_type, discharges, fu7_booked, fu7_booked_pct FROM {G}.followup_gap WHERE unit_id='CUMC-6N' AND condition='HF' AND period='since_2026-06-19'",
+    SAMPLE_QS[2]: f"SELECT hrrp_condition, err, penalty_contribution FROM {G}.hrrp_condition_err WHERE hospital_id='CUMC' AND hrrp_condition='HF'",
+    SAMPLE_QS[3]: f"SELECT value AS lives_alone, index_admissions, readmit_rate_pct FROM {G}.readmission_risk_factors WHERE condition='HF' AND factor='ai_lives_alone'",
+    SAMPLE_QS[4]: f"SELECT fu7_target_pct, readmissions_avoided, hf_err_scenario, penalty_saved FROM {G}.hrrp_whatif WHERE scope='6N weekend HF' AND fu7_target_pct=80",
+}
+JUDGE_SYSTEM = ("You are a strict evaluator of an analytics assistant. Compare the ASSISTANT ANSWER (its text and result rows) with the EXPECTED "
+                "ANSWER computed from the source tables. PASS only if the key numbers and entities in the assistant answer match the expected answer "
+                "(allow rounding to 1 decimal place and equivalent formatting). Return ONLY JSON: "
+                '{"verdict": "PASS" or "FAIL", "score": integer 1-5, "rationale": "one sentence"}')
+
+def judge(question, expected, answer):
+    msg = {"question": question, "expected_answer_rows": expected,
+           "assistant_answer": {"text": answer.get("text"), "columns": answer.get("columns"), "rows": (answer.get("rows") or [])[:10]}}
+    r = w.api_client.do("POST", f"/serving-endpoints/{judge_endpoint}/invocations",
+                        body={"messages": [{"role": "system", "content": JUDGE_SYSTEM},
+                                           {"role": "user", "content": json.dumps(msg, default=str)}],
+                              "max_tokens": 300, "temperature": 0})
+    content = r["choices"][0]["message"]["content"]
+    if isinstance(content, list):
+        content = "".join(p.get("text", "") for p in content if isinstance(p, dict))
+    out = json.loads(content[content.find("{"): content.rfind("}") + 1])
+    return out["verdict"].upper(), int(out["score"]), out["rationale"]
+
+run_ts = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
+judgements = []
+for t in transcript:
+    expected = [r.asDict() for r in spark.sql(EXPECTED_SQL[t["question"]]).collect()]
+    verdict, score, rationale = judge(t["question"], expected, t)
+    judgements.append({"run_ts": run_ts, "space_id": space_id, "question": t["question"], "genie_status": t["status"],
+                       "genie_sql": t["sql"], "genie_text": t["text"], "genie_rows": json.dumps(t["rows"], default=str),
+                       "expected_rows": json.dumps(expected, default=str), "judge_model": judge_endpoint,
+                       "verdict": verdict, "score": score, "rationale": rationale})
+    print(f"{verdict} ({score}/5)  {t['question']}\n   expected: {json.dumps(expected, default=str)[:200]}\n   judge: {rationale}\n")
+
+jdf = pd.DataFrame(judgements)
+spark.createDataFrame(jdf).write.mode("append").option("mergeSchema", True).saveAsTable(f"{catalog}.gold.genie_eval_judgements")
+display(spark.sql(f"""SELECT run_ts, count(*) AS questions, count_if(verdict='PASS') AS passed, round(avg(score), 2) AS avg_score
+                      FROM {catalog}.gold.genie_eval_judgements GROUP BY run_ts ORDER BY run_ts DESC LIMIT 10"""))
+```
+
+Output:
+
+```text
+PASS (5/5)  Which unit's HF readmission rate rose the most in the last 20 weeks?
+   expected: [{"unit_name": "6 North Telemetry", "prior_20w_rate_pct": 14.8, "last_20w_rate_pct": 23.9, "delta_pts": 9.1}]
+   judge: The assistant correctly identifies 6 North Telemetry with prior rate 14.8%, last rate 23.9%, and delta of 9.1 percentage points, matching all key values in the expected answer.
+
+PASS (5/5)  Compare 7-day follow-up booking on 6 North for weekend vs weekday HF discharges since 2026-06-19
+   expected: [{"discharge_day_type": "Weekend (Fri-Sun)", "discharges": 62, "fu7_booked": 11, "fu7_booked_pct": 17.7}, {"discharge_day_type": "Weekday (Mon-Thu)", "discharges": 137, "fu7_booked": 94, "fu7_booked_p
+   judge: All key numbers match exactly: weekday discharges 137, fu7_booked 94, 68.6%; weekend discharges 62, fu7_booked 11, 17.7%.
+
+PASS (5/5)  What is CUMC's HF ERR and how much of the HRRP penalty comes from heart failure?
+   expected: [{"hrrp_condition": "HF", "err": 1.19, "penalty_contribution": 1139986.98}]
+   judge: The assistant answer correctly identifies HF ERR as 1.19 and penalty contribution as $1,139,986.98, exactly matching the expected answer.
+
+PASS (5/5)  Do HF patients who live alone readmit more often?
+   expected: [{"lives_alone": "true", "index_admissions": 157, "readmit_rate_pct": 33.1}, {"lives_alone": "false", "index_admissions": 1146, "readmit_rate_pct": 20.6}]
+   judge: The assistant's answer matches the expected answer exactly: lives_alone=true has 157 index admissions and 33.1% readmit rate, lives_alone=false has 1146 index admissions and 20.6% readmit rate.
+
+PASS (5/5)  If 6 North booked follow-up for 80% of weekend HF discharges, how much penalty would we save?
+   expected: [{"fu7_target_pct": 80, "readmissions_avoided": 6.52, "hf_err_scenario": 1.1403, "penalty_saved": 238438.15}]
+   judge: All key numbers match exactly: fu7_target_pct=80, readmissions_avoided=6.52, hf_err_scenario=1.1403, and penalty_saved=238438.15.
+| run_ts                           | questions | passed | avg_score |
+|----------------------------------|-----------|--------|-----------|
+| 2026-11-09T22:14:10.022432+00:00 | 5         | 5      | 5.0       |
+| 2026-11-09T22:04:21.995691+00:00 | 5         | 5      | 5.0       |
+(2 rows shown)
 ```

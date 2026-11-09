@@ -1,0 +1,270 @@
+{
+  "job_id": "582628116325413",
+  "run_id": 601827272748584,
+  "run_page_url": "https://e2-demo-field-eng.cloud.databricks.com/?o=1444828305810485#job/582628116325413/run/601827272748584",
+  "state": {
+    "life_cycle_state": "TERMINATED",
+    "result_state": "SUCCESS",
+    "state_message": "",
+    "user_cancelled_or_timedout": false
+  },
+  "start_time": 1794261252870,
+  "end_time": 1794262528709,
+  "tasks": [
+    {
+      "task_key": "generate_data",
+      "run_id": 891002544015027,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261252920,
+      "end_time": 1794261300579,
+      "duration_s": 47.7,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/00_generate_synthetic_data",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "uc_governance",
+      "run_id": 914466581394331,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261301166,
+      "end_time": 1794261322318,
+      "duration_s": 21.2,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/01_uc_governance",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "lakeflow_pipeline",
+      "run_id": 412797011484511,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261322688,
+      "end_time": 1794261456983,
+      "duration_s": 134.3,
+      "notebook": null,
+      "pipeline_id": "16d1c31b-07b3-4d62-8b02-19f82336f501"
+    },
+    {
+      "task_key": "ai_note_signals_eval",
+      "run_id": 944292661098822,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261457185,
+      "end_time": 1794261517997,
+      "duration_s": 60.8,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/02_ai_note_signals_eval",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "hrrp_whatif",
+      "run_id": 1041298962712479,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261457282,
+      "end_time": 1794261503449,
+      "duration_s": 46.2,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/05_hrrp_whatif",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "train_model",
+      "run_id": 835919536114619,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261457359,
+      "end_time": 1794261524037,
+      "duration_s": 66.7,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/03_train_readmission_model",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "batch_score",
+      "run_id": 640357154685872,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261524386,
+      "end_time": 1794261673895,
+      "duration_s": 149.5,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/04_batch_score",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "feedback_loop",
+      "run_id": 520887995362435,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261674365,
+      "end_time": 1794261804481,
+      "duration_s": 130.1,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/08_feedback_loop",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "genie_space",
+      "run_id": 376354127376322,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261674452,
+      "end_time": 1794261878926,
+      "duration_s": 204.5,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/06_genie_space",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "lakebase_sync",
+      "run_id": 121858804726663,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794261674528,
+      "end_time": 1794262004608,
+      "duration_s": 330.1,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/07_lakebase_setup_and_sync",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "validate_story",
+      "run_id": 701308036374195,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794262005039,
+      "end_time": 1794262103858,
+      "duration_s": 98.8,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/99_validate_story",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "train_model",
+      "run_id": 543652077699556,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794262161835,
+      "end_time": 1794262216097,
+      "duration_s": 54.3,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/03_train_readmission_model",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "batch_score",
+      "run_id": 636095575461048,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794262216502,
+      "end_time": 1794262343835,
+      "duration_s": 127.3,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/04_batch_score",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "feedback_loop",
+      "run_id": 514218579664164,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794262344221,
+      "end_time": 1794262392574,
+      "duration_s": 48.4,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/08_feedback_loop",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "genie_space",
+      "run_id": 337405637413394,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794262344312,
+      "end_time": 1794262464315,
+      "duration_s": 120.0,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/06_genie_space",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "lakebase_sync",
+      "run_id": 353275271416366,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794262344392,
+      "end_time": 1794262464054,
+      "duration_s": 119.7,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/07_lakebase_setup_and_sync",
+      "pipeline_id": null
+    },
+    {
+      "task_key": "validate_story",
+      "run_id": 31547648132122,
+      "state": {
+        "life_cycle_state": "TERMINATED",
+        "result_state": "SUCCESS",
+        "state_message": "",
+        "user_cancelled_or_timedout": false
+      },
+      "start_time": 1794262464712,
+      "end_time": 1794262528152,
+      "duration_s": 63.4,
+      "notebook": "/Workspace/Users/melissa.pang@databricks.com/.bundle/readmission-command-center/dev/files/notebooks/99_validate_story",
+      "pipeline_id": null
+    }
+  ]
+}

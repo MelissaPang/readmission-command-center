@@ -1,6 +1,6 @@
 # Executed notebook: generate_data
 
-job run `206873801708733` · task run `155085439701699` · result **SUCCESS** · 2026-11-09 17:49:48 UTC
+job run `601827272748584` · task run `891002544015027` · result **SUCCESS** · 2026-11-09 21:54:12 UTC
 
 # 00 · Generate synthetic EHR extracts (raw data)
 

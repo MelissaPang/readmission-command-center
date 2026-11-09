@@ -9,6 +9,7 @@
 # MAGIC   account groups, so entitlements are data-driven instead.
 # MAGIC * Column-mask functions `gold.mask_phi` (STRING) and `gold.mask_phi_date` (DATE). The Lakeflow pipeline attaches them to the
 # MAGIC   PHI columns of `silver.patients` (`MASK` clause), so only `care_transitions` principals see names, MRN, DOB and phone.
+# MAGIC * Role-based column mask `gold.mask_clinical_text` for AI-extracted evidence quotes (verbatim snippets of clinical notes). Only `care_transitions` sees them; analysts, finance and Genie see a placeholder.
 # MAGIC * Row-filter function `gold.hospital_scope` restricts patient-level gold tables to the hospitals a principal may see.
 # MAGIC * Governance tags on catalog and schemas.
 
@@ -53,6 +54,15 @@ COMMENT 'Column mask for PHI dates: non care_transitions principals see only Jan
 RETURN CASE WHEN EXISTS (SELECT 1 FROM {catalog}.gold.rcc_user_entitlements e
                          WHERE e.principal = current_user() AND e.role = 'care_transitions')
             THEN v ELSE make_date(year(v), 1, 1) END
+""")
+spark.sql(f"""
+CREATE OR REPLACE FUNCTION {catalog}.gold.mask_clinical_text(v STRING)
+RETURNS STRING
+COMMENT 'Role-based column mask for AI-extracted free-text evidence quotes from clinical notes: only care_transitions principals see the quote; everyone else (analysts, finance, the app SP used by Genie) sees a placeholder.'
+RETURN CASE WHEN v IS NULL THEN NULL
+            WHEN EXISTS (SELECT 1 FROM {catalog}.gold.rcc_user_entitlements e
+                         WHERE e.principal = current_user() AND e.role = 'care_transitions')
+            THEN v ELSE '[restricted: care-transitions only]' END
 """)
 spark.sql(f"""
 CREATE OR REPLACE FUNCTION {catalog}.gold.hospital_scope(hid STRING)

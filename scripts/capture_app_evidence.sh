@@ -38,8 +38,13 @@ get 10_patient_before "/api/patients/$ENC"
 echo "POST draft-plan (Foundation Model API)"
 curl -sf "${H[@]}" -X POST "$URL/api/patients/$ENC/draft-plan" | pretty > "$OUT/11_draft_plan.json"
 PLAN=$(python3 -c "import json;print(json.load(open('$OUT/11_draft_plan.json'))['plan_id'])")
-echo "POST approve plan $PLAN"
-curl -sf "${H[@]}" -X POST "$URL/api/plans/$PLAN/approve" -d '{}' | pretty > "$OUT/12_approve_plan.json"
+echo "POST approve plan $PLAN with an RN edit (closed loop: edit metrics -> audit log -> weak label)"
+EDITED=$(python3 -c "
+import json; d=json.load(open('$OUT/11_draft_plan.json'))['draft_text']
+edit = 'Within 48 hours**\\n- RN edit: call patient (and caregiver if any) today to book the HF Bridge Clinic slot before end of shift'
+d = d.replace('Within 48 hours**', edit, 1) if 'Within 48 hours**' in d else d + '\\n- RN edit: call patient today to book follow-up'
+print(json.dumps({'final_text': d}))")
+curl -sf "${H[@]}" -X POST "$URL/api/plans/$PLAN/approve" -d "$EDITED" | pretty > "$OUT/12_approve_plan.json"
 get 13_patient_after "/api/patients/$ENC"
 get 14_outreach_open "/api/outreach-tasks?status=open"
 TASK=$(python3 -c "import json;print(json.load(open('$OUT/12_approve_plan.json'))['tasks_created'][0]['task_id'])")

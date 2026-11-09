@@ -107,8 +107,12 @@ resources:
           depends_on: [{task_key: batch_score}, {task_key: hrrp_whatif}]
           notebook_task:
             notebook_path: ../notebooks/06_genie_space.py
+        - task_key: feedback_loop
+          depends_on: [{task_key: batch_score}]
+          notebook_task:
+            notebook_path: ../notebooks/08_feedback_loop.py
         - task_key: validate_story
-          depends_on: [{task_key: lakebase_sync}, {task_key: genie_space}, {task_key: ai_note_signals_eval}]
+          depends_on: [{task_key: lakebase_sync}, {task_key: genie_space}, {task_key: ai_note_signals_eval}, {task_key: feedback_loop}]
           notebook_task:
             notebook_path: ../notebooks/99_validate_story.py
 

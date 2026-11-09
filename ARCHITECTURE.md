@@ -169,7 +169,7 @@ The app, dashboard and Genie space (created through the API in `notebooks/06_cre
 ```
 readmission_command_center/
 ├── README.md, ARCHITECTURE.md
-├── databricks.yml, resources/rcc.yml, resources/app.yml   # bundle: schemas, volumes, pipeline, 10-task job, dashboard, app
+├── databricks.yml, resources/rcc.yml, resources/app.yml   # bundle: schemas, volumes, pipeline, 11-task job, dashboard, app
 ├── src/rcc_datagen.py                 # seeded synthetic EHR generator (story built into the data)
 ├── pipelines/01_bronze.sql, 02_silver.sql, 03_gold.sql   # Lakeflow (incl. AI Functions)
 ├── notebooks/                         # job notebooks (source, .py)
@@ -192,8 +192,8 @@ The evaluator reads text only, so every stage commits its output as text, not sc
 
 | Stage | Evidence file | What it shows | Produced by |
 |---|---|---|---|
-| All notebooks | `notebooks/executed/*.ipynb`, `evidence/notebook_outputs/*.md` | Every job notebook **with its real cell outputs** from job run `206873801708733` (tables rendered as text) | `scripts/export_evidence.py` (decodes `jobs export-run`) |
-| Orchestration | `evidence/job_run_summary.md`, `evidence/job_run_206873801708733.json` | Job and task run IDs, result states (10/10 SUCCESS), durations | `scripts/export_evidence.py` |
+| All notebooks | `notebooks/executed/*.ipynb`, `evidence/notebook_outputs/*.md` | Every job notebook **with its real cell outputs** from job run `601827272748584` (tables rendered as text) | `scripts/export_evidence.py` (decodes `jobs export-run`) |
+| Orchestration | `evidence/job_run_summary.md`, `evidence/job_run_601827272748584.json` | Job and task run IDs, result states (11/11 SUCCESS), durations | `scripts/export_evidence.py` |
 | Lakeflow | `evidence/pipeline_events.md` | Pipeline updates, rows written per flow, expectation pass/fail, dropped records (event log) | `scripts/export_pipeline_evidence.py` |
 | Unity Catalog | `notebooks/executed/01_uc_governance.ipynb`, `99_validate_story.ipynb` | Mask and row-filter functions, tags, masked vs unmasked query output, row filter (3,424 of 14,475), lineage API output | job |
 | AI Functions | `notebooks/executed/02_ai_note_signals_eval.ipynb` | Sample extractions with evidence quotes, accuracy/precision/recall vs ground truth, readmit rate by AI flag | job |
@@ -204,7 +204,7 @@ The evaluator reads text only, so every stage commits its output as text, not sc
 | Genie | `notebooks/executed/06_genie_space.ipynb`, `evidence/app_api_responses/16_genie_ask.json` | Question → generated SQL → result rows for 5 story questions (5/5 COMPLETED); Genie via the app | job, capture script |
 | App | `evidence/app_deploy.log`, `evidence/app_api_responses/00_*.json` … `16_*.json`, `evidence/app_logs.txt` | Deploy output, app status, responses from every endpoint, app logs | capture script |
 | Dashboard | `evidence/dashboard_verification.md` | Deployed definition read back; all 9 dataset queries executed with results; all 15 widgets resolve their fields | `scripts/verify_dashboard.py` |
-| Story check | `notebooks/executed/99_validate_story.ipynb`, `evidence/query_results.md` | 27/27 checks (story numbers + platform objects + governance) | job |
+| Story check | `notebooks/executed/99_validate_story.ipynb`, `evidence/query_results.md` | 33/33 checks (story numbers + platform objects + governance) | job |
 
 `README.md` has an **evidence index** that maps each requirement to these files.
 
@@ -237,3 +237,8 @@ The evaluator reads text only, so every stage commits its output as text, not sc
 | Account groups for masks / row filters | `gold.rcc_user_entitlements` table read by the mask and filter functions | We can't create account groups in the shared demo workspace. |
 | Tags `data_classification=synthetic_phi`, `project=…` | `data_classification=RESTRICTED`, `rcc_*` keys | Workspace tag policies restrict allowed values. |
 | Job pipeline task `full_refresh: true` | `full_refresh: false` (incremental) | A full refresh re-sends about 16.6k notes to the model (~20 min). Incremental runs take ~2 min. |
+| *(added after review)* nurse sees driver labels | **AI nurse briefing** per worklist row (`ai_query`, grounded in the row's drivers) | Reads like a briefing, not a scored table |
+| *(added after review)* plan approve / reject only | **Closed loop:** edit metrics → audit log → `gold.plan_feedback` weak labels → `ml.retraining_signals` → MLflow metrics in training | Turns the Lakebase write-back into an active learning signal |
+| *(added after review)* one-time Genie story run | **LLM judge** vs SQL reference answers, appended per run to `gold.genie_eval_judgements`, gated in validation | Repeatable quality check |
+| *(added after review)* PHI + hospital scope only | **Role-based mask** `gold.mask_clinical_text` on AI evidence quotes (care-transitions only); quotes removed from `gold.index_admissions`; app SP limited to `silver.staffing_events` | Governance beyond PHI and hospital scope |
+
