@@ -37,7 +37,7 @@ the **visual**, the **storyline beat**, and the **source** of every number in th
 > All figures come from the prototype run on synthetic Cedarbrook data (job run `601827272748584`, 11/11 tasks, 33/33 checks).
 > **[assumption]** items must be stated as such. Real-time scoring at discharge is the **production design**.
 
-**Flow (15 main slides + appendix, 20–30 min)**
+**Flow (16 main slides + appendix, 20–30 min)**
 
 | # | Slide | Beat |
 |---|---|---|
@@ -84,6 +84,7 @@ Three tiles, each labelled with its owner:
 **Role lines (on the slide):**
 * **For Jordan (CFO):** "A $1.14M penalty line becomes a $238K decision you can fund this quarter."
 * **For Priya (Transitional Care Manager):** "Every discharge comes with a risk score and a 2-sentence briefing: who to call today, and why."
+* **Strategic line (for the CEO and board):** "The same ratio is published on Care Compare, feeds the star rating, and is used in payer contracts and referral decisions. This protects market position, not just the penalty."
 
 **Visual:** three KPI tiles with the person's name and role in the tile header.
 **Source:** `gold.hrrp_whatif`, `gold.hrrp_hospital_penalty`, `gold.followup_gap`.
@@ -95,7 +96,7 @@ Three tiles, each labelled with its owner:
 **Headline:** *Under HRRP, one unit's readmissions can cut a hospital's Medicare payments*
 
 * Cedarbrook Health: 3 hospitals. Flagship CUMC has 538 beds.
-* CMS HRRP cuts payments on **all** Medicare discharges, by up to **3%**, when 30-day readmissions exceed expected. ERR is publicly reported.
+* CMS HRRP cuts payments on **all** Medicare discharges, by up to **3%**, when 30-day readmissions exceed expected. The same readmission performance is **published on CMS Care Compare and feeds the hospital star rating** (see slide 5).
 * CUMC penalty **$1.62M**, already **at the 3% cap** ($54M base DRG payments). **Heart failure is the largest line: $1.14M, ERR 1.19.** Across the system: **~$2.08M**.
 
 **Role line:** *For Jordan (CFO) and Dr. Vasquez (VP of Quality):* one penalty, one publicly reported ratio, one shared problem.
@@ -110,21 +111,51 @@ Three tiles, each labelled with its owner:
 
 *(Jordan Whitfield, Dr. Elena Vasquez, Priya Raman, Kenji Tanaka)*
 
-| Role | Measured on | Today | Target |
-|---|---|---|---|
-| **Jordan Whitfield, CFO** | HRRP penalty $ | $1.62M (HF $1.14M) | –$238K on 6 North; –$874K CUMC HF |
-| **Dr. Elena Vasquez, VP of Quality** | HF excess readmission ratio; HF 30-day readmission rate | ERR 1.19; 6 North 23.9% | ERR 1.14; ~15% |
-| **Priya Raman, Manager of Transitional Care** | 7-day follow-up booked at discharge; high-risk contacted ≤ 48h | weekend 18% (weekday 69%); 41 of 54 high-risk with no follow-up | ≥ 80%; ≥ 90% |
-| **Kenji Tanaka, CDAO** | Integration cost, PHI risk, time-to-insight | 5 silos, multiple PHI copies | 1 governed copy; ~2 min refresh |
+| Role | Measured on | Today | Target | External (market) consequence |
+|---|---|---|---|---|
+| **Jordan Whitfield, CFO** | HRRP penalty $ | $1.62M (HF $1.14M) | –$238K on 6 North; –$874K CUMC HF | Payer contract withholds and bundled-payment risk are negotiated on the same readmission record |
+| **Dr. Elena Vasquez, VP of Quality** | HF excess readmission ratio; HF 30-day readmission rate | ERR 1.19; 6 North 23.9% | ERR 1.14; ~15% | Published on Care Compare; readmission is 1 of 5 star-rating groups |
+| **Priya Raman, Manager of Transitional Care** | 7-day follow-up booked at discharge; high-risk contacted ≤ 48h | weekend 18% (weekday 69%); 41 of 54 high-risk with no follow-up | ≥ 80%; ≥ 90% | Better transitions protect post-acute partner and cardiology referral relationships |
+| **Kenji Tanaka, CDAO** | Integration cost, PHI risk, time-to-insight | 5 silos, multiple PHI copies | 1 governed copy; ~2 min refresh | Trusted, auditable numbers for public reporting and payer negotiations |
 
-Bottom line: *"All four numbers move with one action: a 7-day follow-up booked before a high-risk patient goes home."*
+Bottom line: *"All four numbers, and the public rating behind them, move with one action: a 7-day follow-up booked before a high-risk patient goes home."*
 
 **Visual:** a 4-row table or four person cards (name, role, number) connected to one central "7-day follow-up" node.
 **Source:** `docs/storyline.md` §2.
 
 ---
 
-## Slide 5 · A peak nobody saw coming (Beat 2)
+## Slide 5 · Beyond the penalty: the ERR is a public, market-facing number (strategic stakes)
+
+**Headline:** *The readmission ratio isn't only a penalty line: it's published, rated and used by the people who send Cedarbrook its patients and contracts*
+
+Four outward consequences of a worsening heart-failure readmission record:
+1. **Public reporting.** CMS **Care Compare** publishes every hospital's heart-failure 30-day readmission rate, with a comparison to the national rate. Patients, referring physicians, employers and payers all see it.
+2. **Star rating.** Readmission is one of the five measure groups in the **CMS Overall Hospital Star Rating** (22% of the weighting, alongside mortality, safety and patient experience). A visible star can move with readmission performance.
+3. **Payer contract risk.**
+   * Medicare Advantage and commercial **value-based contracts** commonly tie quality withholds, shared savings or network tiering to readmission performance.
+   * **Bundled-payment** episodes, for example heart failure in CMS BPCI Advanced, put the hospital at financial risk for readmissions after discharge.
+   * A worse ratio weakens Cedarbrook's position at the next contract negotiation.
+4. **Referral volume and competitive position.**
+   * Heart failure is a high-volume cardiology service line.
+   * ACOs, cardiology groups and post-acute partners increasingly steer patients to hospitals with better published outcomes, which means competing regional systems with better rates win referrals.
+
+**Illustrative exposure (assumption: validate with Cedarbrook strategy and managed care):**
+* A **2% quality withhold** on a **$20M** value-based contract is **$400K** at risk each year, on top of the HRRP penalty.
+* Losing **5%** of heart-failure referrals to a better-rated competitor reduces volume on the hospital's busiest cardiology line.
+
+**Role lines (on the slide):**
+* **For Dr. Vasquez (VP of Quality):** "Your ERR is what patients, payers and the star rating see. 1.19 → 1.14 is a public story, not just a penalty."
+* **For Jordan (CFO):** "The penalty is the floor of the exposure. Payer withholds and contract terms sit on top of it, and they're negotiated on this same number."
+* **For the CEO and board** (the strategic audience): "Heart-failure outcomes decide where referrals and value-based contracts go. Fixing weekend follow-up protects market share, not just margin."
+
+**Visual:** a "ripple" diagram, with HF ERR at the center and four rings: Care Compare → star rating → payer contracts → referrals and market share.
+**Source:** CMS Care Compare and Overall Hospital Star Rating methodology (public); the illustrative exposure is an **[assumption]**.
+**Speaker note:** don't claim a specific star change. Say "readmission performance is one of five star-rating groups, and it's visible".
+
+---
+
+## Slide 6 · A peak nobody saw coming (Beat 2)
 
 **Headline:** *One unit's heart-failure readmissions jumped 9 points, and it was found out months too late*
 
@@ -138,7 +169,7 @@ Bottom line: *"All four numbers move with one action: a 7-day follow-up booked b
 
 ---
 
-## Slide 6 · Why Cedarbrook couldn't solve it before (Beat 2b)
+## Slide 7 · Why Cedarbrook couldn't solve it before (Beat 2b)
 
 **Headline:** *The answer was in the data, but discharges, predictions and follow-ups never met*
 
@@ -158,7 +189,7 @@ Bottom line: *"All four numbers move with one action: a 7-day follow-up booked b
 
 ---
 
-## Slide 7 · Unified data makes the root cause obvious (Beat 3)
+## Slide 8 · Unified data makes the root cause obvious (Beat 3)
 
 **Headline:** *Unify discharges, predictions and follow-ups, and the root cause appears: no 7-day follow-up, especially on weekends*
 
@@ -174,7 +205,7 @@ Callout: *"Not a clinical mystery: a missing follow-up appointment, a process ga
 
 ---
 
-## Slide 8 · What fixing it is worth, by role (Beat 5, before the solution)
+## Slide 9 · What fixing it is worth, by role (Beat 5, before the solution)
 
 **Headline:** *Every 10 points of weekend follow-up on 6 North is worth ~$120K in avoided penalty*
 
@@ -191,13 +222,18 @@ Scaled: CUMC weekend HF (all units) **~$412K** · all CUMC HF **~$874K**.
 * **For Dr. Vasquez (VP of Quality):** "HF ERR 1.19 → 1.14, toward the 1.00 benchmark."
 * **For Priya (Manager of Transitional Care):** "54 high-risk patients in the window today; 41 have no follow-up. Booking those is how weekend follow-up gets from 18% to 80%."
 
+**Beyond the penalty (strategic value, illustrative [assumption]):**
+* **Contracts:** protects value-based contract terms. A 2% quality withhold on a $20M contract is $400K a year at risk.
+* **Stars and Care Compare:** moves the publicly reported HF readmission performance in the right direction.
+* **Referrals:** defends heart-failure referral share against better-rated regional competitors.
+
 **Speaker note:** savings rise unevenly because CUMC is above the 3% cap (uncapped $1.68M), so the first ~$60K is absorbed by the cap.
 **Visual:** a what-if slider screenshot plus a small bar of the three scopes.
 **Source:** `gold.hrrp_whatif`, `gold.discharge_worklist`, `evidence/app_api_responses/08_whatif_6n_weekend.json`.
 
 ---
 
-## Slide 9 · The solution (Beat 4)
+## Slide 10 · The solution (Beat 4)
 
 **Headline:** *One platform that sees the peak, explains it, acts on every discharge, and learns from every nurse*
 
@@ -222,7 +258,7 @@ Six steps:
 
 ---
 
-## Slide 10 · One patient, one platform (the integrated journey)
+## Slide 11 · One patient, one platform (the integrated journey)
 
 **Headline:** *A Friday discharge, from raw record to an RN-approved plan, and back into the model*
 
@@ -241,7 +277,7 @@ Closing line: *"The discharge, its prediction and its follow-up finally live tog
 
 ---
 
-## Slide 11 · How Databricks solves each challenge (§4b)
+## Slide 12 · How Databricks solves each challenge (§4b)
 
 **Headline:** *Every reason Cedarbrook couldn't solve this has a direct answer on one platform*
 
@@ -260,7 +296,7 @@ Closing line: *"The discharge, its prediction and its follow-up finally live tog
 
 ---
 
-## Slide 12 · Demo: what you're about to see (tell)
+## Slide 13 · Demo: what you're about to see (tell)
 
 **Headline:** *Five stops: from the peak, to a briefed patient, to an approved plan, to the dollars*
 
@@ -274,7 +310,7 @@ Closing line: *"The discharge, its prediction and its follow-up finally live tog
 
 ---
 
-## Slide 13 · What the demo means, by role (tell back)
+## Slide 14 · What the demo means, by role (tell back)
 
 **Headline:** *Insight → action → dollars, in one workflow that learns*
 
@@ -287,7 +323,7 @@ Closing line: *"The discharge, its prediction and its follow-up finally live tog
 
 ---
 
-## Slide 14 · Trust, quality gates and trade-offs (Beat 6, §8)
+## Slide 15 · Trust, quality gates and trade-offs (Beat 6, §8)
 
 **Headline:** *Built to be trusted, measured every run, and honest about its limits*
 
@@ -307,7 +343,7 @@ Limits stated: the feedback loop has only 3 reviewed plans so far; real-time sco
 
 ---
 
-## Slide 15 · 90-day pilot and the ask, by role (Beat 7)
+## Slide 16 · 90-day pilot and the ask, by role (Beat 7)
 
 **Headline:** *A 90-day pilot on 6 North proves the $240K before scaling hospital-wide*
 
@@ -324,6 +360,8 @@ Limits stated: the feedback loop has only 3 reviewed plans so far; real-time sco
 | **Dr. Elena Vasquez, VP of Quality** | 6 North HF readmissions toward ~15%; the ERR trend | Executive sponsor; chair the weekly KPI review |
 | **Priya Raman, Manager of Transitional Care** | weekend follow-up ≥ 80%; ≥ 90% of high-risk contacted ≤ 48h | A 6 North nurse champion |
 | **Kenji Tanaka, CDAO** | feeds connected; quality gates green | Data access and an Epic integration contact |
+
+**For the CEO and board:** the pilot's weekly scorecard includes the publicly reported HF readmission trend, so the market-facing story is measured, not assumed.
 
 Close: *"What would you need to see to move forward?"*
 
@@ -357,6 +395,7 @@ Close: *"What would you need to see to move forward?"*
 ## Appendix D · Assumptions and simplifications
 * ERR = observed / expected, 12 months, all payers, neutrality modifier 1.0. CMS uses 3 years, risk adjustment and Medicare FFS only.
 * The what-if assumes the follow-up effect is causal. The ~$60K/yr weekend follow-up capacity is illustrative.
+* The strategic exposure (a 2% withhold on a $20M value-based contract = $400K; referral share) is illustrative. Star-rating and Care Compare facts are CMS program facts; no specific star change is claimed.
 * Real-time scoring at discharge is the production design. The feedback loop has 3 reviewed plans so far.
 * All patient data is synthetic.
 

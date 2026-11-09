@@ -43,6 +43,13 @@ talking under executive pressure: lead with *their* number, not the platform.
 | **Priya Raman, RN, Manager of Transitional Care** (domain owner) | **7-day follow-up booked at discharge %**, **high-risk patients contacted within 48h %**, nurse time per patient | Weekend 7-day follow-up **18%** (vs 69% weekdays); **54** high-risk patients in the window, **41** with no follow-up | Weekend follow-up **≥ 80%**; **≥ 90%** of high-risk patients contacted within 48h | Worklist with a readmission prediction and an **AI nurse briefing** per patient; AI-drafted plan the RN approves; outreach tasks created automatically | *"Your team starts each shift with a short briefing on who to call and why, and the care plan is already drafted for you to approve."* |
 | **Kenji Tanaka, Chief Data & Analytics Officer** (technical stakeholder) | Integration cost, PHI risk, time-to-insight, platform sprawl | 5 siloed sources, multiple PHI copies, monthly manual analysis **[scenario]** | One governed copy; incremental refresh in **~2 min**; AI cost scales with *new* notes | Lakeflow + Unity Catalog + Lakebase + Apps in one bundle; role-based masks; LLM-judge quality gates | *"One governed copy of the data from raw extract to app, deployed as code, with quality checks that run every time."* |
 
+**External (market) consequence of each number:**
+* **Jordan:** payer contract withholds and bundled-payment risk ride on the same readmission record.
+* **Dr. Vasquez:** the HF readmission rate is published on Care Compare and feeds the star rating.
+* **Priya:** better transitions protect post-acute partner and cardiology referral relationships.
+* **Kenji:** trusted, auditable numbers for public reporting and payer negotiations.
+* **The CEO and board** own the sum: market share in a high-volume cardiology line.
+
 **Reading the room:** answer the person who asked with *their* number, then bridge in one sentence to the person who funds it.
 * Jordan (CFO) asks about AI risk → "Every AI output is reviewed by an RN and audited; your exposure is the penalty, not the AI."
 * Priya (Transitional Care) asks about workload → "It removes drafting time; Jordan (CFO) sees each booked follow-up as dollars."
@@ -65,6 +72,16 @@ The arc **opens with the outcome in the CFO's and Quality's numbers**, then earn
 * Cedarbrook Health: 3 hospitals. Flagship CUMC has 538 beds.
 * CMS **HRRP** cuts payments on *all* Medicare discharges, by up to 3%, when readmissions exceed expected. A unit-level problem becomes a hospital-wide payment cut, and a publicly reported quality metric.
 * CUMC's estimated penalty is **$1.62M**, already at the 3% cap. Heart failure is the largest line at **$1.14M**, **ERR 1.19**. This is Jordan's (CFO) and Dr. Vasquez's (VP of Quality) shared problem.
+
+### Beat 1b: Beyond the penalty (strategic stakes: why the ERR is a market number)
+* The HF readmission performance behind the ERR is **published on CMS Care Compare** against the national rate, and readmission is **one of five measure groups (22%) in the CMS Overall Hospital Star Rating**.
+* **Payer contracts:** value-based (Medicare Advantage and commercial) contracts tie withholds, shared savings and network tiering to readmission performance. Bundled heart-failure episodes put the hospital at risk after discharge.
+* **Referrals and competition:** ACOs, cardiology groups and post-acute partners steer heart-failure patients to hospitals with better published outcomes, so competing regional systems win share.
+* Illustrative **[assumption]**: a 2% quality withhold on a $20M value-based contract = **$400K/yr** at risk, on top of HRRP.
+* Lines:
+  * **Dr. Vasquez:** "your ERR is public"
+  * **Jordan:** "the penalty is the floor of the exposure"
+  * **CEO and board:** "this protects market share, not just margin"
 
 ### Beat 2: Complication (a peak nobody saw coming, and nobody could explain)
 * One unit's HF readmissions went **14.8% → 23.9%** in 20 weeks. **Every other unit stayed within ~1.5 pts.**
@@ -284,6 +301,7 @@ Full answers: `docs/talk_track.md` §8.
 * [x] Quantifies impact in the buyer's KPIs, **each tied to its accountable role** (§2 accountability map)
 * [x] Frames value for the executive sponsor (**Jordan Whitfield, CFO**) *and* the domain owner (**Priya Raman, Manager of Transitional Care**) explicitly, plus **Dr. Elena Vasquez (VP of Quality)** and **Kenji Tanaka (CDAO)**
 * [x] The deck's text is extractable: `docs/deck.md` is the deck as plain text, with a "For Jordan (CFO) / For Dr. Vasquez (VP of Quality) / For Priya (Transitional Care Manager)" line on every value slide
+* [x] Executive pressure is **strategic, not only financial**: the ERR is linked to Care Compare, star ratings, payer contract risk and referral volume (Beat 1b; walkthrough slide 5)
 * [x] Architecture after value
 
 **Role-play**
