@@ -73,7 +73,7 @@ SELECT
   coalesce(sig.ai_lives_alone, false) AS ai_lives_alone,
   coalesce(sig.ai_transport_barrier, false) AS ai_transport_barrier,
   sig.ai_followup_status, sig.ai_evidence,
-  (s.next_admit_ts > s.discharge_ts AND s.next_admit_ts <= s.discharge_ts + INTERVAL 30 DAYS) AS readmit_30d,
+  coalesce(s.next_admit_ts > s.discharge_ts AND s.next_admit_ts <= s.discharge_ts + INTERVAL 30 DAYS, false) AS readmit_30d,
   CASE WHEN s.next_admit_ts > s.discharge_ts AND s.next_admit_ts <= s.discharge_ts + INTERVAL 30 DAYS
        THEN s.next_encounter_id END AS readmit_encounter_id,
   CASE WHEN s.next_admit_ts > s.discharge_ts AND s.next_admit_ts <= s.discharge_ts + INTERVAL 30 DAYS

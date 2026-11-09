@@ -1,0 +1,845 @@
+{
+  "datasets": [
+    {
+      "name": "ds_kpi",
+      "displayName": "ds_kpi",
+      "queryLines": [
+        "SELECT h.estimated_penalty, h.largest_condition_contribution AS hf_line, h.largest_condition_err AS hf_err,\n  u.last_20w_rate_pct AS sixn_last20, u.prior_20w_rate_pct AS sixn_prior20\nFROM cedarbrook_rcc.gold.hrrp_hospital_penalty h CROSS JOIN cedarbrook_rcc.gold.unit_period_summary u\nWHERE h.hospital_id = 'CUMC' AND u.unit_id = 'CUMC-6N' AND u.condition = 'HF'"
+      ]
+    },
+    {
+      "name": "ds_units",
+      "displayName": "ds_units",
+      "queryLines": [
+        "SELECT concat(unit_name, ' (', hospital_id, ')') AS unit, delta_pts, prior_20w_rate_pct, last_20w_rate_pct FROM cedarbrook_rcc.gold.unit_period_summary WHERE condition = 'ALL'"
+      ]
+    },
+    {
+      "name": "ds_weekly",
+      "displayName": "ds_weekly",
+      "queryLines": [
+        "SELECT discharge_week, CASE WHEN unit_id = 'CUMC-6N' THEN '6 North Telemetry' ELSE 'All other units' END AS unit_group,\n  sum(readmissions) AS readmissions, sum(index_admissions) AS index_admissions,\n  round(100 * sum(readmissions) / sum(index_admissions), 1) AS readmit_rate_pct\nFROM cedarbrook_rcc.gold.unit_weekly_readmissions WHERE condition = 'HF' AND discharge_week >= '2025-12-29' GROUP BY ALL"
+      ]
+    },
+    {
+      "name": "ds_gap",
+      "displayName": "ds_gap",
+      "queryLines": [
+        "SELECT discharge_day_type, period, fu7_booked_pct, discharges FROM cedarbrook_rcc.gold.followup_gap WHERE unit_id = 'CUMC-6N' AND condition = 'HF'"
+      ]
+    },
+    {
+      "name": "ds_penalty",
+      "displayName": "ds_penalty",
+      "queryLines": [
+        "SELECT hospital_id, hrrp_condition, err, penalty_contribution, observed_rate, expected_readmission_rate, index_admissions, readmissions FROM cedarbrook_rcc.gold.hrrp_condition_err"
+      ]
+    },
+    {
+      "name": "ds_whatif",
+      "displayName": "ds_whatif",
+      "queryLines": [
+        "SELECT fu7_target_pct, readmissions_avoided, penalty_saved, hf_err_scenario FROM cedarbrook_rcc.gold.hrrp_whatif WHERE scope = '6N weekend HF'"
+      ]
+    },
+    {
+      "name": "ds_factors",
+      "displayName": "ds_factors",
+      "queryLines": [
+        "SELECT concat(factor, ' = ', value) AS factor_value, readmit_rate_pct, index_admissions\nFROM cedarbrook_rcc.gold.readmission_risk_factors WHERE condition = 'HF' AND factor IN ('fu7_booked', 'ai_lives_alone', 'ai_transport_barrier')"
+      ]
+    },
+    {
+      "name": "ds_tiers",
+      "displayName": "ds_tiers",
+      "queryLines": [
+        "SELECT risk_tier, count(*) AS index_admissions, round(100 * avg(CAST(readmit_30d AS INT)), 1) AS observed_readmit_pct\nFROM cedarbrook_rcc.gold.patient_risk_scores WHERE outcome_complete GROUP BY risk_tier"
+      ]
+    },
+    {
+      "name": "ds_whatif80",
+      "displayName": "ds_whatif80",
+      "queryLines": [
+        "SELECT fu7_target_pct, readmissions_avoided, penalty_saved, hf_err_scenario FROM cedarbrook_rcc.gold.hrrp_whatif WHERE scope = '6N weekend HF' AND fu7_target_pct = 80"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "overview",
+      "displayName": "Readmissions & HRRP",
+      "layout": [
+        {
+          "widget": {
+            "name": "hdr",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Readmissions & HRRP: Cedarbrook Health (synthetic)\n",
+                "6 North heart-failure readmissions rose after the unit lost its weekend transitions pharmacist (2026-06-19) and the HF Bridge Clinic stopped offering Friday afternoon slots (2026-06-26). Weekend discharges now leave without a booked 7-day follow-up. Heart failure is the largest line of CUMC's HRRP penalty."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "k1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi",
+                  "fields": [
+                    {
+                      "name": "estimated_penalty",
+                      "expression": "`estimated_penalty`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "estimated_penalty",
+                  "displayName": "CUMC est. HRRP penalty ($, 3% cap)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "CUMC est. HRRP penalty ($, 3% cap)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "k2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi",
+                  "fields": [
+                    {
+                      "name": "hf_line",
+                      "expression": "`hf_line`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "hf_line",
+                  "displayName": "Heart-failure penalty line ($)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Heart-failure penalty line ($)"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "k3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi",
+                  "fields": [
+                    {
+                      "name": "hf_err",
+                      "expression": "`hf_err`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "hf_err",
+                  "displayName": "CUMC HF excess readmission ratio"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "CUMC HF excess readmission ratio"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "k4",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi",
+                  "fields": [
+                    {
+                      "name": "sixn_prior20",
+                      "expression": "`sixn_prior20`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sixn_prior20",
+                  "displayName": "6N HF readmit %, prior 20 weeks"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "6N HF readmit %, prior 20 weeks"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "k5",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_kpi",
+                  "fields": [
+                    {
+                      "name": "sixn_last20",
+                      "expression": "`sixn_last20`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sixn_last20",
+                  "displayName": "6N HF readmit %, last 20 weeks"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "6N HF readmit %, last 20 weeks"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "k6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_whatif80",
+                  "fields": [
+                    {
+                      "name": "penalty_saved",
+                      "expression": "`penalty_saved`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "penalty_saved",
+                  "displayName": "Saved at 80% weekend follow-up ($)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Penalty saved if 6N books 80% of weekend HF follow-ups ($)"
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "c_weekly",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_weekly",
+                  "fields": [
+                    {
+                      "name": "discharge_week",
+                      "expression": "`discharge_week`"
+                    },
+                    {
+                      "name": "readmit_rate_pct",
+                      "expression": "`readmit_rate_pct`"
+                    },
+                    {
+                      "name": "unit_group",
+                      "expression": "`unit_group`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "discharge_week",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "discharge_week"
+                },
+                "y": {
+                  "fieldName": "readmit_rate_pct",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "readmit_rate_pct"
+                },
+                "color": {
+                  "fieldName": "unit_group",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "unit_group"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Weekly HF 30-day readmission rate: 6 North vs all other units"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "c_gap",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_gap",
+                  "fields": [
+                    {
+                      "name": "period",
+                      "expression": "`period`"
+                    },
+                    {
+                      "name": "fu7_booked_pct",
+                      "expression": "`fu7_booked_pct`"
+                    },
+                    {
+                      "name": "discharge_day_type",
+                      "expression": "`discharge_day_type`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "period",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "period"
+                },
+                "y": {
+                  "fieldName": "fu7_booked_pct",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "fu7_booked_pct"
+                },
+                "color": {
+                  "fieldName": "discharge_day_type",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "discharge_day_type"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "6 North HF: % discharged with a booked 7-day follow-up"
+              },
+              "mark": {
+                "layout": "group"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 3,
+            "width": 2,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "c_units",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_units",
+                  "fields": [
+                    {
+                      "name": "unit",
+                      "expression": "`unit`"
+                    },
+                    {
+                      "name": "delta_pts",
+                      "expression": "`delta_pts`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "unit",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "unit"
+                },
+                "y": {
+                  "fieldName": "delta_pts",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "delta_pts"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Change in all-cause readmission rate, last 20 vs prior 20 weeks (pts)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c_pen",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_penalty",
+                  "fields": [
+                    {
+                      "name": "hrrp_condition",
+                      "expression": "`hrrp_condition`"
+                    },
+                    {
+                      "name": "penalty_contribution",
+                      "expression": "`penalty_contribution`"
+                    },
+                    {
+                      "name": "hospital_id",
+                      "expression": "`hospital_id`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "hrrp_condition",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "hrrp_condition"
+                },
+                "y": {
+                  "fieldName": "penalty_contribution",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "penalty_contribution"
+                },
+                "color": {
+                  "fieldName": "hospital_id",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "hospital_id"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "HRRP penalty contribution by condition ($)"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 8,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c_whatif",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_whatif",
+                  "fields": [
+                    {
+                      "name": "fu7_target_pct",
+                      "expression": "`fu7_target_pct`"
+                    },
+                    {
+                      "name": "penalty_saved",
+                      "expression": "`penalty_saved`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "fu7_target_pct",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "fu7_target_pct"
+                },
+                "y": {
+                  "fieldName": "penalty_saved",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "penalty_saved"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "What-if: penalty saved vs 6N weekend follow-up booking target (%)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "c_factors",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_factors",
+                  "fields": [
+                    {
+                      "name": "factor_value",
+                      "expression": "`factor_value`"
+                    },
+                    {
+                      "name": "readmit_rate_pct",
+                      "expression": "`readmit_rate_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "factor_value",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "factor_value"
+                },
+                "y": {
+                  "fieldName": "readmit_rate_pct",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "readmit_rate_pct"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "HF 30-day readmission % by risk factor (trailing 12m; AI = from note text)"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 14,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "c_tiers",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_tiers",
+                  "fields": [
+                    {
+                      "name": "risk_tier",
+                      "expression": "`risk_tier`"
+                    },
+                    {
+                      "name": "observed_readmit_pct",
+                      "expression": "`observed_readmit_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "risk_tier",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "risk_tier"
+                },
+                "y": {
+                  "fieldName": "observed_readmit_pct",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "observed_readmit_pct"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Model risk tier vs observed readmission %"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 19,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "t_err",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_penalty",
+                  "fields": [
+                    {
+                      "name": "hospital_id",
+                      "expression": "`hospital_id`"
+                    },
+                    {
+                      "name": "hrrp_condition",
+                      "expression": "`hrrp_condition`"
+                    },
+                    {
+                      "name": "index_admissions",
+                      "expression": "`index_admissions`"
+                    },
+                    {
+                      "name": "readmissions",
+                      "expression": "`readmissions`"
+                    },
+                    {
+                      "name": "observed_rate",
+                      "expression": "`observed_rate`"
+                    },
+                    {
+                      "name": "expected_readmission_rate",
+                      "expression": "`expected_readmission_rate`"
+                    },
+                    {
+                      "name": "err",
+                      "expression": "`err`"
+                    },
+                    {
+                      "name": "penalty_contribution",
+                      "expression": "`penalty_contribution`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "hospital_id",
+                    "displayName": "hospital_id"
+                  },
+                  {
+                    "fieldName": "hrrp_condition",
+                    "displayName": "hrrp_condition"
+                  },
+                  {
+                    "fieldName": "index_admissions",
+                    "displayName": "index_admissions"
+                  },
+                  {
+                    "fieldName": "readmissions",
+                    "displayName": "readmissions"
+                  },
+                  {
+                    "fieldName": "observed_rate",
+                    "displayName": "observed_rate"
+                  },
+                  {
+                    "fieldName": "expected_readmission_rate",
+                    "displayName": "expected_readmission_rate"
+                  },
+                  {
+                    "fieldName": "err",
+                    "displayName": "err"
+                  },
+                  {
+                    "fieldName": "penalty_contribution",
+                    "displayName": "penalty_contribution"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Excess readmission ratio by hospital and condition"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 19,
+            "width": 3,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ]
+}

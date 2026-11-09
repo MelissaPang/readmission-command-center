@@ -61,11 +61,12 @@ COMMENT 'Row filter: principals see patient-level rows only for hospitals in the
 RETURN EXISTS (SELECT 1 FROM {catalog}.gold.rcc_user_entitlements e
                WHERE e.principal = current_user() AND (e.hospital_scope = '*' OR e.hospital_scope = hid))
 """)
-display(spark.sql(f"SHOW USER FUNCTIONS IN {catalog}.gold"))
+spark.sql(f"USE CATALOG {catalog}")
+display(spark.sql("SHOW USER FUNCTIONS IN gold"))
 
 # COMMAND ----------
 
-spark.sql(f"ALTER CATALOG {catalog} SET TAGS ('data_classification' = 'synthetic_phi', 'owner_team' = 'care_transitions_analytics', 'project' = 'readmission_command_center')")
+spark.sql(f"ALTER CATALOG {catalog} SET TAGS ('data_classification' = 'RESTRICTED', 'rcc_synthetic_data' = 'true', 'rcc_owner_team' = 'care_transitions_analytics', 'rcc_solution' = 'readmission_command_center')")
 for s, tier in [("raw", "landing"), ("bronze", "bronze"), ("silver", "silver"), ("gold", "gold"), ("ml", "ml")]:
-    spark.sql(f"ALTER SCHEMA {catalog}.{s} SET TAGS ('medallion_tier' = '{tier}')")
+    spark.sql(f"ALTER SCHEMA {catalog}.{s} SET TAGS ('rcc_medallion_tier' = '{tier}')")
 display(spark.sql(f"SELECT schema_name, tag_name, tag_value FROM {catalog}.information_schema.schema_tags ORDER BY schema_name"))

@@ -486,6 +486,12 @@ def generate(seed: int = SEED) -> Generated:
     ra = ra[observed].copy()
     ra_los = np.clip(rng.gamma(2.0, 2.0, len(ra)), 1, 15).round().astype(int)
     ra["discharge_ts"] = ra.admit_ts + pd.to_timedelta(ra_los, unit="D")
+    # nothing in the extract can be discharged after the extract date
+    late = ra.discharge_ts > AS_OF
+    ra.loc[late, "discharge_ts"] = ra.loc[late, "admit_ts"].where(
+        ra.loc[late, "admit_ts"] > AS_OF - pd.Timedelta(hours=2), AS_OF - pd.Timedelta(hours=1))
+    ra.loc[late, "discharge_ts"] = ra.loc[late, ["admit_ts", "discharge_ts"]].max(axis=1)
+    ra_los = (ra.discharge_ts.dt.normalize() - ra.admit_ts.dt.normalize()).dt.days.to_numpy()
     ra["los_days"] = ra_los
     ra["index_encounter_id"] = ra.encounter_id
     ra["encounter_id"] = [f"E{3000000 + i}" for i in range(len(ra))]

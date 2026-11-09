@@ -82,7 +82,7 @@ resources:
           depends_on: [{task_key: uc_governance}]
           pipeline_task:
             pipeline_id: ${resources.pipelines.rcc_pipeline.id}
-            full_refresh: true
+            full_refresh: false
         - task_key: ai_note_signals_eval
           depends_on: [{task_key: lakeflow_pipeline}]
           notebook_task:
@@ -111,3 +111,10 @@ resources:
           depends_on: [{task_key: lakebase_sync}, {task_key: genie_space}, {task_key: ai_note_signals_eval}]
           notebook_task:
             notebook_path: ../notebooks/99_validate_story.py
+
+  dashboards:
+    readmissions_hrrp_executive:
+      display_name: Readmissions & HRRP Executive (Cedarbrook Health)
+      file_path: ../dashboards/readmissions_hrrp_executive.lvdash.json
+      warehouse_id: ${var.warehouse_id}
+      embed_credentials: false
