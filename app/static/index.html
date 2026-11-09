@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Readmission Command Center · Cedarbrook Health</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">CH</div>
+      <div>
+        <div class="title">Readmission Command Center</div>
+        <div class="subtitle">Cedarbrook Health · 30-day readmissions &amp; CMS HRRP · synthetic data</div>
+      </div>
+    </div>
+    <nav id="tabs">
+      <button data-tab="trends" class="active">Unit Trends</button>
+      <button data-tab="worklist">Discharge Worklist</button>
+      <button data-tab="hrrp">HRRP &amp; What-if</button>
+      <button data-tab="outreach">Outreach Queue</button>
+      <button data-tab="genie">Ask Genie</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- UNIT TRENDS -->
+    <section id="trends" class="tab active">
+      <div class="kpis" id="trend-kpis"></div>
+      <div class="grid2">
+        <div class="card">
+          <h3>6 North Telemetry · weekly HF 30-day readmission rate</h3>
+          <p class="hint">Index admissions with a complete 30-day window. Dashed lines mark operational changes.</p>
+          <canvas id="weeklyChart" height="150"></canvas>
+        </div>
+        <div class="card">
+          <h3>7-day follow-up booked at discharge · 6 North HF</h3>
+          <p class="hint">Weekend = Fri–Sun. Since 2026-06-19 the weekend transitions pharmacist is gone and the HF Bridge Clinic stopped offering Friday afternoon slots.</p>
+          <canvas id="gapChart" height="150"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Readmission rate by unit · prior 20 weeks vs last 20 weeks</h3>
+        <div class="row">
+          <label>Condition <select id="unitCond"><option value="ALL">All-cause</option><option value="HF" selected>Heart failure</option></select></label>
+        </div>
+        <table id="unitTable"></table>
+      </div>
+    </section>
+
+    <!-- WORKLIST -->
+    <section id="worklist" class="tab">
+      <div class="card">
+        <div class="row">
+          <h3 style="margin:0">Patients inside their 30-day window, ranked by risk</h3>
+          <span class="spacer"></span>
+          <label>Hospital <select id="wlHospital"><option value="">All</option><option>CUMC</option><option>FCH</option><option>PHMC</option></select></label>
+          <label>Unit <select id="wlUnit"><option value="">All</option></select></label>
+          <label>Tier <select id="wlTier"><option value="">All</option><option>High</option><option>Medium</option><option>Low</option></select></label>
+          <label><input type="checkbox" id="wlNoFu" /> No 7-day follow-up</label>
+        </div>
+        <table id="wlTable"></table>
+      </div>
+    </section>
+
+    <!-- HRRP -->
+    <section id="hrrp" class="tab">
+      <div class="kpis" id="hrrp-kpis"></div>
+      <div class="grid2">
+        <div class="card">
+          <h3>What-if: book a 7-day follow-up for more weekend HF discharges</h3>
+          <div class="row">
+            <label>Scope <select id="wiScope">
+              <option>6N weekend HF</option><option>CUMC weekend HF (all units)</option><option>CUMC all HF discharges</option></select></label>
+          </div>
+          <div class="slider">
+            <input type="range" id="wiTarget" min="40" max="100" step="5" value="80" />
+            <span id="wiTargetLbl">80%</span>
+          </div>
+          <div class="kpis small" id="wi-kpis"></div>
+          <p class="hint" id="wiMethod"></p>
+        </div>
+        <div class="card">
+          <h3>CUMC penalty contribution by condition</h3>
+          <canvas id="penaltyChart" height="170"></canvas>
+        </div>
+      </div>
+      <div class="card"><h3>Excess readmission ratio by hospital &amp; condition</h3><table id="errTable"></table></div>
+    </section>
+
+    <!-- OUTREACH -->
+    <section id="outreach" class="tab">
+      <div class="card">
+        <h3>Outreach queue (from approved transition plans)</h3>
+        <table id="taskTable"></table>
+      </div>
+    </section>
+
+    <!-- GENIE -->
+    <section id="genie" class="tab">
+      <div class="card">
+        <h3>Ask Genie · Readmission &amp; HRRP Analyst</h3>
+        <div class="chips" id="genieChips"></div>
+        <div id="chat"></div>
+        <form id="genieForm" class="row">
+          <input id="genieQ" placeholder="Ask a question about readmissions, follow-up or HRRP..." autocomplete="off" />
+          <button type="submit">Ask</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- PATIENT DRAWER -->
+  <aside id="drawer" class="hidden">
+    <button class="close" id="drawerClose">×</button>
+    <div id="drawerBody"></div>
+  </aside>
+
+  <footer>Synthetic data only, no real patients. Lakeflow · Unity Catalog · Lakebase · MLflow · AI Functions · Genie · Databricks Apps</footer>
+  <script src="/static/app.js"></script>
+</body>
+</html>

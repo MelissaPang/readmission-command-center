@@ -1,0 +1,113 @@
+resources:
+  schemas:
+    raw:
+      catalog_name: ${var.catalog}
+      name: raw
+      comment: Landing zone (UC volumes) for raw synthetic EHR extracts
+    bronze:
+      catalog_name: ${var.catalog}
+      name: bronze
+      comment: Raw ingested tables (Lakeflow / Auto Loader)
+    silver:
+      catalog_name: ${var.catalog}
+      name: silver
+      comment: Cleaned, conformed, AI-enriched tables
+    gold:
+      catalog_name: ${var.catalog}
+      name: gold
+      comment: Readmission facts, HRRP penalty, risk scores, governance functions
+    ml:
+      catalog_name: ${var.catalog}
+      name: ml
+      comment: Registered models (UC model registry)
+
+  volumes:
+    landing:
+      catalog_name: ${var.catalog}
+      schema_name: ${resources.schemas.raw.name}
+      name: landing
+      comment: Raw extracts landed by the synthetic EHR generator
+    ground_truth:
+      catalog_name: ${var.catalog}
+      schema_name: ${resources.schemas.raw.name}
+      name: ground_truth
+      comment: Generator ground truth, used only to score AI extraction accuracy (never read by the pipeline)
+
+  pipelines:
+    rcc_pipeline:
+      name: rcc_pipeline
+      catalog: ${var.catalog}
+      schema: gold
+      serverless: true
+      channel: PREVIEW
+      photon: true
+      development: false
+      libraries:
+        - file:
+            path: ../pipelines/01_bronze.sql
+        - file:
+            path: ../pipelines/02_silver.sql
+        - file:
+            path: ../pipelines/03_gold.sql
+      configuration:
+        catalog: ${var.catalog}
+        landing: /Volumes/${var.catalog}/raw/landing
+        extraction_endpoint: ${var.extraction_endpoint}
+
+  jobs:
+    rcc_end_to_end:
+      name: rcc_end_to_end
+      description: Readmission Command Center end-to-end build (generate -> govern -> Lakeflow -> ML -> HRRP what-if -> Lakebase -> Genie -> validate)
+      max_concurrent_runs: 1
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: warehouse_id
+          default: ${var.warehouse_id}
+        - name: lakebase_instance
+          default: ${var.lakebase_instance}
+        - name: lakebase_database
+          default: ${var.lakebase_database}
+        - name: assistant_endpoint
+          default: ${var.assistant_endpoint}
+      tasks:
+        - task_key: generate_data
+          notebook_task:
+            notebook_path: ../notebooks/00_generate_synthetic_data.py
+        - task_key: uc_governance
+          depends_on: [{task_key: generate_data}]
+          notebook_task:
+            notebook_path: ../notebooks/01_uc_governance.py
+        - task_key: lakeflow_pipeline
+          depends_on: [{task_key: uc_governance}]
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.rcc_pipeline.id}
+            full_refresh: true
+        - task_key: ai_note_signals_eval
+          depends_on: [{task_key: lakeflow_pipeline}]
+          notebook_task:
+            notebook_path: ../notebooks/02_ai_note_signals_eval.py
+        - task_key: train_model
+          depends_on: [{task_key: lakeflow_pipeline}]
+          notebook_task:
+            notebook_path: ../notebooks/03_train_readmission_model.py
+        - task_key: batch_score
+          depends_on: [{task_key: train_model}]
+          notebook_task:
+            notebook_path: ../notebooks/04_batch_score.py
+        - task_key: hrrp_whatif
+          depends_on: [{task_key: lakeflow_pipeline}]
+          notebook_task:
+            notebook_path: ../notebooks/05_hrrp_whatif.py
+        - task_key: lakebase_sync
+          depends_on: [{task_key: batch_score}, {task_key: hrrp_whatif}]
+          notebook_task:
+            notebook_path: ../notebooks/07_lakebase_setup_and_sync.py
+        - task_key: genie_space
+          depends_on: [{task_key: batch_score}, {task_key: hrrp_whatif}]
+          notebook_task:
+            notebook_path: ../notebooks/06_genie_space.py
+        - task_key: validate_story
+          depends_on: [{task_key: lakebase_sync}, {task_key: genie_space}, {task_key: ai_note_signals_eval}]
+          notebook_task:
+            notebook_path: ../notebooks/99_validate_story.py
