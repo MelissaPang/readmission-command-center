@@ -27,10 +27,27 @@ What the data shows (every number below is recomputed from the gold tables and c
 **Personas:** Priya Raman, RN, Manager of Transitional Care, the app's main user, who approves the transition plans; transitional-care
 nurses and CHWs, who work the outreach queue; the Revenue Integrity & Quality team, who use the HRRP page, the dashboard and Genie.
 
+## Industry context: why this matters to a health system
+
+* **The CMS Hospital Readmissions Reduction Program (HRRP)** (ACA §3025, penalties since FY2013) cuts a hospital's base operating
+  DRG payments for **all** Medicare fee-for-service discharges, by up to **3%**, when its 30-day readmissions exceed expected for
+  six cohorts: AMI, heart failure, pneumonia, COPD, CABG and elective hip/knee replacement. CMS compares hospitals within peer groups
+  (by dual-eligible share) over a 3-year performance period. A unit-level problem therefore becomes a hospital-wide payment cut.
+* **Heart failure** is among the most readmitted cohorts: roughly one in five HF patients is readmitted within 30 days nationally.
+  An early outpatient visit is one of the most consistently cited levers.
+* **The 7-day follow-up** matches how care transitions are reimbursed. Transitional Care Management (CPT 99496) expects contact
+  within 2 business days and a face-to-face visit within 7 days for high-complexity discharges. So the KPI the app drives (7-day follow-up
+  booked before discharge) is one care-transitions teams already own.
+* **The buyer's KPIs** used throughout: HRRP penalty $, excess readmission ratio (ERR), HF 30-day readmission rate, 7-day follow-up rate,
+  % of high-risk patients contacted within 48h.
+* The prototype simplifies the CMS method (12 months, all payers, observed/expected; see *Simplifications*), and says so wherever it matters.
+
 ## Presentation materials
 
 * [`docs/deck_walkthrough.md`](docs/deck_walkthrough.md): slide-by-slide deck content (outcome first, buyer KPIs, sources for every number)
 * [`docs/talk_track.md`](docs/talk_track.md): role-play script with tell-show-tell demo, objection handling for business and technical stakeholders
+* [`docs/ai_workflow.md`](docs/ai_workflow.md): AI tools, the actual prompts, and the build workflow with Claude Code
+* [`docs/fe_bar_readiness.md`](docs/fe_bar_readiness.md): self-assessment against the four FE Bar domains
 
 ## Architecture
 
@@ -62,7 +79,7 @@ gold.*    (index admissions + 30-day outcome, unit trends, follow-up gap, risk f
 | **Gen AI** | AI Functions in `02_silver.sql`; plan drafting in `app/app.py` | `notebooks/executed/02_ai_note_signals_eval.ipynb` (extraction accuracy vs ground truth), `evidence/app_api_responses/11_draft_plan.json` (real Claude output) |
 | **Genie agent** | `notebooks/06_genie_space.py` | `notebooks/executed/06_genie_space.ipynb` (question → SQL → rows), `evidence/app_api_responses/16_genie_ask.json` |
 | **Databricks App** | `app/` (FastAPI + JS), `resources/app.yml` | `evidence/app_deploy.log`, `evidence/app_api_responses/00_app_status.json` … `16_*.json`, `evidence/app_logs.txt` |
-| **Dashboard** | `dashboards/readmissions_hrrp_executive.lvdash.json` (built by `scripts/build_dashboard.py`) | `evidence/query_results.md` (the same gold tables the dashboard reads) |
+| **Dashboard** | `dashboards/readmissions_hrrp_executive.lvdash.json` (built by `scripts/build_dashboard.py`) | `evidence/dashboard_verification.md` (deployed definition: 9 dataset queries executed, 15 widgets resolved) |
 | **Story numbers** | `notebooks/99_validate_story.py` | `notebooks/executed/99_validate_story.ipynb`, `evidence/query_results.md` (validation table) |
 
 ## Execution evidence (text only)
@@ -87,7 +104,8 @@ pipelines/                        Lakeflow SQL: bronze / silver (+ AI Functions)
 notebooks/                        job notebooks (source)      notebooks/executed/  same, with run outputs
 app/                              Databricks App: app.py (FastAPI), static/ (UI), app.yaml
 dashboards/                       AI/BI dashboard definition
-scripts/                          local story check, evidence exporters, app grants, run status
+scripts/                          local story check, evidence exporters, verifiers, app grants, run status
+docs/                             deck walkthrough, talk track, AI workflow, FE Bar readiness
 evidence/                         text execution evidence
 ```
 

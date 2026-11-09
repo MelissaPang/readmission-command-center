@@ -19,7 +19,7 @@ flowchart LR
     subgraph LF["1 · Lakeflow Declarative Pipeline: rcc_pipeline"]
       BR["bronze_*<br/>Auto Loader"]
       SI["silver_*<br/>cleaned, conformed,<br/>expectations"]
-      AIF["silver_discharge_note_signals<br/>AI Functions<br/>ai_extract / ai_classify"]
+      AIF["silver_discharge_note_signals<br/>AI Functions<br/>ai_query (Claude Haiku)<br/>structured output"]
       GO["gold_*<br/>readmission facts,<br/>unit weekly trends,<br/>HRRP ERR & penalty"]
     end
     ML["2 · ML<br/>MLflow model<br/>ml.hf_readmit_30d (UC registry)"]
@@ -33,12 +33,12 @@ flowchart LR
   end
 
   subgraph AI["4 · Gen AI"]
-    FM["Foundation Model API<br/>(Claude) draft transition plan<br/>+ explain risk drivers"]
+    FM["Foundation Model API<br/>(Claude Sonnet) drafts<br/>transition plan for RN approval"]
     GENIE["Genie space<br/>'Readmission & HRRP Analyst'"]
   end
 
   subgraph APP["5 · Databricks App: readmission-command-center"]
-    UI["React + FastAPI<br/>Unit Trends · Discharge Worklist ·<br/>Patient Detail / Approve Plan ·<br/>HRRP & What-if · Ask Genie"]
+    UI["FastAPI + JS<br/>Unit Trends · Discharge Worklist ·<br/>Patient Detail / Approve Plan ·<br/>HRRP & What-if · Ask Genie"]
   end
 
   DASH["AI/BI Dashboard<br/>Readmissions & HRRP Executive"]
@@ -87,7 +87,7 @@ Each stage reads the previous stage's output, so nothing is siloed. The AI-extra
 - **Silver:** typed and deduplicated tables (`silver_encounters`, `silver_patients`, `silver_followups`, `silver_discharge_notes`) with expectations, for example:
   - `EXPECT (discharge_ts >= admit_ts) ON VIOLATION DROP ROW`
   - `EXPECT (patient_id IS NOT NULL) ON VIOLATION FAIL UPDATE`
-- **Silver AI enrichment:** `silver_discharge_note_signals` uses `ai_extract(note_text, ARRAY('caregiver_status','transportation','followup_instruction'))` and `ai_classify(note_text, ARRAY('booked_followup','patient_to_call','none'))`. This creates the `lives_alone_flag`, `transport_barrier_flag` and `followup_instruction_type` columns, which exist only in free text.
+- **Silver AI enrichment:** `silver_discharge_note_signals` is an incremental streaming table that calls `ai_query('databricks-claude-haiku-4-5', <prompt + note>, responseFormat => STRUCT<lives_alone_no_caregiver, transportation_barrier, followup_status, evidence>)`. This creates the `ai_lives_alone`, `ai_transport_barrier`, `ai_followup_status` and `ai_evidence` columns, which exist only in free text. Each note is processed once (prompt in `docs/ai_workflow.md`).
 - **Gold:**
   - `gold_index_admissions`: HRRP index admissions with `readmit_30d` flag (CMS-style planned-readmission exclusion simplified)
   - `gold_unit_weekly_readmissions`: unit × week × condition rate, with weekday/weekend split
@@ -109,7 +109,7 @@ Each stage reads the previous stage's output, so nothing is siloed. The AI-extra
 ### 2.3 ML: 30-day readmission risk
 **Notebook:** `notebooks/03_train_readmission_model.py`
 - **Features:** age, LOS, prior admits (12 months), Charlson-like comorbidity count, discharge weekday/weekend, `followup_7d_booked`, `lives_alone_flag`, `transport_barrier_flag`, unit, payer.
-- **Model:** LightGBM (or sklearn HistGradientBoosting), time-based split. It is logged to MLflow with AUC, Brier score, a calibration table and SHAP top drivers, and registered to UC.
+- **Models:** scikit-learn HistGradientBoosting and logistic regression on a time-based split, logged to MLflow (AUC, AP, Brier, top-decile lift, calibration deciles, permutation importance). The higher test AUC is registered to UC as `@champion` (as built: logistic regression, AUC 0.7245).
 - **Scoring:** `notebooks/04_batch_score.py` writes `gold_patient_risk_scores` (score, risk tier, top 3 drivers per patient).
 - **What-if:** `notebooks/05_hrrp_whatif.py` is deterministic. It sets the 6 North weekend follow-up rate to 80%, recomputes expected readmissions, and reports avoided readmits (~7), the HF ERR change (1.19 → 1.14) and penalty saved (~$240K). Output goes to `gold_hrrp_whatif`.
 
@@ -126,8 +126,8 @@ Each stage reads the previous stage's output, so nothing is siloed. The AI-extra
 - **AI Functions** run in the pipeline (2.1) and extract note signals.
 - **Foundation Model API** (`databricks-claude-*` endpoint), called from the app backend:
   - "Draft transition plan" builds a plan from patient context (risk drivers, note flags, follow-up status) and saves it as a draft in Lakebase. Priya reviews and approves it (human in the loop).
-  - "Explain this score" turns SHAP drivers into a short summary in plain language.
-- Prompts and responses are logged to MLflow Tracing for evaluation evidence.
+  - *(Designed, not built: an "Explain this score" LLM summary. As built, the explanation is the counterfactual drivers shown in the patient view; see §7.)*
+- As built, each draft is logged to the Lakebase audit table `app_rcc.plan_audit_log` (model endpoint, prompt SHA-256, latency, approver). MLflow Tracing is a level-up item (see `docs/ai_workflow.md` §4).
 
 ### 2.6 Genie agent
 - **Space:** "Readmission & HRRP Analyst". **Tables:** `gold_unit_weekly_readmissions`, `gold_followup_gap`, `gold_hrrp_condition_err`, `gold_hrrp_penalty`, `gold_hrrp_whatif`, `gold_patient_risk_scores` (masked), plus federated `transition_plans`.
@@ -137,7 +137,7 @@ Each stage reads the previous stage's output, so nothing is siloed. The AI-extra
 - **Access:** embedded in the app through the Genie Conversation API, and also used directly by Finance & Quality.
 
 ### 2.7 Databricks App
-**Stack:** `app/` uses FastAPI (`backend/`) and React + Vite (`frontend/`), deployed with `app.yaml`. Resources are bound to the app: the SQL warehouse, the Lakebase database, the serving endpoint and the Genie space. Auth runs through the app service principal, with on-behalf-of-user for Genie so UC masks apply.
+**Stack (as built):** `app/app.py` (FastAPI) and `app/static/` (JS + Chart.js), deployed with `app.yaml` as a bundle resource. Bound resources: the SQL warehouse, the serving endpoint and the Genie space. Lakebase access is granted explicitly to the app service principal (`scripts/grant_app_access.py`; see §7). The app, including Genie, runs as its service principal, which has the `analyst` entitlement, so UC masks hide PHI in Genie answers.
 
 | Page | Data source | Purpose |
 |---|---|---|
@@ -164,55 +164,49 @@ The app, dashboard and Genie space (created through the API in `notebooks/06_cre
 
 ---
 
-## 4. Repository layout
+## 4. Repository layout (as built)
 
 ```
 readmission_command_center/
-├── ARCHITECTURE.md
-├── README.md                     # quickstart + story + evidence index
-├── databricks.yml                # bundle: job, pipeline, app, dashboard
-├── resources/                    # job / pipeline / app / lakebase YAML
-├── notebooks/                    # committed as .ipynb WITH outputs
-│   ├── 00_generate_synthetic_data.ipynb
-│   ├── 01_uc_governance.ipynb          # grants, tags, masks, row filters
-│   ├── 02_ai_functions_note_signals.ipynb
-│   ├── 03_train_readmission_model.ipynb
-│   ├── 04_batch_score.ipynb
-│   ├── 05_hrrp_whatif.ipynb
-│   ├── 06_create_genie_space.ipynb
-│   ├── 07_lakebase_setup_and_sync.ipynb
-│   └── 99_validate_story.ipynb         # asserts every story number
-├── pipelines/rcc_pipeline.sql / .py
-├── app/ (app.yaml, backend/, frontend/)
+├── README.md, ARCHITECTURE.md
+├── databricks.yml, resources/rcc.yml, resources/app.yml   # bundle: schemas, volumes, pipeline, 10-task job, dashboard, app
+├── src/rcc_datagen.py                 # seeded synthetic EHR generator (story built into the data)
+├── pipelines/01_bronze.sql, 02_silver.sql, 03_gold.sql   # Lakeflow (incl. AI Functions)
+├── notebooks/                         # job notebooks (source, .py)
+│   ├── 00_generate_synthetic_data.py   01_uc_governance.py   02_ai_note_signals_eval.py
+│   ├── 03_train_readmission_model.py   04_batch_score.py     05_hrrp_whatif.py
+│   ├── 06_genie_space.py               07_lakebase_setup_and_sync.py   99_validate_story.py
+│   └── executed/*.ipynb               # same notebooks WITH run outputs
+├── app/app.py, app/static/, app/app.yaml   # Databricks App (FastAPI + JS)
 ├── dashboards/readmissions_hrrp_executive.lvdash.json
-├── genie/space_config.json             # instructions, tables, sample Qs
-└── evidence/                           # TEXT execution evidence (see §5)
+├── scripts/                           # local check, evidence exporters, verifiers, app grants
+├── docs/                              # deck walkthrough, talk track, AI workflow, FE Bar readiness
+└── evidence/                          # TEXT execution evidence (see §5)
 ```
 
 ---
 
 ## 5. Execution evidence (text only, committed)
 
-The evaluator reads text only, so every stage commits its output as text, not screenshots. `scripts/export_evidence.py` (the last job task) and `scripts/capture_app_evidence.sh` produce:
+The evaluator reads text only, so every stage commits its output as text, not screenshots. These are the files actually committed:
 
-| Stage | Evidence file | What it shows |
-|---|---|---|
-| All | `notebooks/*.ipynb` | Notebooks exported **with cell outputs** (`databricks workspace export --format JUPYTER` after the run) |
-| Orchestration | `evidence/job_run_rcc_end_to_end.json` | `databricks jobs get-run` output: run_id, task states = SUCCESS, timestamps |
-| Lakeflow | `evidence/pipeline_events.md` | Pipeline update ID, rows written per table, expectation pass/fail counts from the event log |
-| Unity Catalog | `evidence/uc_governance.md` | `SHOW GRANTS`, `DESCRIBE TABLE EXTENDED` (tags, masks), masked vs unmasked query output, `system.access.table_lineage` rows |
-| AI Functions | `evidence/ai_note_signals_sample.md` | 20 note excerpts → extracted flags; readmit rate with/without the lives-alone flag (33.1% vs 20.6%) |
-| ML | `evidence/model_metrics.json`, `evidence/mlflow_run.md` | MLflow run ID, AUC, Brier score, calibration table, feature importance, UC model version + alias |
-| Scoring | `evidence/risk_scores_sample.csv` | Top 25 scored patients (PHI masked) |
-| HRRP what-if | `evidence/hrrp_whatif.md` | Baseline vs scenario: ERR 1.19 → 1.14, ~7 avoided readmits, ~$240K saved |
-| Lakebase | `evidence/lakebase_queries.txt` | `psql` output: synced row counts, `SELECT` from `discharge_worklist`, an approved row in `transition_plans` |
-| Gen AI | `evidence/llm_transition_plan_samples.md` | Real FM API prompt + response for 3 patients, with MLflow trace IDs |
-| Genie | `evidence/genie_conversation.json` | Genie API transcript: question → generated SQL → result rows for 5 sample questions |
-| App | `evidence/app_api_responses/*.json`, `evidence/app_deploy.log` | `databricks apps deploy` output, app URL/status `RUNNING`, curl responses from each backend endpoint, `databricks apps logs` excerpt |
-| Dashboard | `evidence/dashboard_queries.md` | Dashboard ID, published status, result of each dataset query |
-| Story check | `evidence/validate_story.txt` | Assertions (e.g. `6N HF readmit 14.8% → 23.9% ✔`, `weekend FU 18% vs weekday 69% ✔`) |
+| Stage | Evidence file | What it shows | Produced by |
+|---|---|---|---|
+| All notebooks | `notebooks/executed/*.ipynb`, `evidence/notebook_outputs/*.md` | Every job notebook **with its real cell outputs** from job run `206873801708733` (tables rendered as text) | `scripts/export_evidence.py` (decodes `jobs export-run`) |
+| Orchestration | `evidence/job_run_summary.md`, `evidence/job_run_206873801708733.json` | Job and task run IDs, result states (10/10 SUCCESS), durations | `scripts/export_evidence.py` |
+| Lakeflow | `evidence/pipeline_events.md` | Pipeline updates, rows written per flow, expectation pass/fail, dropped records (event log) | `scripts/export_pipeline_evidence.py` |
+| Unity Catalog | `notebooks/executed/01_uc_governance.ipynb`, `99_validate_story.ipynb` | Mask and row-filter functions, tags, masked vs unmasked query output, row filter (3,424 of 14,475), lineage API output | job |
+| AI Functions | `notebooks/executed/02_ai_note_signals_eval.ipynb` | Sample extractions with evidence quotes, accuracy/precision/recall vs ground truth, readmit rate by AI flag | job |
+| ML | `notebooks/executed/03_train_readmission_model.ipynb`, `04_batch_score.ipynb` | Both models' AUC/AP/Brier/lift, champion selection, calibration deciles, permutation importance, UC registration, scores by tier | job |
+| HRRP what-if | `notebooks/executed/05_hrrp_whatif.ipynb`, `evidence/query_results.md` | Penalty by condition; 6N weekend at 80% → 6.52 avoided, ERR 1.14, $238,438 saved | job, `scripts/export_pipeline_evidence.py` |
+| Lakebase | `notebooks/executed/07_lakebase_setup_and_sync.ipynb`, `evidence/lakebase_verification.md` | Synced-table creation and `psql` queries; 9/9 synced tables match their UC source (rows, key hash, sum); SP privileges; UC read-back of app writes | job, `scripts/verify_lakebase.py` |
+| Gen AI (app) | `evidence/app_api_responses/11_draft_plan.json`, `12_approve_plan.json` | Real Claude plan (model, latency, grounded context), approval and auto-created outreach tasks | `scripts/capture_app_evidence.sh` |
+| Genie | `notebooks/executed/06_genie_space.ipynb`, `evidence/app_api_responses/16_genie_ask.json` | Question → generated SQL → result rows for 5 story questions (5/5 COMPLETED); Genie via the app | job, capture script |
+| App | `evidence/app_deploy.log`, `evidence/app_api_responses/00_*.json` … `16_*.json`, `evidence/app_logs.txt` | Deploy output, app status, responses from every endpoint, app logs | capture script |
+| Dashboard | `evidence/dashboard_verification.md` | Deployed definition read back; all 9 dataset queries executed with results; all 15 widgets resolve their fields | `scripts/verify_dashboard.py` |
+| Story check | `notebooks/executed/99_validate_story.ipynb`, `evidence/query_results.md` | 27/27 checks (story numbers + platform objects + governance) | job |
 
-`README.md` will include an **Evidence Index** that links each requirement (Lakeflow, UC, Lakebase, ML/GenAI, Genie, App) to the evidence file that proves it ran.
+`README.md` has an **evidence index** that maps each requirement to these files.
 
 ---
 
