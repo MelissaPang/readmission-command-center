@@ -24,7 +24,7 @@ What the data shows (every number below is recomputed from the gold tables and c
 * **What-if (fixed-rule, no model):** if 6 North had booked a follow-up for 80% of its weekend HF discharges, CUMC would have avoided about
   **7 readmissions** in 12 months. That moves the HF ERR from **1.19 to 1.14** and saves about **$240K** of penalty.
 
-**Personas:** Priya Raman, RN, Manager of Transitional Care, the app's main user, who approves the transition plans; transitional-care
+**Personas (fictional Cedarbrook leadership):** **Jordan Whitfield**, CFO (executive sponsor; owns the HRRP penalty); **Dr. Elena Vasquez, MD**, VP of Quality & Patient Safety (owns the HF excess readmission ratio); **Priya Raman, RN**, Manager of Transitional Care, the app's main user, who approves the transition plans (owns the 7-day follow-up rate); **Kenji Tanaka**, Chief Data & Analytics Officer (owns the platform). Transitional-care nurses and CHWs work the outreach queue.
 nurses and CHWs, who work the outreach queue; the Revenue Integrity & Quality team, who use the HRRP page, the dashboard and Genie.
 
 ## Industry context: why this matters to a health system

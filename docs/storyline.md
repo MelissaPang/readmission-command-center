@@ -24,19 +24,28 @@ The three-sentence version (the elevator pitch, ~30 seconds):
 
 ## 2. Executive accountability map: who owns which number
 
+**Cedarbrook leadership (fictional)**
+
+| Name | Role | Owns |
+|---|---|---|
+| **Jordan Whitfield** | Chief Financial Officer (executive sponsor) | HRRP penalty $, operating margin |
+| **Dr. Elena Vasquez, MD** | VP of Quality & Patient Safety | CMS HF excess readmission ratio (ERR), HF 30-day readmission rate |
+| **Priya Raman, RN** | Manager of Transitional Care (domain owner) | 7-day follow-up booked %, high-risk contacted within 48h |
+| **Kenji Tanaka** | Chief Data & Analytics Officer (technical stakeholder) | Integration cost, PHI risk, time-to-insight |
+
 Every value claim in the deck is tied to a **named role** and **the number that role is measured on**. This is the map to use when
 talking under executive pressure: lead with *their* number, not the platform.
 
 | Role (who) | What they are measured on | Today (prototype) | Target / what the fix delivers | What in the solution moves it | Line that lands |
 |---|---|---|---|---|---|
-| **CFO** (executive sponsor, funds the decision) | **HRRP penalty $** (a cut to all Medicare base DRG payments), operating margin | CUMC **$1.62M** (at the 3% cap of $54M base payments); system **$2.08M**; HF line **$1.14M** | **–$238K/yr** at 80% weekend follow-up on 6 North; **–$874K/yr** across CUMC HF; ~**4× payback** on ~$60K/yr of weekend follow-up capacity **[assumption]** | HRRP & What-if page; fixed-rule, auditable method | *"This turns a $1.14M penalty line into a $238K decision you can fund this quarter, with the method on one page your team can audit."* |
-| **VP of Quality / Chief Quality Officer** | **CMS HF excess readmission ratio (ERR)** (publicly reported, drives HRRP), **HF 30-day readmission rate** | HF ERR **1.19**; 6 North HF readmission **23.9%** (was 14.8%) | ERR **1.19 → 1.14** (toward the 1.00 benchmark); 6 North back toward **~15%** | Unit trend over time (see the peak when it starts), root cause, weekly KPI tracking | *"You see the peak the week it starts, not when CMS reports it, and you can show the ERR moving."* |
-| **Manager of Transitional Care** (Priya Raman, RN; domain owner) | **7-day follow-up booked at discharge %**, **high-risk patients contacted within 48h %**, nurse time per patient | Weekend 7-day follow-up **18%** (vs 69% weekdays); **54** high-risk patients in the window, **41** with no follow-up | Weekend follow-up **≥ 80%**; **≥ 90%** of high-risk patients contacted within 48h | Worklist with a readmission prediction and an **AI nurse briefing** per patient; AI-drafted plan the RN approves; outreach tasks created automatically | *"Your team starts each shift with a short briefing on who to call and why, and the care plan is already drafted for you to approve."* |
-| **CIO / Chief Data & Analytics Officer** (technical stakeholder) | Integration cost, PHI risk, time-to-insight, platform sprawl | 5 siloed sources, multiple PHI copies, monthly manual analysis **[scenario]** | One governed copy; incremental refresh in **~2 min**; AI cost scales with *new* notes | Lakeflow + Unity Catalog + Lakebase + Apps in one bundle; role-based masks; LLM-judge quality gates | *"One governed copy of the data from raw extract to app, deployed as code, with quality checks that run every time."* |
+| **Jordan Whitfield, CFO** (executive sponsor, funds the decision) | **HRRP penalty $** (a cut to all Medicare base DRG payments), operating margin | CUMC **$1.62M** (at the 3% cap of $54M base payments); system **$2.08M**; HF line **$1.14M** | **–$238K/yr** at 80% weekend follow-up on 6 North; **–$874K/yr** across CUMC HF; ~**4× payback** on ~$60K/yr of weekend follow-up capacity **[assumption]** | HRRP & What-if page; fixed-rule, auditable method | *"This turns a $1.14M penalty line into a $238K decision you can fund this quarter, with the method on one page your team can audit."* |
+| **Dr. Elena Vasquez, MD, VP of Quality & Patient Safety** | **CMS HF excess readmission ratio (ERR)** (publicly reported, drives HRRP), **HF 30-day readmission rate** | HF ERR **1.19**; 6 North HF readmission **23.9%** (was 14.8%) | ERR **1.19 → 1.14** (toward the 1.00 benchmark); 6 North back toward **~15%** | Unit trend over time (see the peak when it starts), root cause, weekly KPI tracking | *"You see the peak the week it starts, not when CMS reports it, and you can show the ERR moving."* |
+| **Priya Raman, RN, Manager of Transitional Care** (domain owner) | **7-day follow-up booked at discharge %**, **high-risk patients contacted within 48h %**, nurse time per patient | Weekend 7-day follow-up **18%** (vs 69% weekdays); **54** high-risk patients in the window, **41** with no follow-up | Weekend follow-up **≥ 80%**; **≥ 90%** of high-risk patients contacted within 48h | Worklist with a readmission prediction and an **AI nurse briefing** per patient; AI-drafted plan the RN approves; outreach tasks created automatically | *"Your team starts each shift with a short briefing on who to call and why, and the care plan is already drafted for you to approve."* |
+| **Kenji Tanaka, Chief Data & Analytics Officer** (technical stakeholder) | Integration cost, PHI risk, time-to-insight, platform sprawl | 5 siloed sources, multiple PHI copies, monthly manual analysis **[scenario]** | One governed copy; incremental refresh in **~2 min**; AI cost scales with *new* notes | Lakeflow + Unity Catalog + Lakebase + Apps in one bundle; role-based masks; LLM-judge quality gates | *"One governed copy of the data from raw extract to app, deployed as code, with quality checks that run every time."* |
 
 **Reading the room:** answer the person who asked with *their* number, then bridge in one sentence to the person who funds it.
-* CFO asks about AI risk → "Every AI output is reviewed by an RN and audited; your exposure is the penalty, not the AI."
-* Transitional Care asks about workload → "It removes drafting time; the CFO sees each booked follow-up as dollars."
+* Jordan (CFO) asks about AI risk → "Every AI output is reviewed by an RN and audited; your exposure is the penalty, not the AI."
+* Priya (Transitional Care) asks about workload → "It removes drafting time; Jordan (CFO) sees each booked follow-up as dollars."
 
 ---
 
@@ -47,15 +56,15 @@ The arc **opens with the outcome in the CFO's and Quality's numbers**, then earn
 ### Beat 0: Outcome first (the hook, first 60 seconds)
 * **Message:** *"About $240K a year in avoidable penalty on one unit, and the fix is operational, not clinical."*
 * Name the owners as you say the numbers:
-  * **for the CFO:** ~$240K a year, ~$874K across CUMC
-  * **for the VP of Quality:** HF ERR 1.19 → 1.14
-  * **for the Transitional Care Manager:** weekend 7-day follow-up from 18% to 80%
+  * **for Jordan Whitfield, CFO:** ~$240K a year, ~$874K across CUMC
+  * **for Dr. Elena Vasquez, VP of Quality:** HF ERR 1.19 → 1.14
+  * **for Priya Raman, Manager of Transitional Care:** weekend 7-day follow-up from 18% to 80%
 * Frame what's coming: what we found, a live demo of how nurses and finance use it, how it's built, and what it takes to go live.
 
 ### Beat 1: Situation (the customer and the stakes)
 * Cedarbrook Health: 3 hospitals. Flagship CUMC has 538 beds.
 * CMS **HRRP** cuts payments on *all* Medicare discharges, by up to 3%, when readmissions exceed expected. A unit-level problem becomes a hospital-wide payment cut, and a publicly reported quality metric.
-* CUMC's estimated penalty is **$1.62M**, already at the 3% cap. Heart failure is the largest line at **$1.14M**, **ERR 1.19**. This is the CFO's and the VP of Quality's shared problem.
+* CUMC's estimated penalty is **$1.62M**, already at the 3% cap. Heart failure is the largest line at **$1.14M**, **ERR 1.19**. This is Jordan's (CFO) and Dr. Vasquez's (VP of Quality) shared problem.
 
 ### Beat 2: Complication (a peak nobody saw coming, and nobody could explain)
 * One unit's HF readmissions went **14.8% → 23.9%** in 20 weeks. **Every other unit stayed within ~1.5 pts.**
@@ -76,9 +85,9 @@ The arc **opens with the outcome in the CFO's and Quality's numbers**, then earn
 
 ### Beat 3: The insight (unified data makes the root cause obvious)
 Once discharge records, readmission predictions and follow-up data are **unified and trended over time**:
-* **When:** readmissions over time by unit show exactly when 6 North's peak started, and that it's confined to one unit. *(VP of Quality)*
-* **Why:** weekend HF discharges with a booked 7-day follow-up fell to **18%**, vs **69%** on weekdays. *(Transitional Care Manager)*
-* **So what:** no 7-day follow-up means **29.8%** readmit, vs **16.4%** with one. *(VP of Quality, CFO)*
+* **When:** readmissions over time by unit show exactly when 6 North's peak started, and that it's confined to one unit. *(Dr. Vasquez, VP of Quality)*
+* **Why:** weekend HF discharges with a booked 7-day follow-up fell to **18%**, vs **69%** on weekdays. *(Priya, Transitional Care)*
+* **So what:** no 7-day follow-up means **29.8%** readmit, vs **16.4%** with one. *(Dr. Vasquez and Jordan)*
 * **Who, right now:** every discharge carries its readmission prediction and a plain-English nurse briefing, so high-risk patients are caught *before they go home*.
 * *The "aha":* not a clinical mystery, but a **missing follow-up appointment**: a fixable process gap.
 
@@ -87,21 +96,21 @@ Once discharge records, readmission predictions and follow-up data are **unified
 * AI shows patients who live alone readmit at 33.1% vs 20.6%.
 
 ### Beat 5: Value, by accountable executive (deliver this *before* the solution walkthrough)
-* **CFO:**
+* **Jordan Whitfield (CFO):**
   * 80% weekend follow-up on 6 North → ~6.5 avoided readmissions → **$238K** less penalty ($1.62M → $1.38M)
   * every 10 points of follow-up ≈ $120K
   * all CUMC HF ≈ **$874K**
   * payback ≈ **4×** on ~$60K/yr of weekend follow-up capacity **[assumption]**
-* **VP of Quality:**
+* **Dr. Elena Vasquez (VP of Quality):**
   * HF ERR **1.19 → 1.14**
   * 6 North HF readmissions trend back toward ~15%
   * the trend view shows the next peak the week it starts
-* **Manager of Transitional Care:**
+* **Priya Raman (Manager of Transitional Care):**
   * **54** high-risk patients today, **41** without a follow-up, each with a 2-sentence briefing
   * plans drafted in **~4 s** for RN approval
   * outreach tasks created on approval
   * target weekend follow-up **≥ 80%**, high-risk contact within 48h **≥ 90%**
-* **CIO:** one governed copy, ~2 min incremental refresh, quality gates (validation plus an LLM judge) on every run.
+* **Kenji Tanaka (CDAO):** one governed copy, ~2 min incremental refresh, quality gates (validation plus an LLM judge) on every run.
 
 ### Beat 4: Resolution (one connected journey)
 1. **Unify** discharge records, follow-ups, notes and penalty data in one governed place.
@@ -140,13 +149,13 @@ Then: the one-thread story (§4), and challenge → capability (§4b).
   * validate the AI and the model with RNs and Quality (weeks 4–8)
   * nurses work the briefed worklist daily (weeks 8–12)
 * **Success, by owner:**
-  * CFO: penalty trajectory
-  * VP of Quality: 6 North HF readmissions toward ~15% and the ERR trend
-  * Transitional Care: weekend follow-up 18% → ≥ 80%, ≥ 90% of high-risk patients contacted within 48h
+  * Jordan (CFO): penalty trajectory
+  * Dr. Vasquez (VP of Quality): 6 North HF readmissions toward ~15% and the ERR trend
+  * Priya (Transitional Care): weekend follow-up 18% → ≥ 80%, ≥ 90% of high-risk patients contacted within 48h
 * **Ask:**
-  * from the **CFO**, funding for weekend follow-up capacity
-  * from the **VP of Quality**, executive sponsorship and the pilot KPI review
-  * from **Transitional Care**, a 6 North nurse champion
+  * from **Jordan (CFO)**, funding for weekend follow-up capacity
+  * from **Dr. Vasquez (VP of Quality)**, executive sponsorship and the pilot KPI review
+  * from **Priya (Transitional Care)**, a 6 North nurse champion
 * Close: *"What would you need to see to move forward?"*
 
 ---
@@ -197,11 +206,11 @@ Follow **one weekend heart-failure patient** through the platform (addresses the
 
 | Stop | Tell | Show | Tell back (and whose number it moves) |
 |---|---|---|---|
-| 1. Unit Trends | "When did the peak start, and why?" | Readmissions over time by unit; the 6 North peak; the weekend follow-up drop | "Peak and root cause on one screen." *VP of Quality: see the next peak the week it starts* |
-| 2. Worklist | "Who to act on today" | Filter 6 North · High · no follow-up; the **AI nurse briefing** per patient | "A briefing, not a scored table." *Transitional Care: 41 high-risk patients without follow-up, each with the reason* |
-| 3. Patient → plan → **edit** → approve | "From insight to action, and the system learns" | The evidence quote → Claude drafts → the RN **edits** and approves → tasks are created, edit stats recorded | "AI drafts, the nurse decides, and every edit becomes a learning signal." *Transitional Care: drafting time removed* |
-| 4. HRRP & What-if | "The same action in the CFO's language" | Slider 55% → 80%: ~6.5 avoided, ERR 1.14, $238K; scope → $874K | *CFO: $238K; VP of Quality: ERR 1.14* |
-| 5. Ask Genie | "Questions nobody built a dashboard for" | Weekend vs weekday follow-up → 17.7% vs 68.6% + SQL; mention the LLM judge (5/5 every run) | *CIO: self-service on governed data, quality-gated* |
+| 1. Unit Trends | "When did the peak start, and why?" | Readmissions over time by unit; the 6 North peak; the weekend follow-up drop | "Peak and root cause on one screen." *Dr. Vasquez: see the next peak the week it starts* |
+| 2. Worklist | "Who to act on today" | Filter 6 North · High · no follow-up; the **AI nurse briefing** per patient | "A briefing, not a scored table." *Priya: 41 high-risk patients without follow-up, each with the reason* |
+| 3. Patient → plan → **edit** → approve | "From insight to action, and the system learns" | The evidence quote → Claude drafts → the RN **edits** and approves → tasks are created, edit stats recorded | "AI drafts, the nurse decides, and every edit becomes a learning signal." *Priya: drafting time removed* |
+| 4. HRRP & What-if | "The same action in Jordan's (CFO) language" | Slider 55% → 80%: ~6.5 avoided, ERR 1.14, $238K; scope → $874K | *Jordan: $238K; Dr. Vasquez: ERR 1.14* |
+| 5. Ask Genie | "Questions nobody built a dashboard for" | Weekend vs weekday follow-up → 17.7% vs 68.6% + SQL; mention the LLM judge (5/5 every run) | *Kenji: self-service on governed data, quality-gated* |
 
 ~8–9 minutes. Close with: *"Insight → action → dollars, and it learns from every nurse."*
 
@@ -211,30 +220,30 @@ Follow **one weekend heart-failure patient** through the platform (addresses the
 
 | Claim | Number | Owner | Evidence |
 |---|---|---|---|
-| Unit peak, others stable | 14.8% → 23.9%; others ≤ 1.1 pts | VP of Quality | `evidence/query_results.md`, dashboard trend |
-| Weekend follow-up gap | 18% (11/62) vs 69% (94/137) | Transitional Care | `gold.followup_gap` |
-| Follow-up effect | 29.8% vs 16.4% | VP of Quality | `gold.readmission_risk_factors` |
-| Penalty | $1.62M (cap), HF $1.14M, ERR 1.19 | CFO | `gold.hrrp_hospital_penalty` |
-| What-if | 80% → 6.52 avoided, ERR 1.14, $238,438; CUMC HF ≈ $874K | CFO | `gold.hrrp_whatif` |
-| Worklist + briefings | 54 High-risk, 41 without follow-up; 705/705 briefings | Transitional Care | `gold.discharge_worklist`, `04_batch_score.ipynb` |
-| AI plan + RN edit | 4.4 s draft; edit 95% similar, +107 chars | Transitional Care | `evidence/app_api_responses/11_*.json`, `12_*.json` |
-| Closed loop | 3 reviewed, 1 nurse_edited, 33% edit rate logged in training | CIO / Quality | `08_feedback_loop.ipynb`, `ml.model_metrics` |
-| Genie quality | 5/5 PASS by the LLM judge, every run | CIO | `06_genie_space.ipynb`, `gold.genie_eval_judgements` |
-| Model | AUC 0.7245; High 45% / Low 9% observed | VP of Quality | `03_*.ipynb`, `04_*.ipynb` |
-| Governance | PHI masked; evidence quotes role-masked; row filter 3,424 / 14,475 | CIO | `99_validate_story.ipynb` |
-| It really ran | 11/11 tasks; 33/33 checks; Lakebase 9/9 | CIO | `evidence/job_run_summary.md`, `evidence/lakebase_verification.md` |
+| Unit peak, others stable | 14.8% → 23.9%; others ≤ 1.1 pts | Dr. Vasquez | `evidence/query_results.md`, dashboard trend |
+| Weekend follow-up gap | 18% (11/62) vs 69% (94/137) | Priya | `gold.followup_gap` |
+| Follow-up effect | 29.8% vs 16.4% | Dr. Vasquez | `gold.readmission_risk_factors` |
+| Penalty | $1.62M (cap), HF $1.14M, ERR 1.19 | Jordan | `gold.hrrp_hospital_penalty` |
+| What-if | 80% → 6.52 avoided, ERR 1.14, $238,438; CUMC HF ≈ $874K | Jordan | `gold.hrrp_whatif` |
+| Worklist + briefings | 54 High-risk, 41 without follow-up; 705/705 briefings | Priya | `gold.discharge_worklist`, `04_batch_score.ipynb` |
+| AI plan + RN edit | 4.4 s draft; edit 95% similar, +107 chars | Priya | `evidence/app_api_responses/11_*.json`, `12_*.json` |
+| Closed loop | 3 reviewed, 1 nurse_edited, 33% edit rate logged in training | Kenji / Dr. Vasquez | `08_feedback_loop.ipynb`, `ml.model_metrics` |
+| Genie quality | 5/5 PASS by the LLM judge, every run | Kenji | `06_genie_space.ipynb`, `gold.genie_eval_judgements` |
+| Model | AUC 0.7245; High 45% / Low 9% observed | Dr. Vasquez | `03_*.ipynb`, `04_*.ipynb` |
+| Governance | PHI masked; evidence quotes role-masked; row filter 3,424 / 14,475 | Kenji | `99_validate_story.ipynb` |
+| It really ran | 11/11 tasks; 33/33 checks; Lakebase 9/9 | Kenji | `evidence/job_run_summary.md`, `evidence/lakebase_verification.md` |
 
 ---
 
 ## 7. Anticipated pushback, built into the story
 
-* **CFO: "Is the $240K real?"** (Beat 5) Fixed-rule and reproducible by Finance; state the causal assumption; the pilot proves it.
-* **CFO: "Why the jump between 70% and 80%?"** CUMC is above the 3% cap, so the first ~$60K of improvement is absorbed by the cap.
-* **VP of Quality: "Will this move our public ERR, and when?"** ERR is calculated on a rolling performance period, so avoided readmissions roll in. Track 6 North's rate and the ERR trend weekly in the pilot.
-* **Transitional Care: "Is AI telling my nurses what to do?"** (Beat 6) No. AI drafts and briefs, the RN decides; edits are captured to improve it; every step is audited.
-* **CIO: "What about PHI?"** (§4b) Masks, role-based masking of note quotes, row filters, a least-privilege app identity, lineage.
-* **CIO: "Will it integrate with Epic? Another platform?"** (Beat 7, §4b) The same pipeline maps the feeds. It *replaces* copies rather than adding one.
-* **CIO: "How do you know the AI is right?"** An LLM judge against SQL reference answers every run, extraction scored against ground truth, briefings grounded in the row.
+* **Jordan (CFO): "Is the $240K real?"** (Beat 5) Fixed-rule and reproducible by Finance; state the causal assumption; the pilot proves it.
+* **Jordan (CFO): "Why the jump between 70% and 80%?"** CUMC is above the 3% cap, so the first ~$60K of improvement is absorbed by the cap.
+* **Dr. Vasquez (VP of Quality): "Will this move our public ERR, and when?"** ERR is calculated on a rolling performance period, so avoided readmissions roll in. Track 6 North's rate and the ERR trend weekly in the pilot.
+* **Priya (Transitional Care): "Is AI telling my nurses what to do?"** (Beat 6) No. AI drafts and briefs, the RN decides; edits are captured to improve it; every step is audited.
+* **Kenji (CDAO): "What about PHI?"** (§4b) Masks, role-based masking of note quotes, row filters, a least-privilege app identity, lineage.
+* **Kenji (CDAO): "Will it integrate with Epic? Another platform?"** (Beat 7, §4b) The same pipeline maps the feeds. It *replaces* copies rather than adding one.
+* **Kenji (CDAO): "How do you know the AI is right?"** An LLM judge against SQL reference answers every run, extraction scored against ground truth, briefings grounded in the row.
 * **"What caused the weekend gap?"** (Q&A) Two late-June operational changes. The fix is restoring weekend follow-up capacity.
 
 Full answers: `docs/talk_track.md` §8.
@@ -245,7 +254,7 @@ Full answers: `docs/talk_track.md` §8.
 
 * **Synthetic data shaped like Cedarbrook's**: zero PHI risk, reproducible numbers. *Trade-off:* real notes are messier, so extraction is re-validated in the pilot.
 * **The simpler model won** (logistic regression 0.7245 vs gradient boosting 0.7137): easier for clinicians to trust. *Trade-off:* less headroom, so the champion is re-selected each run, and RN feedback is accumulated for retraining.
-* **A fixed-rule, auditable what-if** on a simplified HRRP method: the CFO's team can reproduce every dollar. *Trade-off:* it assumes causality, and it simplifies CMS's 3-year, risk-adjusted, Medicare-only method.
+* **A fixed-rule, auditable what-if** on a simplified HRRP method: Jordan's finance team can reproduce every dollar. *Trade-off:* it assumes causality, and it simplifies CMS's 3-year, risk-adjusted, Medicare-only method.
 
 ---
 
@@ -273,8 +282,8 @@ Full answers: `docs/talk_track.md` §8.
 **Deck**
 * [x] Leads with the business outcome (Beat 0), stated in **named executives' numbers**
 * [x] Quantifies impact in the buyer's KPIs, **each tied to its accountable role** (§2 accountability map)
-* [x] Frames value for the executive sponsor (**CFO**) *and* the domain owner (**Manager of Transitional Care**) explicitly, plus the **VP of Quality** and the **CIO**
-* [x] The deck's text is extractable: `docs/deck.md` is the deck as plain text, with a "For the CFO / For the VP of Quality / For the Transitional Care Manager" line on every value slide
+* [x] Frames value for the executive sponsor (**Jordan Whitfield, CFO**) *and* the domain owner (**Priya Raman, Manager of Transitional Care**) explicitly, plus **Dr. Elena Vasquez (VP of Quality)** and **Kenji Tanaka (CDAO)**
+* [x] The deck's text is extractable: `docs/deck.md` is the deck as plain text, with a "For Jordan (CFO) / For Dr. Vasquez (VP of Quality) / For Priya (Transitional Care Manager)" line on every value slide
 * [x] Architecture after value
 
 **Role-play**
