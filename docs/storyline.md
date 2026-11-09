@@ -9,14 +9,15 @@ All numbers come from the prototype run on synthetic Cedarbrook data (sources in
 
 ## 1. The story in one sentence
 
-> **Cedarbrook is losing about $240K a year in Medicare penalties on one unit because weekend heart-failure patients go home
-> without a follow-up appointment. The Readmission Command Center finds those patients, tells nurses who to call and why,
-> and shows the CFO what every call is worth, on one governed platform.**
+> **Readmission spikes cost hospitals Medicare penalties, and they are usually discovered months too late, because discharge records,
+> readmission predictions and follow-up data live in separate systems. By unifying them on Databricks, Cedarbrook can see when a
+> readmission peak starts, see the root cause (patients leaving without a 7-day follow-up, especially on weekends), and act on
+> each high-risk patient at discharge, worth about $240K a year on one unit.**
 
 The three-sentence version (the elevator pitch, ~30 seconds):
-1. *Problem:* Heart-failure readmissions on 6 North jumped from 14.8% to 23.9% after a weekend staffing change, and heart failure is the biggest line of a $1.62M HRRP penalty.
-2. *Insight:* Only 18% of weekend discharges leave with a 7-day follow-up (vs 69% on weekdays), and those patients readmit at nearly twice the rate. Cedarbrook couldn't see it because the answer was spread across siloed systems and unstructured notes, with no platform to bring it together or apply AI safely.
-3. *Outcome:* Getting weekend follow-up to 80% avoids ~7 readmissions, cuts the HF ERR from 1.19 to 1.14 and saves ~$240K a year on one unit. The same playbook is worth ~$874K across CUMC.
+1. *Problem:* Heart-failure readmissions on one unit jumped from 14.8% to 23.9%, and nobody noticed until the HRRP penalty ($1.62M, with heart failure the biggest line) showed it.
+2. *Insight:* With discharge records, readmission predictions and follow-ups unified and trended over time, the peak and its cause are obvious: patients going home without a 7-day follow-up, especially on weekends (18% booked vs 69% on weekdays). Those patients readmit at nearly twice the rate.
+3. *Outcome:* Flag high-risk patients at discharge and book their follow-up. Getting weekend follow-up to 80% avoids ~7 readmissions, cuts the HF ERR from 1.19 to 1.14 and saves ~$240K a year on one unit, ~$874K across the hospital.
 
 ---
 
@@ -48,51 +49,56 @@ The arc deliberately **opens with the outcome**, then earns it. Architecture app
 * The CMS **HRRP** cuts payments on *all* Medicare discharges, by up to 3%, when readmissions exceed expected. A unit-level problem becomes a hospital-wide payment cut.
 * CUMC's estimated penalty is **$1.62M** (at the cap). Heart failure is the largest line at **$1.14M**, **ERR 1.19**.
 
-### Beat 2: Complication (something changed, and nobody could see why)
-* 6 North HF readmissions went **14.8% → 23.9%** in 20 weeks. **Every other unit stayed within ~1.5 pts.**
-* Why it stayed hidden: the cause is **operational** (a staffing and clinic schedule change), the evidence is **in free text**, and the data is **split** between Quality, Finance and Care Transitions.
+### Beat 2: Complication (a peak nobody saw coming, and nobody could explain)
+* One unit's heart-failure readmissions went **14.8% → 23.9%** in 20 weeks. **Every other unit stayed within ~1.5 pts.**
+* Cedarbrook found out the way most hospitals do: **after the fact**, when quality reports and the penalty estimate came in. By then, months of patients had already been readmitted.
+* Nobody could answer the two questions that matter: **when did it start, and why?**
 
 ### Beat 2b: Why Cedarbrook couldn't solve it before (the technical complication)
-*Scenario: Cedarbrook's current state, typical of a 3-hospital system. Confirm the specifics in discovery.*
+*Scenario: Cedarbrook's current state, typical of a multi-hospital system. Confirm the specifics in discovery.*
 
-The business problem persisted because the technology made the answer impossible to assemble:
+1. **Siloed data. Discharges, predictions and follow-ups never meet.**
+   * **Discharge records** sit in the EHR reporting database; **follow-up appointments** in ambulatory scheduling; key risk details only in **discharge notes**; the **penalty** in Finance spreadsheets built from CMS files.
+   * **Readmission prediction is disconnected from the discharge.** If a risk score exists, it's calculated in a batch report weeks later, or locked inside a vendor module. It is **not in front of the nurse when the patient is being discharged**, which is exactly when a follow-up can still be booked.
+   * There's **no view of readmissions over time by unit**, so a peak isn't visible when it starts. Answering "why" is a manual, monthly analyst project, and it's stale by the time it's done.
+2. **Complicated infrastructure. Every new question means another copy and another integration.**
+   * A reporting warehouse, a separate data lake, a BI tool and an app database for care management, each with its own copy of patient data, its own access rules and its own IT queue.
+   * Every new feed is a project, and every copy of PHI is another security review.
+   * There's no single definition of "readmission rate" or "ERR", so Quality and Finance numbers don't match.
+3. **Limited ML and AI capability. The signals exist, but nobody can use them.**
+   * There's no platform to train, deploy, monitor and govern a prediction model *inside* the discharge workflow.
+   * Key risk details are only in free text, and there's no safe way to apply AI to PHI at scale.
+   * Analysts depend on IT for every new question.
 
-1. **Siloed data. The answer needed five systems that don't talk to each other.**
-   * Encounters and readmissions live in the EHR reporting database (Epic Clarity).
-   * Follow-up appointments live in ambulatory scheduling.
-   * Social risk ("lives alone") lives only in clinical notes.
-   * Staffing changes live in HR / nursing operations.
-   * The HRRP penalty lives in Finance's spreadsheets built from CMS files.
+> Line to say: *"The answer was in Cedarbrook's data all along, but discharges, predictions and follow-ups lived in different systems, so nobody could see the peak start or explain it."*
 
-   Linking a weekend discharge to a missing appointment to a penalty dollar took a manual, monthly analyst project. By the time it was done, the data was stale.
-2. **Complicated infrastructure. Every new question meant another copy and another integration.**
-   * A warehouse for reporting, a separate data lake, a BI tool, and an app database for the care-management worklist: each with its own copy of PHI, its own access rules, and its own IT queue.
-   * Every new data feed was a project, and security reviews multiplied with every copy.
-   * There was no single, trusted definition of "readmission rate" or "ERR". Quality and Finance numbers didn't match.
-3. **Limited ML and AI capability. The risk signal was there, but nobody could use it.**
-   * There's no data science platform or MLOps: risk models live in notebooks on laptops, if they exist at all. They can't be deployed into a nurse's workflow, monitored or governed.
-   * **Key risk signals are unstructured** (living alone, transportation, "patient to call" are only in discharge notes), and there was no safe way to apply LLMs to PHI at scale. Manual chart review doesn't scale to ~16,600 notes.
-   * Analysts depend on IT for every new report, so Finance can't ask its own questions.
+### Beat 3: The insight (unified data makes the root cause obvious)
+Once discharge records, readmission predictions and follow-up data are **unified and trended over time**:
+* **When:** the dashboard view of readmissions over time shows exactly when 6 North's peak started, and that it's confined to one unit.
+* **Why:** drilling into that peak shows the root cause, **patients leaving without a 7-day follow-up, especially on weekends**. Only **18%** of weekend heart-failure discharges have one booked, vs **69%** on weekdays.
+* **So what:** patients without a 7-day follow-up readmit at **29.8%** vs **16.4%** with one.
+* **Who, right now:** the prediction scores every patient at discharge, so the high-risk ones without a follow-up can be caught *before* they go home, not discovered in next quarter's report.
+* *The "aha":* this isn't a clinical mystery. It's a **missing follow-up appointment**, a process gap the team can fix.
 
-> Line to say: *"The answer existed in Cedarbrook's data, but it was spread across five systems, three copies and a stack of notes nobody could read at scale."*
-
-### Beat 3: The insight (root cause, quantified)
-* Weekend pharmacist gone (2026-06-19) and Friday clinic slots dropped (2026-06-26). Since then, **18%** of weekend HF discharges have a booked 7-day follow-up vs **69%** on weekdays.
-* No follow-up → **29.8%** readmit vs **16.4%** with one.
-* AI read **16,584 notes**: patients who **live alone** (only in the text) readmit at **33.1% vs 20.6%**.
-* *The "aha":* the problem is a missing appointment on Fridays to Sundays, a fixable process gap.
+*Supporting detail, only if asked:*
+* The weekend drop lines up with two operational changes in late June: a vacated weekend transitions-pharmacist role, and fewer Friday clinic slots. That's the "why behind the why".
+* AI reading the notes also shows patients who **live alone** readmit at **33.1% vs 20.6%**.
 
 ### Beat 4: Resolution (what the solution does, one connected journey)
-* The **one-thread story** below is the centrepiece. It shows the layers are connected, not stitched.
-* In business terms: **see the cause → find the patients → act → measure the dollars → ask anything.**
-* In platform terms, each technical challenge from Beat 2b is answered by one capability (§4b), on **one platform, one governed copy of the data**.
+* **Unify** discharge records, follow-ups, notes and penalty data in one governed place.
+* **Predict** readmission risk for every discharge and put it in the nurse's worklist.
+* **Visualize** readmissions over time by unit, so peaks are seen when they start.
+* **Act:** book the follow-up, with an AI-drafted plan for the nurse to approve.
+* **Measure:** see what each booked follow-up is worth in penalty dollars.
+* In business terms: **see the peak → understand the cause → act on each patient → measure the dollars → ask anything.**
+* The **one-thread story** below shows the layers are connected, not stitched. Each technical challenge from Beat 2b maps to one capability (§4b), on **one platform with one governed copy of the data**.
 
 ### Beat 5: Value (in the buyer's KPIs)
 * For the **executive:**
   * 80% weekend follow-up → ~6.5 avoided readmissions, ERR 1.14, **$238K** saved
   * every 10 points of follow-up ≈ $120K
   * scale to all CUMC HF ≈ **$874K**
-  * payback vs ~0.4 FTE of weekend pharmacist coverage (~$60K/yr **[assumption]**) ≈ **4×**
+  * payback: if restoring weekend follow-up capacity costs ~$60K/yr (e.g. ~0.4 FTE of weekend coordinator or pharmacist time **[assumption]**), that's ≈ **4×**
 * For the **domain owner:**
   * **54** high-risk patients in the current 30-day window, **41** with no follow-up, ranked with the reason for each
   * the AI-drafted plan in ~4 s, approved by an RN, with outreach tasks created automatically
@@ -113,7 +119,7 @@ The business problem persisted because the technology made the answer impossible
   * validate the AI and the model with RNs and Quality (weeks 4–8)
   * nurses work the list daily (weeks 8–12)
 * **Success** = weekend follow-up 18% → ≥ 80%, ≥ 90% of high-risk patients contacted within 48h, HF readmissions trending back toward ~15%.
-* **Ask:** an executive sponsor plus a decision on weekend follow-up coverage. *"What would you need to see to move forward?"*
+* **Ask:** an executive sponsor, plus a decision to fund weekend follow-up capacity (scheduling coverage, so weekend discharges leave with an appointment). *"What would you need to see to move forward?"*
 
 ---
 
@@ -122,22 +128,25 @@ The business problem persisted because the technology made the answer impossible
 Tell the platform story by following **one weekend heart-failure patient** through it. This is the slide, and the demo path, that
 addresses the "layers present but not connected" failure mode.
 
-1. **Raw data.** Friday 4 pm discharge from 6 North. The ADT record, the appointment extract (no follow-up booked) and the discharge note
-   *"Lives alone… Patient to call the HF Bridge Clinic on Monday"* land as raw files.
-2. **Lakeflow** ingests them incrementally, de-duplicates them and enforces data-quality rules, then builds the HRRP gold tables (index admission, 30-day outcome, follow-up gap).
+1. **Raw data.** Friday 4 pm heart-failure discharge from 6 North. The discharge record, the appointment extract (no follow-up booked) and the
+   discharge note (*"Patient to call the clinic on Monday… lives alone"*) land as raw files.
+2. **Lakeflow** unifies them: it ingests incrementally, de-duplicates, enforces data-quality rules, and builds the gold tables. These are the discharge
+   record joined to its 7-day follow-up status, the 30-day outcome, and readmissions by unit over time.
 3. **Unity Catalog** governs one copy. The patient's name and MRN are masked for analysts, and access is scoped by hospital. Lineage traces every column back to the raw file.
 4. **AI Functions** read the note and add `lives_alone = true` and `followup_status = patient_to_call`, with the evidence quote.
-5. **ML:** those AI flags plus the EHR fields feed the 30-day risk model (the champion is registered in UC). This patient scores **High**, with drivers *"No 7-day follow-up booked"* and *"Lives alone"*.
+5. **Readmission prediction:** the 30-day risk model (the champion is registered in UC) scores this discharge using the EHR fields and the AI flags.
+   It scores **High**, with drivers *"No 7-day follow-up booked"* and *"Lives alone"*. The prediction is now attached to the discharge record, not in a separate report.
 6. **Lakebase** serves the worklist to the app in milliseconds. The patient appears at the top of Priya's list.
 7. **The app:**
    * Claude drafts a transition plan from this patient's facts only, and an RN approves it
    * outreach tasks (book the follow-up, pharmacist call, caregiver check) are written back to Lakebase
    * the approval is readable in UC
 8. **The HRRP page:** booking follow-ups like this one is what moves the ERR from 1.19 toward 1.14 and the penalty down ~$240K.
-9. **Genie:** Finance asks *"weekend vs weekday follow-up on 6 North since June 19?"* and gets 17.7% vs 68.6%, with the SQL, on the same governed tables.
+9. **Dashboard and Genie:** the readmissions-over-time view shows where 6 North's peak started. Finance asks Genie *"weekend vs weekday 7-day follow-up on 6 North?"*
+   and gets 17.7% vs 68.6%, with the SQL, on the same governed tables.
 
-> Closing line for this beat: *"A sentence in a discharge note became a model feature, which became a call on a nurse's list, which became a dollar
-> figure on the CFO's page: one platform, one copy of the data."*
+> Closing line for this beat: *"A discharge record, its prediction and its follow-up finally live together, so the peak, its cause and the patient to
+> call are all visible at the moment it matters: one platform, one copy of the data."*
 
 ---
 
@@ -145,7 +154,7 @@ addresses the "layers present but not connected" failure mode.
 
 | Challenge (Beat 2b) | What was hard | How Databricks solves it | Proof in this build |
 |---|---|---|---|
-| **Siloed data** | Encounters, appointments, notes, staffing and CMS penalty data in 5 systems; manual, stale joins | **Lakeflow** ingests every feed incrementally into one lakehouse (Auto Loader; Lakeflow Connect for Epic Clarity / FHIR in production) with data-quality rules. **One gold layer** defines readmission, follow-up and ERR once for everyone. | 9 raw feeds → bronze → silver → 10 gold tables in one pipeline; planted bad records caught (6 invalid, 45 duplicates); Quality, Finance, the app and Genie all read the same `gold.*` (`evidence/pipeline_events.md`) |
+| **Siloed data; predictions disconnected from discharges** | Discharges, follow-ups, notes and penalty data in separate systems; risk scores, if any, calculated weeks later and not at discharge; no trend view of readmissions | **Lakeflow** ingests every feed incrementally into one lakehouse (Auto Loader; Lakeflow Connect for Epic Clarity / FHIR in production) with data-quality rules. **One gold layer** joins each discharge to its follow-up status, its prediction and its outcome; the **AI/BI dashboard** trends readmissions by unit over time. In production, the pipeline runs on discharge events, so the prediction reaches the worklist near real time. | 9 raw feeds → bronze → silver → 10 gold tables in one pipeline; planted bad records caught (6 invalid, 45 duplicates); Quality, Finance, the app and Genie all read the same `gold.*` (`evidence/pipeline_events.md`) |
 | **Complicated infrastructure** | Separate warehouse, lake, BI, app database and ML tools; PHI copied everywhere; every question is an IT project | **One platform:** Lakeflow + SQL warehouse + AI/BI + **Lakebase** (Postgres for the app) + **Databricks Apps**, all under **Unity Catalog**. No copies to secure. Serving tables *sync* from gold, and app writes are readable back in UC. Deployed as code with **Asset Bundles**; serverless, so no clusters to manage. | One bundle deploys schemas, the pipeline, a 10-task job, the dashboard and the app; Lakebase synced tables verified 9/9 identical to their source; app approvals queryable in UC (`evidence/lakebase_verification.md`) |
 | **Governance across copies** | Each system has its own access rules; PHI audits are hard | **Unity Catalog:** column masks, row filters, tags, lineage and audit on one copy; the app runs as a least-privilege service principal | Analysts see `***MASKED***`; an FCH-only user sees 3,424 of 14,475 rows; lineage raw → app (`99_validate_story.ipynb`) |
 | **Limited ML capability** | No MLOps; models can't reach the workflow | **MLflow + UC model registry:** tracked experiments, champion by test AUC, governed alias, batch scoring into the worklist, explanations per patient | Two models compared; champion `ml.readmit_30d_risk@champion` (AUC 0.7245); scores and drivers in the nurse worklist (`03_*.ipynb`, `04_*.ipynb`) |
@@ -168,8 +177,8 @@ addresses the "layers present but not connected" failure mode.
 
 | Stop | Tell (what you'll see) | Show | Tell back (what it means) |
 |---|---|---|---|
-| 1. Unit Trends | "What Priya sees each morning" | 6 North spike, staffing-change markers, weekend follow-up collapse | "Root cause on one screen, no query written" |
-| 2. Worklist | "Who to act on today" | Filter 6 North · High · no follow-up; risk, AI flags, drivers | "A short, ranked list with the reason next to each name" |
+| 1. Unit Trends | "When did the peak start, and why?" | Readmissions over time by unit: the 6 North peak; drill in to the weekend 7-day follow-up drop | "The peak and its root cause on one screen, no query written" |
+| 2. Worklist | "Who to act on today" | Discharges with their readmission prediction: filter 6 North · High · no follow-up; drivers | "The prediction is attached to the discharge, so nurses catch high-risk patients before the follow-up window closes" |
 | 3. Patient → AI plan → approve | "From insight to action" | Note evidence quote → Claude drafts → RN approves → tasks created | "AI drafts, the nurse decides, everything is audited" |
 | 4. HRRP & What-if | "The same action in the CFO's language" | Slider 55% → 80%: ~6.5 avoided, ERR 1.14, $238K; scope → $874K | "Every booked follow-up moves this number" |
 | 5. Ask Genie | "Questions nobody built a dashboard for" | Weekend vs weekday follow-up → 17.7% vs 68.6% + SQL | "Self-service on governed data, PHI stays masked" |
@@ -182,7 +191,7 @@ Keep the demo to ~9 minutes and close with: *"Insight → action → dollars in 
 
 | Claim | Number | Evidence |
 |---|---|---|
-| Unit spike, others stable | 14.8% → 23.9%; others ≤ 1.1 pts | `evidence/query_results.md` |
+| Unit peak, others stable (trend over time) | 14.8% → 23.9%; others ≤ 1.1 pts | `evidence/query_results.md`, dashboard weekly trend |
 | Weekend follow-up gap | 18% (11/62) vs 69% (94/137) | `gold.followup_gap` |
 | Follow-up effect | 29.8% vs 16.4% | `gold.readmission_risk_factors` |
 | Free-text risk (AI) | lives alone 33.1% vs 20.6%; 16,584 notes, 0 errors | `02_ai_note_signals_eval.ipynb` |
@@ -207,6 +216,7 @@ Address these *inside* the beats so the objections are already answered:
 * **"Will it integrate with Epic?"** (Beat 7 / Q&A) Same pipeline. The connect phase maps feeds, it doesn't rebuild.
 * **"Isn't this just another platform to run?"** (§4b) It *replaces* copies: the warehouse, lake, ML tools and app database are consolidated under one governance model, serverless and deployed as code.
 * **"We don't have data scientists."** (§4b) Fixed-rule SQL, a transparent model with a governed champion, and AI Functions in SQL: the team operates it with SQL and Python skills they already have.
+* **"What caused the weekend gap?"** (Q&A) The data points to two late-June operational changes (the weekend transitions-pharmacist role and Friday clinic slots). The fix is restoring weekend scheduling capacity.
 * **"Why the jump between 70% and 80%?"** (Q&A) CUMC is above the 3% cap, so the first ~$60K of improvement is absorbed by the cap.
 
 Full objection answers are in `docs/talk_track.md` §8.
@@ -240,7 +250,8 @@ Full objection answers are in `docs/talk_track.md` §8.
 * [x] Quantifies impact in the buyer's KPIs: HRRP $, ERR, HF readmission %, 7-day follow-up %, 48h contact
 * [x] Frames value for the executive sponsor *and* the domain owner: §2, Beat 5
 * [x] Architecture after value: Beat 4 comes after Beats 0–3
-* [x] Explains why the customer couldn't solve it before (siloed data, complex infrastructure, limited ML/AI) and how Databricks solves each: Beat 2b, §4b
+* [x] Explains why the customer couldn't solve it before (siloed data and predictions disconnected from discharge, complex infrastructure, limited ML/AI) and how Databricks solves each: Beat 2b, §4b
+* [x] Root cause kept simple and generic: unified discharges + predictions + a trend view → see the peak → root cause = missing 7-day follow-up, especially weekends (Beat 3)
 
 **Role-play scoring criteria**
 * [x] Demo setup: Beat 0 frames the customer, the problem and what's coming before any demo
