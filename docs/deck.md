@@ -26,14 +26,14 @@ title: Readmission Command Center, Cedarbrook Health
 
 **For Jordan (CFO):** a $1.14M penalty line becomes a $238K decision you can fund this quarter.
 **For Priya (Transitional Care Manager):** every discharge comes with a risk score and a 2-sentence briefing: who to call today, and why.
-**For the CEO and board:** the same ratio is public (Care Compare, star rating) and drives payer contracts and referrals.
+**For Dr. Brooks (CEO):** out of Care Compare's *worse than national* heart-failure category, 3★ → 4★, +50 referrals/yr, +$200K payer withhold retained.
 
 ---
 
 # Under HRRP, one unit's readmissions can cut a hospital's Medicare payments
 
 - Cedarbrook Health: 3 hospitals. Flagship **CUMC, 538 beds**
-- CMS HRRP cuts payments on **all** Medicare discharges, by up to **3%**, when 30-day readmissions exceed expected. The same performance is published on Care Compare and feeds the star rating.
+- CMS HRRP cuts payments on **all** Medicare discharges, by up to **3%**, when 30-day readmissions exceed expected. The same performance is published on Care Compare (CUMC HF: 19.4%, *worse than national*) and feeds the star rating (CUMC: 3★).
 - CUMC estimated penalty **$1.62M**, already **at the 3% cap** of $54M base payments. System total **~$2.08M**
 - **Heart failure is the largest line: $1.14M, ERR 1.19**
 
@@ -41,7 +41,7 @@ title: Readmission Command Center, Cedarbrook Health
 
 ---
 
-# Four leaders, four numbers, one root cause
+# Five leaders, five numbers, one root cause
 
 *Cedarbrook leadership (fictional)*
 
@@ -51,23 +51,29 @@ title: Readmission Command Center, Cedarbrook Health
 | **Dr. Elena Vasquez, MD, VP of Quality & Patient Safety** | HF ERR; HF 30-day readmission rate | ERR 1.19; 6 North 23.9% | ERR 1.14; ~15% |
 | **Priya Raman, RN, Manager of Transitional Care** | 7-day follow-up booked; high-risk contacted ≤ 48h | Weekend 18% (weekday 69%); 41 of 54 high-risk with no follow-up | ≥ 80%; ≥ 90% |
 | **Kenji Tanaka, Chief Data & Analytics Officer** | Integration cost, PHI risk, time-to-insight | 5 silos, multiple PHI copies | 1 governed copy; ~2 min refresh |
+| **Dr. Naomi Brooks, President & CEO** | Star rating, HF referral volume | 3★; 420 referrals/yr (–6% YoY) | 4★; 470/yr |
 
-**All four numbers, and the public rating behind them, move with one action: a 7-day follow-up booked before a high-risk patient goes home.**
+**All five numbers, and the public rating behind them, move with one action: a 7-day follow-up booked before a high-risk patient goes home.**
 
 ---
 
-# Beyond the penalty: the readmission ratio is a public, market-facing number
+# Beyond the penalty: out of "worse than national", +1 star, +50 referrals, +$200K contract
 
-1. **Public reporting:** CMS Care Compare publishes every hospital's heart-failure 30-day readmission rate against the national rate. Patients, referring physicians, employers and payers see it.
-2. **Star rating:** readmission is one of five measure groups (22% weight) in the CMS Overall Hospital Star Rating.
-3. **Payer contract risk:** value-based contracts tie withholds, shared savings and network tiering to readmission performance. Bundled heart-failure episodes put the hospital at risk after discharge.
-4. **Referral volume:** ACOs, cardiology groups and post-acute partners steer heart-failure patients to hospitals with better published outcomes.
+| Strategic metric (CUMC heart failure, trailing 12 months) | Owner | Today | With the solution (6 North weekend follow-up at 80%) | Change |
+|---|---|---|---|---|
+| **CMS Care Compare** HF 30-day readmission rate | Dr. Elena Vasquez (VP of Quality) | **19.4%**, rated *"Worse than the national rate"* | **18.6%**, rated *"No different than the national rate"* | –0.8 pts; out of the "worse" category |
+| **CMS Overall Hospital Star Rating** | Dr. Naomi Brooks (CEO) with Dr. Vasquez | **3★** (readmission measure group below national) | **4★** projected (readmission group at national) | +1 star |
+| **HF referral volume** from ACO and cardiology partners | Dr. Naomi Brooks (CEO) | **420 / yr**, down 6% year over year | **470 / yr** | +50 admissions ≈ **+$372K** revenue (at $7,444 per HF admission) |
+| **Payer contract risk:** $20M Medicare Advantage value-based contract, 2% readmission-linked withhold | Jordan Whitfield (CFO) | **$400K at risk**, **$300K** projected to be forfeited | **$100K** projected forfeit | **+$200K** retained |
+| *For reference: HRRP penalty* | Jordan Whitfield (CFO) | *$1.62M* | *$1.38M* | *–$238K* |
 
-**Illustrative exposure (assumption):** a 2% quality withhold on a $20M value-based contract is $400K a year at risk, on top of the HRRP penalty.
+**Financial:** –$238K penalty. **Strategic:** out of *worse than national*, 3★ → 4★, +50 HF referrals (+$372K), +$200K contract withhold retained.
 
-**For Dr. Vasquez (VP of Quality):** your ERR is what patients, payers and the star rating see. 1.19 → 1.14 is a public story, not just a penalty.
-**For Jordan (CFO):** the penalty is the floor of the exposure. Payer contract terms are negotiated on the same number.
-**For the CEO and board:** heart-failure outcomes decide where referrals and contracts go. Fixing weekend follow-up protects market share, not just margin.
+**For Dr. Brooks (CEO):** a 4★ rating and 50 more heart-failure referrals a year on your busiest cardiology line.
+**For Dr. Vasquez (VP of Quality):** your public heart-failure rate leaves the *worse than national* category: 19.4% → 18.6%.
+**For Jordan (CFO):** on top of the –$238K penalty, $200K of withhold retained and ~$372K of referral revenue.
+
+*Synthetic: categories, stars, referrals and contract terms. From the gold tables: the 19.4% → 18.6% rate and the $7,444 per HF admission.*
 
 ---
 
@@ -224,7 +230,7 @@ Limits: the feedback loop has 3 reviewed plans so far; real-time scoring at disc
 | **Priya Raman, Manager of Transitional Care** | Weekend follow-up ≥ 80%; ≥ 90% of high-risk contacted ≤ 48h | A 6 North nurse champion |
 | **Kenji Tanaka, CDAO** | Feeds connected; quality gates green | Data access and an Epic integration contact |
 
-**For the CEO and board:** the pilot scorecard tracks the publicly reported HF readmission trend.
+**For Dr. Brooks (CEO):** the pilot scorecard also tracks the Care Compare HF rate, the readmission star group, partner referrals and contract withhold status.
 
 **What would you need to see to move forward?**
 
@@ -238,4 +244,4 @@ Limits: the feedback loop has 3 reviewed plans so far; real-time scoring at disc
 - **Lakebase** (Postgres) serves the app; app writes are read back in Unity Catalog
 - **Databricks App** (FastAPI): Claude Sonnet drafts plans; Genie API; one Asset Bundle with an 11-task job
 - **Evidence:** job run 601827272748584, 11/11 tasks, 33/33 checks, all committed as text: github.com/MelissaPang/readmission-command-center
-- **Assumptions:** simplified HRRP method (12 months, all payers); the follow-up effect treated as causal; the ~$60K/yr follow-up capacity and the $400K contract exposure are illustrative; star-rating and Care Compare facts are CMS program facts; synthetic data
+- **Assumptions:** simplified HRRP method (12 months, all payers); the follow-up effect treated as causal; the ~$60K/yr follow-up capacity is illustrative; strategic scorecard values (Care Compare category, stars, referrals, contract) are synthetic; synthetic patient data

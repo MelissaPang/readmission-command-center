@@ -32,6 +32,7 @@ The three-sentence version (the elevator pitch, ~30 seconds):
 | **Dr. Elena Vasquez, MD** | VP of Quality & Patient Safety | CMS HF excess readmission ratio (ERR), HF 30-day readmission rate |
 | **Priya Raman, RN** | Manager of Transitional Care (domain owner) | 7-day follow-up booked %, high-risk contacted within 48h |
 | **Kenji Tanaka** | Chief Data & Analytics Officer (technical stakeholder) | Integration cost, PHI risk, time-to-insight |
+| **Dr. Naomi Brooks** | President & CEO (strategic audience) | CMS star rating, HF referral volume, market share |
 
 Every value claim in the deck is tied to a **named role** and **the number that role is measured on**. This is the map to use when
 talking under executive pressure: lead with *their* number, not the platform.
@@ -43,12 +44,11 @@ talking under executive pressure: lead with *their* number, not the platform.
 | **Priya Raman, RN, Manager of Transitional Care** (domain owner) | **7-day follow-up booked at discharge %**, **high-risk patients contacted within 48h %**, nurse time per patient | Weekend 7-day follow-up **18%** (vs 69% weekdays); **54** high-risk patients in the window, **41** with no follow-up | Weekend follow-up **≥ 80%**; **≥ 90%** of high-risk patients contacted within 48h | Worklist with a readmission prediction and an **AI nurse briefing** per patient; AI-drafted plan the RN approves; outreach tasks created automatically | *"Your team starts each shift with a short briefing on who to call and why, and the care plan is already drafted for you to approve."* |
 | **Kenji Tanaka, Chief Data & Analytics Officer** (technical stakeholder) | Integration cost, PHI risk, time-to-insight, platform sprawl | 5 siloed sources, multiple PHI copies, monthly manual analysis **[scenario]** | One governed copy; incremental refresh in **~2 min**; AI cost scales with *new* notes | Lakeflow + Unity Catalog + Lakebase + Apps in one bundle; role-based masks; LLM-judge quality gates | *"One governed copy of the data from raw extract to app, deployed as code, with quality checks that run every time."* |
 
-**External (market) consequence of each number:**
-* **Jordan:** payer contract withholds and bundled-payment risk ride on the same readmission record.
-* **Dr. Vasquez:** the HF readmission rate is published on Care Compare and feeds the star rating.
-* **Priya:** better transitions protect post-acute partner and cardiology referral relationships.
-* **Kenji:** trusted, auditable numbers for public reporting and payer negotiations.
-* **The CEO and board** own the sum: market share in a high-volume cardiology line.
+**Strategic consequence of each number (synthetic):**
+* **Jordan:** $300K → $100K forfeited on a $20M Medicare Advantage withhold.
+* **Dr. Vasquez:** Care Compare HF 19.4% *worse than national* → 18.6% *no different*.
+* **Dr. Brooks (CEO):** 3★ → 4★; HF referrals 420 → 470 a year (+$372K).
+* **Priya:** her follow-up rate is the lever that moves all of them.
 
 **Reading the room:** answer the person who asked with *their* number, then bridge in one sentence to the person who funds it.
 * Jordan (CFO) asks about AI risk → "Every AI output is reviewed by an RN and audited; your exposure is the penalty, not the AI."
@@ -73,15 +73,22 @@ The arc **opens with the outcome in the CFO's and Quality's numbers**, then earn
 * CMS **HRRP** cuts payments on *all* Medicare discharges, by up to 3%, when readmissions exceed expected. A unit-level problem becomes a hospital-wide payment cut, and a publicly reported quality metric.
 * CUMC's estimated penalty is **$1.62M**, already at the 3% cap. Heart failure is the largest line at **$1.14M**, **ERR 1.19**. This is Jordan's (CFO) and Dr. Vasquez's (VP of Quality) shared problem.
 
-### Beat 1b: Beyond the penalty (strategic stakes: why the ERR is a market number)
-* The HF readmission performance behind the ERR is **published on CMS Care Compare** against the national rate, and readmission is **one of five measure groups (22%) in the CMS Overall Hospital Star Rating**.
-* **Payer contracts:** value-based (Medicare Advantage and commercial) contracts tie withholds, shared savings and network tiering to readmission performance. Bundled heart-failure episodes put the hospital at risk after discharge.
-* **Referrals and competition:** ACOs, cardiology groups and post-acute partners steer heart-failure patients to hospitals with better published outcomes, so competing regional systems win share.
-* Illustrative **[assumption]**: a 2% quality withhold on a $20M value-based contract = **$400K/yr** at risk, on top of HRRP.
-* Lines:
-  * **Dr. Vasquez:** "your ERR is public"
-  * **Jordan:** "the penalty is the floor of the exposure"
-  * **CEO and board:** "this protects market share, not just margin"
+### Beat 1b: Beyond the penalty (the strategic scorecard)
+The benefit is not just financial. The same fix moves the market-facing numbers:
+
+| Strategic metric (CUMC heart failure, trailing 12 months) | Owner | Today | With the solution (6 North weekend follow-up at 80%) | Change |
+|---|---|---|---|---|
+| **CMS Care Compare** HF 30-day readmission rate | Dr. Elena Vasquez (VP of Quality) | **19.4%**, rated *"Worse than the national rate"* | **18.6%**, rated *"No different than the national rate"* | –0.8 pts; out of the "worse" category |
+| **CMS Overall Hospital Star Rating** | Dr. Naomi Brooks (CEO) with Dr. Vasquez | **3★** (readmission measure group below national) | **4★** projected (readmission group at national) | +1 star |
+| **HF referral volume** from ACO and cardiology partners | Dr. Naomi Brooks (CEO) | **420 / yr**, down 6% year over year | **470 / yr** | +50 admissions ≈ **+$372K** revenue (at $7,444 per HF admission) |
+| **Payer contract risk:** $20M Medicare Advantage value-based contract, 2% readmission-linked withhold | Jordan Whitfield (CFO) | **$400K at risk**, **$300K** projected to be forfeited | **$100K** projected forfeit | **+$200K** retained |
+| *For reference: HRRP penalty* | Jordan Whitfield (CFO) | *$1.62M* | *$1.38M* | *–$238K* |
+
+*Today values, star rating, Care Compare categories, referral counts and contract terms are **synthetic** for Cedarbrook. The 19.4% → 18.6% rate
+(156 → ~149.5 readmissions on 806 HF index admissions) and the $7,444 payment per HF admission come from the prototype's gold tables.*
+
+* **Line:** *"Financial: –$238K penalty. Strategic: out of 'worse than national', +1 star, +50 referrals, +$200K of contract withhold retained."*
+* **For Dr. Brooks (CEO):** market position. **For Dr. Vasquez:** the public rating. **For Jordan:** penalty, withhold and referral revenue.
 
 ### Beat 2: Complication (a peak nobody saw coming, and nobody could explain)
 * One unit's HF readmissions went **14.8% → 23.9%** in 20 weeks. **Every other unit stayed within ~1.5 pts.**
@@ -127,6 +134,7 @@ Once discharge records, readmission predictions and follow-up data are **unified
   * plans drafted in **~4 s** for RN approval
   * outreach tasks created on approval
   * target weekend follow-up **≥ 80%**, high-risk contact within 48h **≥ 90%**
+* **Dr. Naomi Brooks (CEO), strategic:** Care Compare HF out of *worse than national* (19.4% → 18.6%), 3★ → 4★, +50 HF referrals/yr (+$372K), +$200K payer withhold retained.
 * **Kenji Tanaka (CDAO):** one governed copy, ~2 min incremental refresh, quality gates (validation plus an LLM judge) on every run.
 
 ### Beat 4: Resolution (one connected journey)
@@ -301,7 +309,7 @@ Full answers: `docs/talk_track.md` §8.
 * [x] Quantifies impact in the buyer's KPIs, **each tied to its accountable role** (§2 accountability map)
 * [x] Frames value for the executive sponsor (**Jordan Whitfield, CFO**) *and* the domain owner (**Priya Raman, Manager of Transitional Care**) explicitly, plus **Dr. Elena Vasquez (VP of Quality)** and **Kenji Tanaka (CDAO)**
 * [x] The deck's text is extractable: `docs/deck.md` is the deck as plain text, with a "For Jordan (CFO) / For Dr. Vasquez (VP of Quality) / For Priya (Transitional Care Manager)" line on every value slide
-* [x] Executive pressure is **strategic, not only financial**: the ERR is linked to Care Compare, star ratings, payer contract risk and referral volume (Beat 1b; walkthrough slide 5)
+* [x] Executive pressure is **strategic, not only financial**: a quantified before → after for the Care Compare rating, the star rating, referral volume and payer contract risk (Beat 1b; walkthrough slide 5)
 * [x] Architecture after value
 
 **Role-play**

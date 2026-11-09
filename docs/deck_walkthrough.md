@@ -14,6 +14,7 @@ the **visual**, the **storyline beat**, and the **source** of every number in th
 | **Dr. Elena Vasquez, MD** | VP of Quality & Patient Safety | CMS HF excess readmission ratio (ERR), HF 30-day readmission rate |
 | **Priya Raman, RN** | Manager of Transitional Care (domain owner) | 7-day follow-up booked %, high-risk contacted within 48h |
 | **Kenji Tanaka** | Chief Data & Analytics Officer (technical stakeholder) | Integration cost, PHI risk, time-to-insight |
+| **Dr. Naomi Brooks** | President & CEO (strategic audience) | CMS star rating, HF referral volume, market share |
 
 **Accountable roles in the room (name them on the slides, not "Finance" or "Quality")**
 
@@ -23,6 +24,7 @@ the **visual**, the **storyline beat**, and the **source** of every number in th
 | **Dr. Elena Vasquez, VP of Quality** | CMS HF excess readmission ratio (ERR), HF 30-day readmission rate | ERR 1.19 → 1.14; 6 North 23.9% → ~15% |
 | **Priya Raman, RN, Manager of Transitional Care** (domain owner) | 7-day follow-up booked %, high-risk contacted ≤ 48h % | weekend 18% → ≥ 80%; ≥ 90% contacted |
 | **Kenji Tanaka, CDAO** (technical) | Integration cost, PHI risk, time-to-insight | 5 silos → 1 governed copy; ~2 min refresh |
+| **Dr. Naomi Brooks, President & CEO** (strategic) | CMS star rating, HF referral volume | 3★ → 4★; 420 → 470 HF referrals/yr |
 
 **Deck rules applied:**
 * lead with the outcome in named executives' numbers
@@ -84,7 +86,7 @@ Three tiles, each labelled with its owner:
 **Role lines (on the slide):**
 * **For Jordan (CFO):** "A $1.14M penalty line becomes a $238K decision you can fund this quarter."
 * **For Priya (Transitional Care Manager):** "Every discharge comes with a risk score and a 2-sentence briefing: who to call today, and why."
-* **Strategic line (for the CEO and board):** "The same ratio is published on Care Compare, feeds the star rating, and is used in payer contracts and referral decisions. This protects market position, not just the penalty."
+* **For Dr. Brooks (CEO), strategic:** "Out of Care Compare's 'worse than national' heart-failure category, 3★ → 4★, +50 heart-failure referrals a year (+$372K), +$200K payer withhold retained (slide 5)."
 
 **Visual:** three KPI tiles with the person's name and role in the tile header.
 **Source:** `gold.hrrp_whatif`, `gold.hrrp_hospital_penalty`, `gold.followup_gap`.
@@ -96,7 +98,7 @@ Three tiles, each labelled with its owner:
 **Headline:** *Under HRRP, one unit's readmissions can cut a hospital's Medicare payments*
 
 * Cedarbrook Health: 3 hospitals. Flagship CUMC has 538 beds.
-* CMS HRRP cuts payments on **all** Medicare discharges, by up to **3%**, when 30-day readmissions exceed expected. The same readmission performance is **published on CMS Care Compare and feeds the hospital star rating** (see slide 5).
+* CMS HRRP cuts payments on **all** Medicare discharges, by up to **3%**, when 30-day readmissions exceed expected. The same performance is **published on CMS Care Compare** (CUMC heart failure today: 19.4%, *worse than national*) and **feeds the star rating** (CUMC today: 3★). See slide 5.
 * CUMC penalty **$1.62M**, already **at the 3% cap** ($54M base DRG payments). **Heart failure is the largest line: $1.14M, ERR 1.19.** Across the system: **~$2.08M**.
 
 **Role line:** *For Jordan (CFO) and Dr. Vasquez (VP of Quality):* one penalty, one publicly reported ratio, one shared problem.
@@ -107,51 +109,49 @@ Three tiles, each labelled with its owner:
 
 ## Slide 4 · Who owns which number (new; executive accountability)
 
-**Headline:** *Four leaders, four numbers, one root cause*
+**Headline:** *Five leaders, five numbers, one root cause*
 
-*(Jordan Whitfield, Dr. Elena Vasquez, Priya Raman, Kenji Tanaka)*
+*(Dr. Naomi Brooks, Jordan Whitfield, Dr. Elena Vasquez, Priya Raman, Kenji Tanaka)*
 
-| Role | Measured on | Today | Target | External (market) consequence |
+| Role | Measured on | Today | Target | Strategic consequence (synthetic) |
 |---|---|---|---|---|
-| **Jordan Whitfield, CFO** | HRRP penalty $ | $1.62M (HF $1.14M) | –$238K on 6 North; –$874K CUMC HF | Payer contract withholds and bundled-payment risk are negotiated on the same readmission record |
-| **Dr. Elena Vasquez, VP of Quality** | HF excess readmission ratio; HF 30-day readmission rate | ERR 1.19; 6 North 23.9% | ERR 1.14; ~15% | Published on Care Compare; readmission is 1 of 5 star-rating groups |
-| **Priya Raman, Manager of Transitional Care** | 7-day follow-up booked at discharge; high-risk contacted ≤ 48h | weekend 18% (weekday 69%); 41 of 54 high-risk with no follow-up | ≥ 80%; ≥ 90% | Better transitions protect post-acute partner and cardiology referral relationships |
-| **Kenji Tanaka, CDAO** | Integration cost, PHI risk, time-to-insight | 5 silos, multiple PHI copies | 1 governed copy; ~2 min refresh | Trusted, auditable numbers for public reporting and payer negotiations |
+| **Jordan Whitfield, CFO** | HRRP penalty $ | $1.62M (HF $1.14M) | –$238K on 6 North; –$874K CUMC HF | $20M Medicare Advantage contract: $300K of the $400K withhold projected forfeit → $100K |
+| **Dr. Elena Vasquez, VP of Quality** | HF excess readmission ratio; HF 30-day readmission rate | ERR 1.19; 6 North 23.9% | ERR 1.14; ~15% | Care Compare HF 19.4% *worse than national* → 18.6% *no different*; 3★ → 4★ |
+| **Priya Raman, Manager of Transitional Care** | 7-day follow-up booked at discharge; high-risk contacted ≤ 48h | weekend 18% (weekday 69%); 41 of 54 high-risk with no follow-up | ≥ 80%; ≥ 90% | HF referrals from partners 420 → 470 / yr |
+| **Kenji Tanaka, CDAO** | Integration cost, PHI risk, time-to-insight | 5 silos, multiple PHI copies | 1 governed copy; ~2 min refresh | One auditable source for public reporting and payer negotiations |
+| **Dr. Naomi Brooks, CEO** | CMS star rating; HF referral volume | 3★; 420 referrals/yr (–6% YoY) | 4★; 470/yr | Market share on the busiest cardiology line |
 
-Bottom line: *"All four numbers, and the public rating behind them, move with one action: a 7-day follow-up booked before a high-risk patient goes home."*
+Bottom line: *"All five numbers, and the public rating behind them, move with one action: a 7-day follow-up booked before a high-risk patient goes home."*
 
 **Visual:** a 4-row table or four person cards (name, role, number) connected to one central "7-day follow-up" node.
 **Source:** `docs/storyline.md` §2.
 
 ---
 
-## Slide 5 · Beyond the penalty: the ERR is a public, market-facing number (strategic stakes)
+## Slide 5 · Beyond the penalty: the strategic scorecard (CMS rating, star rating, referrals, payer contracts)
 
-**Headline:** *The readmission ratio isn't only a penalty line: it's published, rated and used by the people who send Cedarbrook its patients and contracts*
+**Headline:** *Fixing weekend follow-up moves Cedarbrook out of "worse than national", adds a star, wins back referrals and protects a payer contract*
 
-Four outward consequences of a worsening heart-failure readmission record:
-1. **Public reporting.** CMS **Care Compare** publishes every hospital's heart-failure 30-day readmission rate, with a comparison to the national rate. Patients, referring physicians, employers and payers all see it.
-2. **Star rating.** Readmission is one of the five measure groups in the **CMS Overall Hospital Star Rating** (22% of the weighting, alongside mortality, safety and patient experience). A visible star can move with readmission performance.
-3. **Payer contract risk.**
-   * Medicare Advantage and commercial **value-based contracts** commonly tie quality withholds, shared savings or network tiering to readmission performance.
-   * **Bundled-payment** episodes, for example heart failure in CMS BPCI Advanced, put the hospital at financial risk for readmissions after discharge.
-   * A worse ratio weakens Cedarbrook's position at the next contract negotiation.
-4. **Referral volume and competitive position.**
-   * Heart failure is a high-volume cardiology service line.
-   * ACOs, cardiology groups and post-acute partners increasingly steer patients to hospitals with better published outcomes, which means competing regional systems with better rates win referrals.
+| Strategic metric (CUMC heart failure, trailing 12 months) | Owner | Today | With the solution (6 North weekend follow-up at 80%) | Change |
+|---|---|---|---|---|
+| **CMS Care Compare** HF 30-day readmission rate | Dr. Elena Vasquez (VP of Quality) | **19.4%**, rated *"Worse than the national rate"* | **18.6%**, rated *"No different than the national rate"* | –0.8 pts; out of the "worse" category |
+| **CMS Overall Hospital Star Rating** | Dr. Naomi Brooks (CEO) with Dr. Vasquez | **3★** (readmission measure group below national) | **4★** projected (readmission group at national) | +1 star |
+| **HF referral volume** from ACO and cardiology partners | Dr. Naomi Brooks (CEO) | **420 / yr**, down 6% year over year | **470 / yr** | +50 admissions ≈ **+$372K** revenue (at $7,444 per HF admission) |
+| **Payer contract risk:** $20M Medicare Advantage value-based contract, 2% readmission-linked withhold | Jordan Whitfield (CFO) | **$400K at risk**, **$300K** projected to be forfeited | **$100K** projected forfeit | **+$200K** retained |
+| *For reference: HRRP penalty* | Jordan Whitfield (CFO) | *$1.62M* | *$1.38M* | *–$238K* |
 
-**Illustrative exposure (assumption: validate with Cedarbrook strategy and managed care):**
-* A **2% quality withhold** on a **$20M** value-based contract is **$400K** at risk each year, on top of the HRRP penalty.
-* Losing **5%** of heart-failure referrals to a better-rated competitor reduces volume on the hospital's busiest cardiology line.
+**Bottom line on the slide:** *"Financial: –$238K penalty. Strategic: out of 'worse than national', +1 star, +50 referrals (+$372K), +$200K contract withhold retained."*
 
 **Role lines (on the slide):**
-* **For Dr. Vasquez (VP of Quality):** "Your ERR is what patients, payers and the star rating see. 1.19 → 1.14 is a public story, not just a penalty."
-* **For Jordan (CFO):** "The penalty is the floor of the exposure. Payer withholds and contract terms sit on top of it, and they're negotiated on this same number."
-* **For the CEO and board** (the strategic audience): "Heart-failure outcomes decide where referrals and value-based contracts go. Fixing weekend follow-up protects market share, not just margin."
+* **For Dr. Brooks (CEO):** "This is a market-position story: a 4★ rating and 50 more heart-failure referrals a year on your busiest cardiology line."
+* **For Dr. Vasquez (VP of Quality):** "Your public heart-failure rate leaves the 'worse than national' category: 19.4% → 18.6%."
+* **For Jordan (CFO):** "On top of the –$238K penalty, you retain $200K of the Medicare Advantage withhold and gain ~$372K of referral revenue."
 
-**Visual:** a "ripple" diagram, with HF ERR at the center and four rings: Care Compare → star rating → payer contracts → referrals and market share.
-**Source:** CMS Care Compare and Overall Hospital Star Rating methodology (public); the illustrative exposure is an **[assumption]**.
-**Speaker note:** don't claim a specific star change. Say "readmission performance is one of five star-rating groups, and it's visible".
+**Visual:** a four-row before → after scorecard with arrows; star icons (3★ → 4★); the Care Compare category badge changing from red to grey.
+**Source:** rate and payment from `gold.hrrp_condition_err` and `gold.hrrp_whatif`; all other values synthetic (see the note).
+
+*Today values, star rating, Care Compare categories, referral counts and contract terms are **synthetic** for Cedarbrook. The 19.4% → 18.6% rate
+(156 → ~149.5 readmissions on 806 HF index admissions) and the $7,444 payment per HF admission come from the prototype's gold tables.*
 
 ---
 
@@ -222,10 +222,11 @@ Scaled: CUMC weekend HF (all units) **~$412K** · all CUMC HF **~$874K**.
 * **For Dr. Vasquez (VP of Quality):** "HF ERR 1.19 → 1.14, toward the 1.00 benchmark."
 * **For Priya (Manager of Transitional Care):** "54 high-risk patients in the window today; 41 have no follow-up. Booking those is how weekend follow-up gets from 18% to 80%."
 
-**Beyond the penalty (strategic value, illustrative [assumption]):**
-* **Contracts:** protects value-based contract terms. A 2% quality withhold on a $20M contract is $400K a year at risk.
-* **Stars and Care Compare:** moves the publicly reported HF readmission performance in the right direction.
-* **Referrals:** defends heart-failure referral share against better-rated regional competitors.
+**Beyond the penalty (strategic value, synthetic; slide 5):**
+* **Care Compare:** HF 19.4% *worse than national* → 18.6% *no different than national*
+* **Star rating:** 3★ → 4★ (projected)
+* **Referrals:** 420 → 470 HF referrals a year (+$372K revenue)
+* **Payer contract:** +$200K of a $400K Medicare Advantage withhold retained
 
 **Speaker note:** savings rise unevenly because CUMC is above the 3% cap (uncapped $1.68M), so the first ~$60K is absorbed by the cap.
 **Visual:** a what-if slider screenshot plus a small bar of the three scopes.
@@ -361,7 +362,7 @@ Limits stated: the feedback loop has only 3 reviewed plans so far; real-time sco
 | **Priya Raman, Manager of Transitional Care** | weekend follow-up ≥ 80%; ≥ 90% of high-risk contacted ≤ 48h | A 6 North nurse champion |
 | **Kenji Tanaka, CDAO** | feeds connected; quality gates green | Data access and an Epic integration contact |
 
-**For the CEO and board:** the pilot's weekly scorecard includes the publicly reported HF readmission trend, so the market-facing story is measured, not assumed.
+**For Dr. Brooks (CEO):** the pilot scorecard tracks the strategic metrics too: the Care Compare HF rate (target < 18.6%), the readmission measure group for stars, monthly partner referrals (target 470/yr run-rate), and contract withhold status.
 
 Close: *"What would you need to see to move forward?"*
 
@@ -395,7 +396,7 @@ Close: *"What would you need to see to move forward?"*
 ## Appendix D · Assumptions and simplifications
 * ERR = observed / expected, 12 months, all payers, neutrality modifier 1.0. CMS uses 3 years, risk adjustment and Medicare FFS only.
 * The what-if assumes the follow-up effect is causal. The ~$60K/yr weekend follow-up capacity is illustrative.
-* The strategic exposure (a 2% withhold on a $20M value-based contract = $400K; referral share) is illustrative. Star-rating and Care Compare facts are CMS program facts; no specific star change is claimed.
+* Strategic scorecard values (Care Compare category, 3★ → 4★, 420 → 470 referrals, $20M contract with a 2% withhold) are **synthetic**. The 19.4% → 18.6% rate and the $7,444 payment per HF admission come from the gold tables.
 * Real-time scoring at discharge is the production design. The feedback loop has 3 reviewed plans so far.
 * All patient data is synthetic.
 
