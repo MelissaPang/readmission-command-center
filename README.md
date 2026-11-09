@@ -44,6 +44,7 @@ nurses and CHWs, who work the outreach queue; the Revenue Integrity & Quality te
 
 ## Presentation materials
 
+* [`docs/submission_answers.md`](docs/submission_answers.md): answers to the submission questions (challenge, solution, AI tools and workflow, trade-offs, outcomes)
 * [`docs/deck.md`](docs/deck.md): **the presentation deck as extractable text** (Marp-compatible; render to a PDF with selectable text with `marp docs/deck.md --pdf`)
 * [`docs/storyline.md`](docs/storyline.md): the narrative spine (outcome-first arc, executive accountability map by role, one-patient thread through every layer, proof points, requirements check)
 * [`docs/deck_walkthrough.md`](docs/deck_walkthrough.md): slide-by-slide deck content (outcome first, buyer KPIs, sources for every number)
