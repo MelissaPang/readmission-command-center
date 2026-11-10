@@ -4,7 +4,7 @@
 
 **Who is in the room.** The role-play has two personas. The **business stakeholder** speaks for Jordan Whitfield (CFO) and Dr. Elena Vasquez (VP of Quality). The **technical stakeholder** speaks for Kenji Tanaka (Chief Data & Analytics Officer). Priya Raman, RN (Manager of Transitional Care) is the app's main user. If the personas introduce themselves with other names, use their names and keep the same roles.
 
-**Timing:** about 22 minutes of presenting, then Q&A.
+**Timing:** about 22 minutes of presenting, then an optional architecture review (about 12 minutes), then Q&A.
 
 **Before you start (5 minutes before):**
 
@@ -12,6 +12,7 @@
 - In **Discharge Worklist**, filter to CUMC · 6 North · High · No 7-day follow-up, and pick a weekend heart-failure patient with **no plan** yet.
 - Open **Ask Genie** in a second browser tab, with the question ready to paste.
 - Have the deck on page 1.
+- For the architecture review, open these in separate tabs: the pipeline `rcc_pipeline`, the Catalog (`cedarbrook_rcc`), the MLflow experiment `rcc_readmission_risk`, the Lakebase instance `rcc-lakebase`, and the latest `rcc_end_to_end` job run.
 
 ---
 
@@ -295,6 +296,129 @@
 
 ---
 
+## Architecture review session (after the ask, about 12 minutes)
+
+*Use this when the technical stakeholder wants to go deeper, or when the business stakeholder asks "how do we know this will work?" It follows the same rhythm as the demo: tell what you'll show, show it, then tell what it means for each person's number. Speak mainly to Kenji, but finish every layer with the business value for Jordan, Dr. Vasquez or Priya.*
+
+→ *Transition in (from page 14):* "Kenji, I'd guess you want to see what's under the hood before you'd commit your team. Could I take about ten minutes for the architecture? Before I dive in, I'd like to make sure we're starting from the same place."
+
+### Step 1: Set the stage before diving in (about 2.5 minutes)
+
+**Restate Cedarbrook's current state.** *(Say it as a summary, then check it.)*
+
+"Let me play back where Cedarbrook is today, and correct me if I've got anything wrong:"
+
+- "Discharge records, follow-up appointments, clinical notes and the penalty data sit in five separate systems."
+- "There are several copies of patient data: in the warehouse, the lake, the BI tool and the care-management database."
+- "If a readmission risk score exists, it's calculated weeks later, so it never reaches the nurse while a follow-up can still be booked."
+- "Answering 'why did readmissions go up?' is a manual, monthly analyst project."
+- "And the result: weekend follow-up at 18%, a heart-failure ratio of 1.19, and a $1.62 million penalty."
+
+"Is that a fair picture? Anything I've missed?"
+
+**Confirm each persona's priorities.** *(Ask, then listen. Write down what they say.)*
+
+- "Kenji, my understanding is that your top priorities are integration effort, PHI risk and not adding another platform to run. Is that right, or would you put something else first?"
+- "Jordan, for you I'm assuming it's whether the $238,000 is real and what it costs to run. Is that still the main question?"
+- "Dr. Vasquez, I'm assuming you care most about whether the numbers will hold up for public reporting. Is that the right focus?"
+- *(On Priya's behalf)* "And for Priya's nurses, the priority is that this saves time rather than adding clicks. Does that match what you hear from the floor?"
+
+**Define success for this review.** *(Agree on it before you show anything.)*
+
+"Here's how I'd suggest we judge this architecture. By the end, you should be confident about four things:"
+
+1. "**It connects to Epic without a rebuild**: your feeds map into the same pipeline in about four weeks."
+2. "**There's one governed copy of patient data**, with PHI and clinical notes protected by role, and an audit trail."
+3. "**The numbers are trustworthy**: data-quality rules, 33 validation checks and an AI judge run on every refresh, so Dr. Vasquez's public ratio and Jordan's penalty come from the same source."
+4. "**It's operable by your team**: deployed as code, serverless, and AI cost that grows with new discharges, not with history."
+
+"If we get to the end and any of those four isn't clear, I've not done my job. Does that list work for you, or should we add something?"
+
+**Check the agenda fits.**
+
+"Here's how I'd use the ten minutes: five layers, each about two minutes, in the same order the data flows: **ingest and quality, governance, intelligence, serving and action, and operations**. Then the path to production. Does that order work, or is there one area you'd like me to spend more time on, or skip?"
+
+*If they pick an area, spend the extra time there and shorten the others. If they say "go ahead", continue.*
+
+→ *Transition:* "Great. Let's follow the data from the moment it arrives."
+
+### Step 2: Tell, show, tell, one layer at a time (about 8 minutes)
+
+**Overall tell:** "There are five layers, but one thread runs through all of them: a single copy of the data that goes from raw extract to a nurse's worklist, and back again when the nurse acts."
+
+#### Layer 1: Ingest and data quality (Lakeflow), for Kenji and Dr. Vasquez
+
+- **Tell:** "First, how the five silos become one source."
+- **Show:** in the workspace, open **Jobs & Pipelines → rcc_pipeline**. Walk the graph from left to right: nine raw feeds land in bronze, are cleaned and checked in silver, and become ten gold tables. Click a silver table and show the **data-quality expectations**: discharge after admit, valid IDs. Point at the counts: the six invalid records and 45 duplicates we planted were caught.
+- **Tell (business value):** "Dr. Vasquez, this is why Quality and Finance now see the same number: readmission rate and ratio are defined once, in one gold layer. And an analysis that used to be a monthly project now refreshes in about two minutes."
+- → "Once the data is in one place, the next question is who's allowed to see what."
+
+#### Layer 2: Governance (Unity Catalog), for Kenji and Dr. Vasquez
+
+- **Tell:** "Second, how patient data stays protected with only one copy."
+- **Show:** in **Catalog**, open `cedarbrook_rcc.silver.patients` and show the **column masks** on name, MRN, date of birth and phone. Open `gold.patient_risk_scores`: show the **row filter** by hospital, and the **role-based mask** on the AI note quote. Then open the **Lineage** tab and trace it from the raw file all the way to the app's worklist.
+- **Tell (business value):** "Kenji, that's one place to secure and audit instead of four copies. An analyst sees `***MASKED***`; a user scoped to one hospital sees only their 3,424 rows. Dr. Vasquez, the lineage means every number you report publicly can be traced back to its source records."
+- → "With the data governed, we can safely put intelligence on top of it."
+
+#### Layer 3: Intelligence (AI Functions and MLflow), for Kenji and Priya
+
+- **Tell:** "Third, how the platform reads notes and predicts risk, inside the same governance."
+- **Show:** open `silver.discharge_note_signals`: the AI read 16,584 notes with zero errors and turned phrases like "lives alone" into columns, with an evidence quote. Then open **Experiments → rcc_readmission_risk**: two models compared, logistic regression chosen as champion (AUC 0.7245), and the calibration table. Show the model in the registry with its `@champion` alias.
+- **Tell (business value):** "Priya, this is what puts the right patient at the top of your list: high-risk patients readmit at 45% against 9% for low risk. And Kenji, the AI runs inside the governed pipeline through Databricks model endpoints, so there's no separate AI tool holding its own copy of the notes."
+- → "A prediction only helps if it reaches the nurse in time, so let's look at how it's served."
+
+#### Layer 4: Serving and action (Lakebase, the Databricks App, the Foundation Model API), for Priya and Jordan
+
+- **Tell:** "Fourth, how predictions reach the nurse in milliseconds, and how the nurse's actions come back."
+- **Show:** open the **Lakebase instance** `rcc-lakebase` and the synced tables: the worklist and HRRP tables, kept in step with the gold layer. Then show the app's own tables, `app_rcc.transition_plans` and `outreach_tasks`, and query them from the lakehouse through the `rcc_lakebase` catalog. Point at the plan you approved in the demo, with its edit statistics.
+- **Tell (business value):** "Priya, this is why the worklist loads instantly and the plan is drafted in 4.4 seconds. Jordan, every approval your nurses make is recorded and queryable, so the follow-ups that drive the $238,000 are measurable, not estimated. And every edit feeds the next model, which is the learning loop."
+- → "The last question is whether your team can run this safely, day after day."
+
+#### Layer 5: Operations and trust (Asset Bundles, Jobs, validation, the LLM judge), for Kenji and Jordan
+
+- **Tell:** "Fifth, how it's deployed, checked and kept affordable."
+- **Show:** open **Jobs → rcc_end_to_end**, the latest run: 11 of 11 tasks succeeded. Open the validation output: 33 of 33 checks passed. Show `gold.genie_eval_judgements`: Genie's answers graded 5 of 5 by the LLM judge. Mention that everything is defined in one Asset Bundle in Git.
+- **Tell (business value):** "Kenji, it's one bundle you can deploy anywhere, with quality gates on every run. Jordan, the AI cost is incremental: notes are read once, and later runs take about two minutes, so cost follows new discharges, not your history."
+
+### Step 3: Path to production (about 1 minute)
+
+- **Tell:** "Here's what changes between this prototype and production."
+- **Show:** *(no screen needed; use slide 14 or just talk)*
+  - "Epic Clarity or FHIR feeds replace the synthetic files, through the same pipeline."
+  - "Account groups replace the entitlements table."
+  - "Change Data Feed and event-triggered runs bring the worklist within minutes of discharge."
+  - "Monitoring on the risk scores to catch drift."
+  - "And the full CMS method: three years, risk-adjusted, Medicare only."
+- **Tell (business value):** "None of these are rebuilds. They're the four weeks of connection work in the pilot plan."
+
+### Step 4: Tell back, check against success (about 1 minute)
+
+"So let's go back to the four things we said would make this a success:"
+
+1. "**Connects to Epic without a rebuild:** the feeds map into the same pipeline. That's the first four weeks of the pilot."
+2. "**One governed copy:** masks, role-based note protection, row filters and lineage, all in Unity Catalog."
+3. "**Trustworthy numbers:** data-quality rules, 33 checks and an AI judge on every run, so Dr. Vasquez's ratio and Jordan's penalty come from one source."
+4. "**Operable:** one bundle, serverless, with incremental AI cost."
+
+"And here's what it means for each of you: Jordan, a penalty you can track down by $238,000. Dr. Vasquez, a ratio you can defend publicly. Priya, a worklist that saves her nurses time. Kenji, one platform instead of five."
+
+"Did we meet all four? Is there anything you'd still need to see before you'd be comfortable taking this to your team?"
+
+→ *Transition out:* "Thank you. That brings us back to the decision on the table: the 90-day pilot on 6 North. What would you need to see to move forward?"
+
+### Architecture questions to expect
+
+**"What happens if the AI model service is down?"** "The pipeline doesn't fail: each failed call is recorded in an error column, and those notes can be reprocessed once the service is back. Meanwhile the worklist keeps serving the last scores from Lakebase, so nurses aren't blocked."
+
+**"Can we bring our own model, or our EHR vendor's score?"** "Yes. The registry takes any MLflow model, and a vendor score can be added as a feature or compared side by side as a challenger."
+
+**"How does this scale to all three hospitals?"** "It's the same pipeline with more feeds. Serverless compute scales automatically, Lakebase capacity can be raised, and the row filter already scopes each hospital's users."
+
+**"Where does the data physically live, and who owns it?"** "In Cedarbrook's own cloud storage, governed by Unity Catalog. The AI calls go through Databricks model endpoints rather than a separate vendor tool, and we'd review the data-processing terms with your security team in the pilot."
+
+
+---
+
 ## Q&A: prepared answers
 
 Pattern: **acknowledge → answer with their number → bridge to the other person in one sentence.**
@@ -347,3 +471,4 @@ Pattern: **acknowledge → answer with their number → bridge to the other pers
 - In demo stop 3, edit the plan before approving it.
 - Name the assumptions yourself (the causal effect, the ~$60K capacity, synthetic data) before anyone asks.
 - On page 14, ask the question and then stop talking.
+- In the architecture review, do all four check-ins (current state, priorities, success, agenda) before showing anything, and end each layer with a business number.
